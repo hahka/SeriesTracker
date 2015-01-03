@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="menu_show_archived">Montrer les séries archivées</string>
+    <string name="menu_hide_archived">Cacher les séries archivées</string>
+    <string name="menu_reload">Recharger</string>
+
+</resources>

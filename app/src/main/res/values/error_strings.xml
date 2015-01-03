@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="error_no_user_found">Aucun utilisateur trouvé avec cet identifiant</string>
+    <string name="error_invalid_login">Votre identifiant est incorrect</string>
+
+</resources>

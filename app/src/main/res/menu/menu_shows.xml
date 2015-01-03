@@ -1,0 +1,13 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.thibautvirolle.betaseries.shows.ShowsActivity">
+
+    <item android:id="@+id/menu_archived"
+        android:title="@string/menu_hide_archived"
+        android:orderInCategory="100"/>
+
+    <item android:id="@+id/menu_reload"
+        android:title="@string/menu_reload"
+        android:orderInCategory="100"/>
+</menu>
