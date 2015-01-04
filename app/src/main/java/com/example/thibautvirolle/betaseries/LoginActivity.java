@@ -27,19 +27,26 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.example.thibautvirolle.betaseries.episodes.Episode;
 import com.example.thibautvirolle.betaseries.utilitaires.Config;
+import com.example.thibautvirolle.betaseries.utilitaires.JsonParser;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.math.BigInteger;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -309,8 +316,9 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         private final String mPassword;
 
 
-        String id = null;
+        String userId = null;
         String token = null;
+        ArrayList<Episode> planningList;
         int error = -1;
 
 
@@ -322,7 +330,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         @Override
         protected Boolean doInBackground(Void... params) {
 
-            id = null;
+            userId = null;
             token = null;
 
             HttpPost httppost = new HttpPost("https://api.betaseries.com/members/auth");
@@ -356,7 +364,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                                 value = reader.nextName();
                                 if (value.equals("id")) {
 
-                                    id = String.valueOf(reader.nextInt());
+                                    userId = String.valueOf(reader.nextInt());
 
                                 } else if (value.equals("login")) {
                                     login = reader.nextString();
@@ -404,7 +412,39 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                 e.printStackTrace();
             }
 
-            return (id != null);
+
+
+
+
+
+
+
+
+            HttpGet httpget = new HttpGet("https://api.betaseries.com/planning/member?id="+userId+"&key="+ Config.API_KEY);
+            Log.d(TAG,"3.1");
+
+            try {
+                HttpClient httpclient = new DefaultHttpClient();
+                Log.d(TAG,"3.2");
+
+                HttpResponse response=httpclient.execute(httpget);
+                Log.d(TAG,"3.3");
+                InputStream is = response.getEntity().getContent();
+
+                Log.d(TAG,"4");
+
+                planningList = JsonParser.readShowEpisodesJsonStream(is);
+
+                Log.d(TAG,"5");
+
+                is.close();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+
+            return (userId != null);
         }
 
         @Override
@@ -414,8 +454,9 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
             if (success) {
                 Intent returnIntent = new Intent();
-                returnIntent.putExtra(MainActivity.USER_ID, id);
-                returnIntent.putExtra(MainActivity.TOKEN, token);
+                returnIntent.putExtra(Config.USER_ID, userId);
+                returnIntent.putExtra(Config.TOKEN, token);
+                returnIntent.putParcelableArrayListExtra(Config.PLANNING_LIST,planningList);
                 setResult(RESULT_OK, returnIntent);
                 finish();
             } else {
@@ -443,6 +484,50 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         protected void onCancelled() {
             mAuthTask = null;
             showProgress(false);
+        }
+
+        private InputStream downloadData(String requestUrl) throws IOException, DownloadException {
+
+            InputStream inputStream = null;
+
+            HttpURLConnection urlConnection = null;
+
+        /* forming th java.net.URL object */
+            URL url = new URL(requestUrl);
+
+            urlConnection = (HttpURLConnection) url.openConnection();
+
+        /* optional request header */
+            urlConnection.setRequestProperty("Content-Type", "application/json");
+
+        /* optional request header */
+            urlConnection.setRequestProperty("Accept", "application/json");
+
+        /* for Get request */
+            urlConnection.setRequestMethod("GET");
+
+            int statusCode = urlConnection.getResponseCode();
+
+        /* 200 represents HTTP OK */
+            if (statusCode == 200) {
+                inputStream = new BufferedInputStream(urlConnection.getInputStream());
+                return inputStream;
+            } else {
+                Log.d(TAG,String.valueOf(statusCode));
+                throw new DownloadException("Failed to fetch data!!");
+            }
+        }
+
+
+        public class DownloadException extends Exception {
+
+            public DownloadException(String message) {
+                super(message);
+            }
+
+            public DownloadException(String message, Throwable cause) {
+                super(message, cause);
+            }
         }
     }
 }

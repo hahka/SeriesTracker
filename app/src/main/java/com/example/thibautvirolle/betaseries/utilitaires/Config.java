@@ -7,5 +7,13 @@ public class Config {
     // Your APP_ID can be found on your developers account
     //public static final String APP_ID = "e4c1a7271d8ffd09d60fe0a0b94304d6";
     public static final String API_KEY = "5913d425349a";
+
+    public static final String USER_ID = "user_id";
+    public static final String TOKEN = "token";
+
+
+    public static final String PLANNING_LIST = "planning_list";
+
+    public static final int AUTH_REQUEST_CODE = 0;
 }
 

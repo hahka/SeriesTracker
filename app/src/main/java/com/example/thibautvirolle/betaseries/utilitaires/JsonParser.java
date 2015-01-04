@@ -1,7 +1,6 @@
 package com.example.thibautvirolle.betaseries.utilitaires;
 
 import android.util.JsonReader;
-import android.util.Log;
 
 import com.example.thibautvirolle.betaseries.episodes.Episode;
 import com.example.thibautvirolle.betaseries.shows.Show;
@@ -97,6 +96,7 @@ public class JsonParser {
         int episode = 0;
         String code = "";
         boolean seen = false;
+        String show = "";
 
         reader.beginObject();
 
@@ -122,6 +122,24 @@ public class JsonParser {
                     //Log.d(TAG,name);
                     episode = Integer.parseInt(reader.nextString());
                     break;
+                case "show":
+                    //Log.d(TAG,name);
+                    reader.beginObject();
+                    while (reader.hasNext()) {
+
+                        //Log.d(TAG, reader.peek().toString());
+
+                        String nameBis = reader.nextName();
+                        if (nameBis.equals("title")) {
+                            //Log.d(TAG, nameBis);
+                            show = reader.nextString();
+                        } else {
+                            reader.skipValue();
+                        }
+                    }
+                    reader.endObject();
+
+                    break;
                 case "code":
                     //Log.d(TAG,name);
                     code = reader.nextString();
@@ -132,11 +150,11 @@ public class JsonParser {
                     reader.beginObject();
                     while (reader.hasNext()) {
 
-                        Log.d(TAG, reader.peek().toString());
+                        //Log.d(TAG, reader.peek().toString());
 
                         String nameBis = reader.nextName();
                         if (nameBis.equals("seen")) {
-                            Log.d(TAG, nameBis);
+                            //Log.d(TAG, nameBis);
                             seen = reader.nextBoolean();
                         } else {
                             reader.skipValue();
@@ -153,7 +171,8 @@ public class JsonParser {
         }
         reader.endObject();
 
-        Episode newEpisode = new Episode(id, title, season, episode, code, seen);
+        //Episode newEpisode = new Episode(id, title, season, episode, code, seen);
+        Episode newEpisode = new Episode(id, title, season, episode, code, seen, show);
 
         return newEpisode;
     }

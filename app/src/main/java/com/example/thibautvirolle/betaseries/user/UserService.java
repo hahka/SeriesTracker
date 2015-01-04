@@ -1,4 +1,4 @@
-package com.example.thibautvirolle.betaseries.shows;
+package com.example.thibautvirolle.betaseries.user;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -7,6 +7,7 @@ import android.os.ResultReceiver;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.example.thibautvirolle.betaseries.shows.Show;
 import com.example.thibautvirolle.betaseries.utilitaires.JsonParser;
 
 import java.io.BufferedInputStream;
@@ -19,9 +20,9 @@ import java.util.ArrayList;
 /**
  * Created by thibautvirolle on 16/12/14.
  */
-public class ShowsService extends IntentService{
+public class UserService extends IntentService{
 
-    private static String TAG = ShowsService.class.getSimpleName();
+    private static String TAG = UserService.class.getSimpleName();
 
 
     public static final int STATUS_RUNNING = 0;
@@ -32,11 +33,11 @@ public class ShowsService extends IntentService{
      *
      * @param name Used to name the worker thread, important only for debugging.
      */
-    public ShowsService(String name) {
+    public UserService(String name) {
         super(name);
     }
 
-    public ShowsService() {
+    public UserService() {
         super(TAG);
     }
 

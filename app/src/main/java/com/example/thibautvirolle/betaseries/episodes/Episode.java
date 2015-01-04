@@ -15,6 +15,8 @@ public class Episode implements Parcelable{
     private String code = "";
     private boolean seen = false;
 
+    private String show = "";
+
     public Episode(int id, String title, int season, int episode,
                    String code, boolean seen)
     {
@@ -24,6 +26,18 @@ public class Episode implements Parcelable{
         setEpisode(episode);
         setCode(code);
         setSeen(seen);
+    }
+
+    public Episode(int id, String title, int season, int episode,
+                   String code, boolean seen, String show)
+    {
+        setId(id);
+        setTitle(title);
+        setSeason(season);
+        setEpisode(episode);
+        setCode(code);
+        setSeen(seen);
+        setShow(show);
     }
 
     public int getId() {
@@ -74,6 +88,14 @@ public class Episode implements Parcelable{
         this.seen = seen;
     }
 
+    public String getShow() {
+        return show;
+    }
+
+    public void setShow(String show) {
+        this.show = show;
+    }
+
 
     @Override
     public int describeContents() {
@@ -89,6 +111,7 @@ public class Episode implements Parcelable{
         parcel.writeInt(episode);
         parcel.writeString(code);
         parcel.writeByte((byte) (seen ? 1 : 0));
+        parcel.writeString(show);
     }
 
 
@@ -114,5 +137,7 @@ public class Episode implements Parcelable{
         this.episode = in.readInt();
         this.code = in.readString();
         this.seen = (in.readByte() != 0);
+        this.show = in.readString();
     }
+
 }

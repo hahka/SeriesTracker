@@ -3,37 +3,29 @@ package com.example.thibautvirolle.betaseries.shows;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.app.Activity;
+import android.app.Fragment;
 import android.content.Intent;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.view.Menu;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.thibautvirolle.betaseries.R;
 import com.example.thibautvirolle.betaseries.utilitaires.Config;
 import com.example.thibautvirolle.betaseries.utilitaires.DownloadResultReceiver;
-import com.example.thibautvirolle.betaseries.utilitaires.JsonParser;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-
-import java.io.InputStream;
 import java.util.ArrayList;
 
 
-public class ShowsActivity extends Activity implements DownloadResultReceiver.Receiver {
+public class ShowsFragment extends Fragment implements DownloadResultReceiver.Receiver {
 
-    private static String TAG = ShowsActivity.class.getSimpleName();
+    private static String TAG = ShowsFragment.class.getSimpleName();
     private ArrayList<Show> userShowsList = new ArrayList<>();
     private static View mContentView;
     private static View mProgressView;
@@ -43,45 +35,35 @@ public class ShowsActivity extends Activity implements DownloadResultReceiver.Re
 
     private DownloadResultReceiver mReceiver;
 
+    View rootView;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_shows);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
 
-        Intent callingIntent = getIntent();
-        userId = callingIntent.getStringExtra("user_id");
-        token = callingIntent.getStringExtra("token");
+        rootView = inflater.inflate(R.layout.fragment_shows, container, false);
 
-        mContentView = findViewById(R.id.showsListContainer);
-        mProgressView = findViewById(R.id.progressBar);
+
+        userId = getArguments().getString("user_id");
+        token = getArguments().getString("token");
+
+        mContentView = rootView.findViewById(R.id.showsListContainer);
+        mProgressView = rootView.findViewById(R.id.progressBar);
 
         Log.d(TAG,"onCreate");
-        /*API request = new API("https://api.betaseries.com/members/infos?id="+userId+"&only=shows"+"&key="+ Config.API_KEY);
-        request.execute((Void) null);
-        */
-
-        /* Starting Download Service */
         mReceiver = new DownloadResultReceiver(new Handler());
         mReceiver.setReceiver(this);
-        Intent intent = new Intent(Intent.ACTION_SYNC, null, this, ShowsService.class);
+        Intent intent = new Intent(Intent.ACTION_SYNC, null, getActivity().getApplicationContext(), ShowsService.class);
 
-        /* Send optional extras to Download IntentService */
         intent.putExtra("url", "https://api.betaseries.com/members/infos?id="+userId+"&only=shows"+"&key="+ Config.API_KEY);
         intent.putExtra("receiver", mReceiver);
         intent.putExtra("requestId", 101);
+        getActivity().startService(intent);
 
-        startService(intent);
-
-
-
+        return rootView;
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_shows, menu);
-        return true;
-    }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -93,14 +75,14 @@ public class ShowsActivity extends Activity implements DownloadResultReceiver.Re
         //noinspection SimplifiableIfStatement
         if (id == R.id.menu_archived) {
 
-            ListView showsListView = (ListView) findViewById(R.id.showsListView);
+            ListView showsListView = (ListView) rootView.findViewById(R.id.showsListView);
 
             if(displayArchived){
-                showsListView.setAdapter(new ShowsNotArchivedAdapter(getApplicationContext(),userShowsList,token));
+                showsListView.setAdapter(new ShowsNotArchivedAdapter(getActivity().getApplicationContext(),userShowsList,token));
                 displayArchived = false;
                 item.setTitle(R.string.menu_show_archived);
             } else {
-                showsListView.setAdapter(new ShowsAdapter(getApplicationContext(),userShowsList,token));
+                showsListView.setAdapter(new ShowsAdapter(getActivity().getApplicationContext(),userShowsList,token));
                 displayArchived = true;
                 item.setTitle(R.string.menu_hide_archived);
             }
@@ -113,14 +95,14 @@ public class ShowsActivity extends Activity implements DownloadResultReceiver.Re
             /* Starting Download Service */
             mReceiver = new DownloadResultReceiver(new Handler());
             mReceiver.setReceiver(this);
-            Intent intent = new Intent(Intent.ACTION_SYNC, null, this, ShowsService.class);
+            Intent intent = new Intent(Intent.ACTION_SYNC, null, getActivity().getApplicationContext(), ShowsService.class);
 
         /* Send optional extras to Download IntentService */
             intent.putExtra("url", "https://api.betaseries.com/members/infos?id="+userId+"&only=shows"+"&key="+ Config.API_KEY);
             intent.putExtra("receiver", mReceiver);
             intent.putExtra("requestId", 101);
 
-            startService(intent);
+            getActivity().startService(intent);
 
             return true;
         }
@@ -143,80 +125,17 @@ public class ShowsActivity extends Activity implements DownloadResultReceiver.Re
                 //Toast.makeText(this, String.valueOf(userShowsList.size()), Toast.LENGTH_SHORT).show();
                 Log.d(TAG,"Data received");
 
-                ListView showsListView = (ListView) findViewById(R.id.showsListView);
-                showsListView.setAdapter(new ShowsAdapter(getApplicationContext(),userShowsList,token));
+                ListView showsListView = (ListView) rootView.findViewById(R.id.showsListView);
+                showsListView.setAdapter(new ShowsAdapter(getActivity().getApplicationContext(),userShowsList,token));
                 showProgress(false);
 
                 break;
             case ShowsService.STATUS_ERROR:
                 /* Handle the error */
                 String error = resultData.getString(Intent.EXTRA_TEXT);
-                Toast.makeText(this, error, Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity().getApplicationContext(), error, Toast.LENGTH_LONG).show();
                 break;
         }
-    }
-
-
-    private class API extends AsyncTask<Void, Void, Boolean> {
-
-        private String target = "";
-
-        public API(String pTarget)
-        {
-            this.target = pTarget;
-        }
-
-
-        @Override
-        protected Boolean doInBackground(Void... voids) {
-
-            HttpGet httpget = new HttpGet(target);
-
-            try {
-                Log.d(TAG, "1");
-                HttpClient httpclient = new DefaultHttpClient();
-
-                Log.d(TAG, "2");
-                HttpResponse response=httpclient.execute(httpget);
-                InputStream is = response.getEntity().getContent();
-
-                Log.d(TAG, "3");
-                userShowsList = JsonParser.readUserShowsJsonStream(is);
-
-                Log.d(TAG, "4");
-                is.close();
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            return (!userShowsList.isEmpty());
-
-        }
-
-
-        @Override
-        protected void onPostExecute(final Boolean success) {
-
-            if(success)
-            {
-                ListView showsListView = (ListView) findViewById(R.id.showsListView);
-                showsListView.setAdapter(new ShowsAdapter(getApplicationContext(),userShowsList,token));
-                showProgress(false);
-            } else {
-                Log.d(TAG,"ERREUR");
-                // TODO : Erreur à gérer
-            }
-
-
-        }
-
-        @Override
-        protected void onCancelled() {
-            // TODO : annulation requête
-        }
-
-
     }
 
 
