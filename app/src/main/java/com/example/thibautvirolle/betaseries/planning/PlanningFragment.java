@@ -26,33 +26,28 @@ import java.util.ArrayList;
 public class PlanningFragment extends Fragment implements DownloadResultReceiver.Receiver {
 
     private static String TAG = PlanningFragment.class.getSimpleName();
-    private ArrayList<Episode> planningList = new ArrayList<>();
     private static View mContentView;
     private static View mProgressView;
+    View rootView;
+    private ArrayList<Episode> planningList = new ArrayList<>();
     private boolean displayArchived = true;
     private String token = "";
     private String userId;
-
     private DownloadResultReceiver mReceiver;
-
-    View rootView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        rootView = inflater.inflate(R.layout.fragment_planning, container, false);
+        rootView = inflater.inflate(R.layout.planning_fragment, container, false);
 
-        userId = getArguments().getString("user_id");
-        token = getArguments().getString("token");
-
+        planningList = getArguments().getParcelableArrayList(Config.PLANNING_LIST);
 
 
         mContentView = rootView.findViewById(R.id.planningListContainer);
         mProgressView = rootView.findViewById(R.id.loadingContainer);
 
 
-        planningList = getArguments().getParcelableArrayList(Config.PLANNING_LIST);
 
         ListView planningListView = (ListView) rootView.findViewById(R.id.planningListView);
         planningListView.setAdapter(new PlanningAdapter(getActivity().getApplicationContext(),planningList));

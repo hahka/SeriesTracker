@@ -22,6 +22,8 @@ import com.example.thibautvirolle.betaseries.navdrawer.NavDrawerItem;
 import com.example.thibautvirolle.betaseries.navdrawer.NavDrawerListAdapter;
 import com.example.thibautvirolle.betaseries.planning.PlanningFragment;
 import com.example.thibautvirolle.betaseries.shows.ShowsFragment;
+import com.example.thibautvirolle.betaseries.user.User;
+import com.example.thibautvirolle.betaseries.user.UserFragment;
 import com.example.thibautvirolle.betaseries.utilitaires.Config;
 
 import java.util.ArrayList;
@@ -32,32 +34,27 @@ import java.util.ArrayList;
 public class DrawerActivity extends Activity {
 
     private static String TAG = DrawerActivity.class.getSimpleName();
+    private static String userId;
+    private static String token;
+    private static User user;
+    private static ArrayList<Episode> planningList;
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
-
     // nav drawer title
     private CharSequence mDrawerTitle;
-
     // used to store app title
     private CharSequence mTitle;
-
     // slide menu items
     private String[] navMenuTitles;
     private TypedArray navMenuIcons;
-
     private ArrayList<NavDrawerItem> navDrawerItems;
     private NavDrawerListAdapter adapter;
-
-    private String userId;
-    private String token;
-
-    private ArrayList<Episode> planningList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.main_activity);
 
 
         /*Intent callingIntent = getIntent();
@@ -121,30 +118,17 @@ public class DrawerActivity extends Activity {
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-        if (savedInstanceState == null && userId != null) {
-            // on first time display view for first nav item
-            displayView(0);
+        if (savedInstanceState == null) {
+            if (userId != null) {
+                // on first time display view for first nav item
+                displayView(0);
+            } else {
+                Intent loginIntent = new Intent(DrawerActivity.this, LoginActivity.class);
+                startActivityForResult(loginIntent, Config.AUTH_REQUEST_CODE);
+            }
+
         }
 
-        if(userId == null)
-        {
-            Intent loginIntent = new Intent(DrawerActivity.this, LoginActivity.class);
-            startActivityForResult(loginIntent,Config.AUTH_REQUEST_CODE);
-
-        }
-    }
-
-    /**
-     * Slide menu item click listener
-     * */
-    private class SlideMenuClickListener implements
-            ListView.OnItemClickListener {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position,
-                                long id) {
-            // display view for selected nav drawer item
-            displayView(position);
-        }
     }
 
     @Override
@@ -181,32 +165,29 @@ public class DrawerActivity extends Activity {
 
     /**
      * Diplaying fragment view for selected nav drawer list item
-     * */
+     */
     private void displayView(int position) {
         // update the main content by replacing fragments
         Fragment fragment = null;
         Bundle bundle;
         switch (position) {
             case 0:
-                fragment = new ShowsFragment();
+                fragment = new UserFragment();
                 bundle = new Bundle();
-                bundle.putString(Config.USER_ID, userId);
-                bundle.putString(Config.TOKEN, token);
+                bundle.putParcelable(Config.USER, user);
                 fragment.setArguments(bundle);
                 break;
             case 1:
                 fragment = new PlanningFragment();
                 bundle = new Bundle();
-                bundle.putString(Config.USER_ID, userId);
-                bundle.putString(Config.TOKEN, token);
                 bundle.putParcelableArrayList(Config.PLANNING_LIST, planningList);
                 fragment.setArguments(bundle);
                 break;
             case 2:
                 fragment = new ShowsFragment();
                 bundle = new Bundle();
-                bundle.putString(Config.USER_ID, userId);
                 bundle.putString(Config.TOKEN, token);
+                bundle.putParcelable(Config.USER, user);
                 fragment.setArguments(bundle);
                 break;
             case 3:
@@ -259,23 +240,35 @@ public class DrawerActivity extends Activity {
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == Config.AUTH_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
+        if (requestCode == Config.AUTH_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
 
             // Access data from the completed intent
             userId = data.getStringExtra(Config.USER_ID);
             token = data.getStringExtra(Config.TOKEN);
+            user = data.getParcelableExtra(Config.USER);
             planningList = data.getParcelableArrayListExtra(Config.PLANNING_LIST);
 
             displayView(0);
 
-        }
-        else {
+        } else {
             Toast.makeText(this, "Something went wrong!", Toast.LENGTH_LONG).show();
         }
 
+    }
+
+    /**
+     * Slide menu item click listener
+     */
+    private class SlideMenuClickListener implements
+            ListView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position,
+                                long id) {
+            // display view for selected nav drawer item
+            displayView(position);
+        }
     }
 
 }

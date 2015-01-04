@@ -4,6 +4,7 @@ import android.util.JsonReader;
 
 import com.example.thibautvirolle.betaseries.episodes.Episode;
 import com.example.thibautvirolle.betaseries.shows.Show;
+import com.example.thibautvirolle.betaseries.user.User;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -263,6 +264,101 @@ public class JsonParser {
         return show;
     }
 
+
+    public static User readUserJsonStream(InputStream in) throws IOException {
+
+        JsonReader reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
+
+        String login = "";
+        int id = 0, friends = 0, badges = 0, xp = 0,
+                seasons = 0, episodes = 0, comments = 0,
+                episodesToWatch = 0, timeOnTv = 0, timeToSpend = 0;
+
+        float progress = 0;
+
+        ArrayList<Show> showsList = new ArrayList<>();
+
+        User user = null;
+        try {
+            reader.beginObject();
+            while (reader.hasNext() && (reader.peek().toString().equals("NAME"))) {
+                String value = reader.nextName();
+                if (value.equals("member")) {
+
+                    reader.beginObject();
+
+
+                    while (reader.hasNext()) {
+                        //Log.d(TAG, reader.peek().toString());
+
+                        String nameBis = reader.nextName();
+                        if (nameBis.equals("id")) {
+                            id = reader.nextInt();
+                        } else if (nameBis.equals("login")) {
+                            login = reader.nextString();
+                        } else if (nameBis.equals("xp")) {
+                            xp = reader.nextInt();
+                        } else if (nameBis.equals("stats")) {
+
+                            reader.beginObject();
+
+                            while (reader.hasNext()) {
+                                String stats = reader.nextName();
+                                if (stats.equals("badges")) {
+                                    badges = reader.nextInt();
+                                } else if (stats.equals("seasons")) {
+                                    seasons = reader.nextInt();
+                                } else if (stats.equals("episodes")) {
+                                    episodes = reader.nextInt();
+                                } else if (stats.equals("comments")) {
+                                    comments = reader.nextInt();
+                                } else if (stats.equals("progress")) {
+                                    progress = (float) reader.nextDouble();
+                                } else if (stats.equals("episodes_to_watch")) {
+                                    episodesToWatch = reader.nextInt();
+                                } else if (stats.equals("time_on_tv")) {
+                                    timeOnTv = reader.nextInt();
+                                } else if (stats.equals("time_to_spend")) {
+                                    timeToSpend = reader.nextInt();
+                                } else {
+                                    reader.skipValue();
+                                }
+                            }
+
+                            reader.endObject();
+
+                        } else if (nameBis.equals("shows")) {
+                            // On arrive dans le trajet
+                            reader.beginArray();
+                            while (reader.hasNext()) {
+                                showsList.add(readShow(reader));
+                            }
+                            reader.endArray();
+
+                        } else {
+                            reader.skipValue();
+                        }
+                    }
+
+                    reader.endObject();
+
+                } else if (value.equals("error")) {
+                    reader.skipValue();
+                } else
+                    reader.skipValue();
+
+            }
+            reader.endObject();
+        } finally {
+            reader.close();
+        }
+
+        user = new User(login, id, friends, badges, seasons, episodes, comments, progress,
+                episodesToWatch, timeOnTv, timeToSpend);
+        user.setShowsList(showsList);
+
+        return user;
+    }
 
 
 

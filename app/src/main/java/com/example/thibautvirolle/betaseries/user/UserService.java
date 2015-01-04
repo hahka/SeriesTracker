@@ -7,7 +7,6 @@ import android.os.ResultReceiver;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.example.thibautvirolle.betaseries.shows.Show;
 import com.example.thibautvirolle.betaseries.utilitaires.JsonParser;
 
 import java.io.BufferedInputStream;
@@ -15,19 +14,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 
 /**
  * Created by thibautvirolle on 16/12/14.
  */
-public class UserService extends IntentService{
-
-    private static String TAG = UserService.class.getSimpleName();
-
+public class UserService extends IntentService {
 
     public static final int STATUS_RUNNING = 0;
     public static final int STATUS_FINISHED = 1;
     public static final int STATUS_ERROR = 2;
+    private static String TAG = UserService.class.getSimpleName();
+
     /**
      * Creates an IntentService.  Invoked by your subclass's constructor.
      *
@@ -61,10 +58,9 @@ public class UserService extends IntentService{
 
                 /* Sending result back to activity */
                 if (null != is) {
-                    ArrayList<Show> showsList = new ArrayList<Show>();
-                    showsList = JsonParser.readUserShowsJsonStream(is);
+                    User user = JsonParser.readUserJsonStream(is);
                     Log.d(TAG, "Data parsed");
-                    bundle.putParcelableArrayList("shows", showsList);
+                    bundle.putParcelable("user", user);
                     receiver.send(STATUS_FINISHED, bundle);
                 }
             } catch (Exception e) {
@@ -105,7 +101,7 @@ public class UserService extends IntentService{
             inputStream = new BufferedInputStream(urlConnection.getInputStream());
             return inputStream;
         } else {
-            Log.d(TAG,String.valueOf(statusCode));
+            Log.d(TAG, String.valueOf(statusCode));
             throw new DownloadException("Failed to fetch data!!");
         }
     }

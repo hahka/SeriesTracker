@@ -28,6 +28,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.thibautvirolle.betaseries.episodes.Episode;
+import com.example.thibautvirolle.betaseries.user.User;
 import com.example.thibautvirolle.betaseries.utilitaires.Config;
 import com.example.thibautvirolle.betaseries.utilitaires.JsonParser;
 
@@ -58,12 +59,9 @@ import java.util.List;
  */
 public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
-    private static String TAG = LoginActivity.class.getSimpleName();
-
     final private static int NO_USER_FOUND = 4002;
     final private static int INVALID_PASSWORD = 4003;
-
-
+    private static String TAG = LoginActivity.class.getSimpleName();
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
@@ -75,11 +73,23 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
     private View mProgressView;
     private View mLoginFormView;
 
+    public static String md5(String s) {
+        MessageDigest digest;
+        try {
+            digest = MessageDigest.getInstance("MD5");
+            digest.update(s.getBytes(), 0, s.length());
+            String hash = new BigInteger(1, digest.digest()).toString(16);
+            return hash;
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.login_activity);
 
         // Set up the login form.
         mLoginView = (AutoCompleteTextView) findViewById(R.id.email);
@@ -112,7 +122,6 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
     private void populateAutoComplete() {
         getLoaderManager().initLoader(0, null, this);
     }
-
 
     /**
      * Attempts to sign in or register the account specified by the login form.
@@ -269,17 +278,6 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
     }
 
-    private interface ProfileQuery {
-        String[] PROJECTION = {
-                ContactsContract.CommonDataKinds.Email.ADDRESS,
-                ContactsContract.CommonDataKinds.Email.IS_PRIMARY,
-        };
-
-        int ADDRESS = 0;
-        int IS_PRIMARY = 1;
-    }
-
-
     private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
         //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
         ArrayAdapter<String> adapter =
@@ -289,21 +287,14 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         mLoginView.setAdapter(adapter);
     }
 
-    public static String md5(String s)
-    {
-        MessageDigest digest;
-        try
-        {
-            digest = MessageDigest.getInstance("MD5");
-            digest.update(s.getBytes(),0,s.length());
-            String hash = new BigInteger(1, digest.digest()).toString(16);
-            return hash;
-        }
-        catch (NoSuchAlgorithmException e)
-        {
-            e.printStackTrace();
-        }
-        return "";
+    private interface ProfileQuery {
+        String[] PROJECTION = {
+                ContactsContract.CommonDataKinds.Email.ADDRESS,
+                ContactsContract.CommonDataKinds.Email.IS_PRIMARY,
+        };
+
+        int ADDRESS = 0;
+        int IS_PRIMARY = 1;
     }
 
     /**
@@ -320,6 +311,8 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         String token = null;
         ArrayList<Episode> planningList;
         int error = -1;
+
+        User user;
 
 
         UserLoginTask(String email, String password) {
@@ -340,15 +333,14 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             postParameters.add(new BasicNameValuePair("login", mEmail));
             postParameters.add(new BasicNameValuePair("password", mPassword));
             postParameters.add(new BasicNameValuePair("key", Config.API_KEY));
-            String login = null;
-            String s;
+
 
             try {
                 UrlEncodedFormEntity entity = new UrlEncodedFormEntity(postParameters);
                 httppost.setEntity(entity);
                 HttpClient httpclient = new DefaultHttpClient();
 
-                HttpResponse response=httpclient.execute(httppost);
+                HttpResponse response = httpclient.execute(httppost);
                 InputStream is = response.getEntity().getContent();
 
 
@@ -366,21 +358,16 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
                                     userId = String.valueOf(reader.nextInt());
 
-                                } else if (value.equals("login")) {
-                                    login = reader.nextString();
                                 } else {
                                     reader.skipValue();
                                 }
                             }
                             reader.endObject();
-                        }
-                        else if (value.equals("token")) {
+                        } else if (value.equals("token")) {
                             token = reader.nextString();
-                        }
-                        else if (value.equals("errors")) {
+                        } else if (value.equals("errors")) {
                             reader.beginArray();
-                            while(reader.hasNext())
-                            {
+                            while (reader.hasNext()) {
                                 reader.beginObject();
                                 while (reader.hasNext()) {
                                     value = reader.nextName();
@@ -407,35 +394,39 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                 is.close();
 
 
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+
+            HttpGet httpget = new HttpGet("https://api.betaseries.com/planning/member?id=" + userId + "&key=" + Config.API_KEY);
+
+            try {
+                HttpClient httpclient = new DefaultHttpClient();
+                HttpResponse response = httpclient.execute(httpget);
+                InputStream is = response.getEntity().getContent();
+
+                planningList = JsonParser.readShowEpisodesJsonStream(is);
+
+                is.close();
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
 
-
-
-
-
-
-
-
-            HttpGet httpget = new HttpGet("https://api.betaseries.com/planning/member?id="+userId+"&key="+ Config.API_KEY);
-            Log.d(TAG,"3.1");
+            httpget = new HttpGet("https://api.betaseries.com/members/infos?id=" + userId + "&only=shows" + "&key=" + Config.API_KEY);
 
             try {
                 HttpClient httpclient = new DefaultHttpClient();
-                Log.d(TAG,"3.2");
-
-                HttpResponse response=httpclient.execute(httpget);
-                Log.d(TAG,"3.3");
+                HttpResponse response = httpclient.execute(httpget);
                 InputStream is = response.getEntity().getContent();
 
-                Log.d(TAG,"4");
+                user = JsonParser.readUserJsonStream(is);
 
-                planningList = JsonParser.readShowEpisodesJsonStream(is);
+                Log.d(TAG, "-------------------------" + user.getShowsList().size());
 
-                Log.d(TAG,"5");
+                Log.d(TAG, user.getLogin());
 
                 is.close();
 
@@ -456,13 +447,13 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                 Intent returnIntent = new Intent();
                 returnIntent.putExtra(Config.USER_ID, userId);
                 returnIntent.putExtra(Config.TOKEN, token);
-                returnIntent.putParcelableArrayListExtra(Config.PLANNING_LIST,planningList);
+                returnIntent.putExtra(Config.USER, user);
+                returnIntent.putParcelableArrayListExtra(Config.PLANNING_LIST, planningList);
                 setResult(RESULT_OK, returnIntent);
                 finish();
             } else {
                 showProgress(false);
-                switch(error)
-                {
+                switch (error) {
                     case NO_USER_FOUND:
                         mLoginView.setError(getString(R.string.error_no_user_found));
                         mLoginView.requestFocus();
@@ -513,7 +504,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                 inputStream = new BufferedInputStream(urlConnection.getInputStream());
                 return inputStream;
             } else {
-                Log.d(TAG,String.valueOf(statusCode));
+                Log.d(TAG, String.valueOf(statusCode));
                 throw new DownloadException("Failed to fetch data!!");
             }
         }

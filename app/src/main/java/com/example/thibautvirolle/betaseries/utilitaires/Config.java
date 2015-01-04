@@ -10,6 +10,7 @@ public class Config {
 
     public static final String USER_ID = "user_id";
     public static final String TOKEN = "token";
+    public static final String USER = "user";
 
 
     public static final String PLANNING_LIST = "planning_list";

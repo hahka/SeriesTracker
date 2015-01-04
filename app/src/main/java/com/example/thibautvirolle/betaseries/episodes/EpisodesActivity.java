@@ -38,7 +38,7 @@ public class EpisodesActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_episodes);
+        setContentView(R.layout.episodes_activity);
 
 
         mContentView = findViewById(R.id.episodesListContainer);
@@ -48,7 +48,7 @@ public class EpisodesActivity extends Activity {
         String showId = callingIntent.getStringExtra("showId");
         String token = callingIntent.getStringExtra("token");
 
-        API request = new API("https://api.betaseries.com/shows/episodes?id="+showId+"&token="+ token + "&key=" + Config.API_KEY);
+        API request = new API("https://api.betaseries.com/shows/episodes?id=" + showId + "&token=" + token + "&key=" + Config.API_KEY);
         request.execute((Void) null);
         showProgress(true);
     }
@@ -76,83 +76,6 @@ public class EpisodesActivity extends Activity {
 
         return super.onOptionsItemSelected(item);
     }
-
-
-
-    private class API extends AsyncTask<Void, Void, Boolean> {
-
-        private String target = "";
-
-        public API(String pTarget)
-        {
-            this.target = pTarget;
-        }
-
-
-        @Override
-        protected Boolean doInBackground(Void... voids) {
-
-            Log.d(TAG,"3");
-            HttpGet httpget = new HttpGet(target);
-            Log.d(TAG,"3.1");
-
-            try {
-                HttpClient httpclient = new DefaultHttpClient();
-                Log.d(TAG,"3.2");
-
-                HttpResponse response=httpclient.execute(httpget);
-                Log.d(TAG,"3.3");
-                InputStream is = response.getEntity().getContent();
-
-                Log.d(TAG,"4");
-
-                userShowEpisodesList = JsonParser.readShowEpisodesJsonStream(is);
-                for(Episode ep : userShowEpisodesList)
-                {
-                    if(ep.isSeen())
-                        Log.d(TAG,ep.getTitle());
-                }
-                Log.d(TAG,"5");
-
-                is.close();
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            return (!userShowEpisodesList.isEmpty());
-
-        }
-
-
-        @Override
-        protected void onPostExecute(final Boolean success) {
-
-            if(success)
-            {
-                Log.d(TAG,"success");
-                ListView episodesListView = (ListView) findViewById(R.id.episodesListView);
-                adapter = new EpisodesAdapter(getApplicationContext(),userShowEpisodesList);
-                episodesListView.setAdapter(adapter);
-                showProgress(false);
-                Log.d(TAG,"post adapter");
-            } else {
-                // TODO : Erreur à gérer
-            }
-
-
-        }
-
-        @Override
-        protected void onCancelled() {
-            // TODO : annulation requête
-        }
-
-
-    }
-
-
-
 
     /**
      * Shows the progress UI and hides the login form.
@@ -188,6 +111,75 @@ public class EpisodesActivity extends Activity {
             mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
             mContentView.setVisibility(show ? View.GONE : View.VISIBLE);
         }
+    }
+
+    private class API extends AsyncTask<Void, Void, Boolean> {
+
+        private String target = "";
+
+        public API(String pTarget) {
+            this.target = pTarget;
+        }
+
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+
+            Log.d(TAG, "3");
+            HttpGet httpget = new HttpGet(target);
+            Log.d(TAG, "3.1");
+
+            try {
+                HttpClient httpclient = new DefaultHttpClient();
+                Log.d(TAG, "3.2");
+
+                HttpResponse response = httpclient.execute(httpget);
+                Log.d(TAG, "3.3");
+                InputStream is = response.getEntity().getContent();
+
+                Log.d(TAG, "4");
+
+                userShowEpisodesList = JsonParser.readShowEpisodesJsonStream(is);
+                for (Episode ep : userShowEpisodesList) {
+                    if (ep.isSeen())
+                        Log.d(TAG, ep.getTitle());
+                }
+                Log.d(TAG, "5");
+
+                is.close();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return (!userShowEpisodesList.isEmpty());
+
+        }
+
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+
+            if (success) {
+                Log.d(TAG, "success");
+                ListView episodesListView = (ListView) findViewById(R.id.episodesListView);
+                adapter = new EpisodesAdapter(getApplicationContext(), userShowEpisodesList);
+                episodesListView.setAdapter(adapter);
+                showProgress(false);
+                Log.d(TAG, "post adapter");
+            } else {
+                // TODO : Erreur à gérer
+            }
+
+
+        }
+
+        @Override
+        protected void onCancelled() {
+            // TODO : annulation requête
+        }
+
+
     }
 
 
