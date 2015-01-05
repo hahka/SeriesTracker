@@ -2,7 +2,6 @@ package com.example.thibautvirolle.betaseries.shows;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,8 +23,7 @@ public class ShowsAdapter extends BaseAdapter {
     private Context context;
     private String token;
 
-    public ShowsAdapter(Context context, ArrayList<Show> liste, String token)
-    {
+    public ShowsAdapter(Context context, ArrayList<Show> liste, String token) {
         this.context = context;
         this.showsList = liste;
         this.token = token;
@@ -51,9 +49,9 @@ public class ShowsAdapter extends BaseAdapter {
     public View getView(int position, View view, ViewGroup viewGroup) {
         final Show show = getItem(position);
 
-        if(view == null) {
+        if (view == null) {
             view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.show_row, viewGroup, false);
-        } else{
+        } else {
             // On a déjà une vue correspondant, on veut juste la modifier, et pas l'inflater
         }
 
@@ -72,19 +70,16 @@ public class ShowsAdapter extends BaseAdapter {
             public void onClick(View view) {
                 TextView idtv = (TextView) view.findViewById(R.id.showsIdTextView);
                 String showId = idtv.getText().toString();
-                Log.d(TAG, "Show ID : " + showId);
-
 
                 Intent userShowEpisodesIntent;
-                userShowEpisodesIntent = new Intent(context,EpisodesActivity.class);
+                userShowEpisodesIntent = new Intent(context, EpisodesActivity.class);
                 userShowEpisodesIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                userShowEpisodesIntent.putExtra("showId",showId);
-                userShowEpisodesIntent.putExtra("token",token);
+                userShowEpisodesIntent.putExtra("showId", showId);
+                userShowEpisodesIntent.putExtra("token", token);
                 context.startActivity(userShowEpisodesIntent);
 
             }
         });
-
 
 
         return view;

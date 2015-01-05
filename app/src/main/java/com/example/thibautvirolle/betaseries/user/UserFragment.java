@@ -1,18 +1,22 @@
 package com.example.thibautvirolle.betaseries.user;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
 import android.app.Fragment;
-import android.os.Build;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.thibautvirolle.betaseries.R;
 import com.example.thibautvirolle.betaseries.utilitaires.DownloadResultReceiver;
+
+import java.io.InputStream;
 
 
 public class UserFragment extends Fragment {
@@ -37,47 +41,55 @@ public class UserFragment extends Fragment {
         TextView mTitleView = (TextView) rootView.findViewById(R.id.profileTitleTextView);
         mTitleView.setText("Résumé de " + user.getLogin());
 
+
+        TextView episodesTextView = (TextView) rootView.findViewById(R.id.episodesTextView);
+        episodesTextView.setText(user.getEpisodes() + " ÉPISODES");
+        TextView saisonsTextView = (TextView) rootView.findViewById(R.id.saisonsTextView);
+        saisonsTextView.setText(user.getSeasons() + " SAISONS");
+        TextView seriesTextView = (TextView) rootView.findViewById(R.id.seriesTextView);
+        seriesTextView.setText(user.getShowsList().size() + " SÉRIES");
+        TextView badgesTextView = (TextView) rootView.findViewById(R.id.badgesTextView);
+        badgesTextView.setText(user.getBadges() + " BADGES");
+
+        ProgressBar avancement = (ProgressBar) rootView.findViewById(R.id.avancementProgressBar);
+        avancement.setProgress((int) user.getProgress());
+
+        TextView avancementTextView = (TextView) rootView.findViewById(R.id.avancementTextView);
+        avancementTextView.setText(user.getProgress() + "% : " + user.getEpisodesToWatch() + " ÉPISODES À REGARDER");
+
+
         mContentView = rootView.findViewById(R.id.profileContainer);
         mProgressView = rootView.findViewById(R.id.progressBar);
+
+        new DownloadImageTask((ImageView) rootView.findViewById(R.id.avatarImageView))
+                .execute(user.getAvatar());
 
 
         return rootView;
     }
 
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+        ImageView bmImage;
 
-    /**
-     * Shows the progress UI and hides the login form.
-     */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-    public void showProgress(final boolean show) {
-        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-        // for very easy animations. If available, use these APIs to fade-in
-        // the progress spinner.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+        public DownloadImageTask(ImageView bmImage) {
+            this.bmImage = bmImage;
+        }
 
-            mContentView.setVisibility(show ? View.GONE : View.VISIBLE);
-            mContentView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mContentView.setVisibility(show ? View.GONE : View.VISIBLE);
-                }
-            });
+        protected Bitmap doInBackground(String... urls) {
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
 
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mProgressView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-                }
-            });
-        } else {
-            // The ViewPropertyAnimator APIs are not available, so simply show
-            // and hide the relevant UI components.
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mContentView.setVisibility(show ? View.GONE : View.VISIBLE);
+        protected void onPostExecute(Bitmap result) {
+            bmImage.setImageBitmap(result);
         }
     }
 }

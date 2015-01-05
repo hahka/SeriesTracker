@@ -1,75 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     >
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="@string/episode_code"
         android:id="@+id/episodeCodeTextView"
-        android:layout_gravity="center_horizontal"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_marginStart="0dp"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignBottom="@+id/episodeSeparatorTextView"
+        android:layout_alignParentTop="true"
+        android:layout_gravity="center_vertical"
         android:layout_marginLeft="0dp"
-        android:layout_alignParentTop="true"
+        android:layout_marginStart="0dp"
         android:layout_marginTop="0dp"
-        android:layout_alignBottom="@+id/episodeSeparatorTextView" />
+        android:gravity="center"
+        android:text="@string/episode_code"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="@string/episode_details_separator"
         android:id="@+id/episodeSeparatorTextView"
-        android:layout_alignParentTop="true"
-        android:layout_toRightOf="@+id/episodeCodeTextView"
-        android:layout_toEndOf="@+id/episodeCodeTextView"
-        android:layout_alignBottom="@+id/episodeTitleTextView" />
-
-    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="@string/details"
-        android:id="@+id/episodeTitleTextView"
-        android:layout_gravity="center_horizontal"
+        android:layout_alignBottom="@+id/episodeTitleTextView"
         android:layout_alignParentTop="true"
+        android:layout_toEndOf="@+id/episodeCodeTextView"
+        android:layout_toRightOf="@+id/episodeCodeTextView"
+        android:gravity="center"
+        android:text="@string/episode_details_separator"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/episodeTitleTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/isSeenImageButton"
+        android:layout_alignParentTop="true"
+        android:layout_gravity="center_horizontal"
+        android:layout_toLeftOf="@+id/isSeenImageButton"
         android:layout_toRightOf="@+id/episodeSeparatorTextView"
-        android:layout_toEndOf="@+id/episodeSeparatorTextView"
-        android:layout_alignBottom="@+id/isSeenImageButton" />
+        android:layout_toStartOf="@+id/isSeenImageButton"
+        android:gravity="center_vertical"
+        android:text="@string/details"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
 
     <TextView
+        android:id="@+id/episodeIdTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="@string/details"
-        android:visibility="gone"
-        android:id="@+id/episodeIdTextView"
-        android:layout_gravity="center_horizontal"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_gravity="center_horizontal"
         android:layout_marginLeft="0dp"
         android:layout_marginStart="0dp"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="0dp" />
+        android:layout_marginTop="0dp"
+        android:text="@string/details"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:visibility="gone" />
 
     <ImageButton
+        android:id="@+id/isSeenImageButton"
         android:layout_width="35dp"
         android:layout_height="35dp"
-        android:id="@+id/isSeenImageButton"
-        android:background="@drawable/ic_check_box_black"
-        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentTop="true"
+        android:background="@drawable/ic_check_box_black" />
 
 
 </RelativeLayout>

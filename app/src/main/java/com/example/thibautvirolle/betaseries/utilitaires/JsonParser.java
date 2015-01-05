@@ -82,7 +82,7 @@ public class JsonParser {
         List<Episode> episodes = new ArrayList<Episode>();
 
         reader.beginArray();
-        while(reader.hasNext()) {
+        while (reader.hasNext()) {
             episodes.add(readEpisode(reader));
         }
         reader.endArray();
@@ -184,24 +184,24 @@ public class JsonParser {
         List<Show> shows = new ArrayList<Show>();
 
         //while (reader.hasNext()) {
-            reader.beginObject();
-            while (reader.hasNext()) {
+        reader.beginObject();
+        while (reader.hasNext()) {
 
-                String name = reader.nextName();
+            String name = reader.nextName();
 
-                if (name.equals("shows")) {
-                    // On arrive dans le trajet
-                    reader.beginArray();
-                    while(reader.hasNext()) {
-                        shows.add(readShow(reader));
-                    }
-                    reader.endArray();
-
-                } else {
-                    reader.skipValue();
+            if (name.equals("shows")) {
+                // On arrive dans le trajet
+                reader.beginArray();
+                while (reader.hasNext()) {
+                    shows.add(readShow(reader));
                 }
+                reader.endArray();
+
+            } else {
+                reader.skipValue();
             }
-            reader.endObject();
+        }
+        reader.endObject();
         //}
         return shows;
     }
@@ -228,7 +228,7 @@ public class JsonParser {
             } else if (name.equals("seasons")) {
                 //Log.d(TAG,name);
                 seasons = Integer.parseInt(reader.nextString());
-            }else if (name.equals("episodes")) {
+            } else if (name.equals("episodes")) {
                 //Log.d(TAG,name);
                 episodes = Integer.parseInt(reader.nextString());
             } else if (name.equals("user")) {
@@ -269,7 +269,7 @@ public class JsonParser {
 
         JsonReader reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
 
-        String login = "";
+        String login = "", avatar = "";
         int id = 0, friends = 0, badges = 0, xp = 0,
                 seasons = 0, episodes = 0, comments = 0,
                 episodesToWatch = 0, timeOnTv = 0, timeToSpend = 0;
@@ -298,6 +298,8 @@ public class JsonParser {
                             login = reader.nextString();
                         } else if (nameBis.equals("xp")) {
                             xp = reader.nextInt();
+                        } else if (nameBis.equals("avatar")) {
+                            avatar = reader.nextString();
                         } else if (nameBis.equals("stats")) {
 
                             reader.beginObject();
@@ -354,13 +356,11 @@ public class JsonParser {
         }
 
         user = new User(login, id, friends, badges, seasons, episodes, comments, progress,
-                episodesToWatch, timeOnTv, timeToSpend);
+                episodesToWatch, timeOnTv, timeToSpend, xp, avatar);
         user.setShowsList(showsList);
 
         return user;
     }
-
-
 
 
 }

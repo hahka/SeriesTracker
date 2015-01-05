@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.thibautvirolle.betaseries.R;
@@ -20,7 +19,7 @@ import java.util.ArrayList;
 public class EpisodesAdapter extends BaseAdapter {
 
     private static String TAG = EpisodesAdapter.class.getSimpleName();
-    ArrayList<Episode> episodesList = new ArrayList<Episode>();
+    ArrayList<Episode> episodesList = new ArrayList<>();
     private Context context;
 
     public EpisodesAdapter(Context context, ArrayList<Episode> liste) {
@@ -47,14 +46,14 @@ public class EpisodesAdapter extends BaseAdapter {
     public View getView(int position, View view, ViewGroup viewGroup) {
         final Episode episode = getItem(position);
 
-        if(view == null) {
+        if (view == null) {
             view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.episode_row, viewGroup, false);
-        } else{
+        } else {
             // On a déjà une vue correspondant, on veut juste la modifier, et pas l'inflater
         }
 
         TextView codetv = (TextView) view.findViewById(R.id.episodeCodeTextView);
-        codetv.setText(episode.getCode());
+        codetv.setText(String.valueOf(episode.getEpisode()));
 
         TextView titletv = (TextView) view.findViewById(R.id.episodeTitleTextView);
         titletv.setText(episode.getTitle());
@@ -62,8 +61,7 @@ public class EpisodesAdapter extends BaseAdapter {
         TextView idtv = (TextView) view.findViewById(R.id.episodeIdTextView);
         idtv.setText(String.valueOf(episode.getId()));
 
-        if(!episode.isSeen())
-        {
+        if (!episode.isSeen()) {
             ImageButton isSeenImageButton = (ImageButton) view.findViewById(R.id.isSeenImageButton);
             isSeenImageButton.setBackgroundResource(R.drawable.ic_check_box_outline_blank_black);
         } else {
@@ -79,8 +77,6 @@ public class EpisodesAdapter extends BaseAdapter {
                 Log.d(TAG, String.valueOf(showId));
             }
         });
-
-
 
         return view;
     }

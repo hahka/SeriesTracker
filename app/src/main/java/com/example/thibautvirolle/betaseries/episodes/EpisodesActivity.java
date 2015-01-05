@@ -1,22 +1,24 @@
 package com.example.thibautvirolle.betaseries.episodes;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.example.thibautvirolle.betaseries.R;
 import com.example.thibautvirolle.betaseries.utilitaires.Config;
 import com.example.thibautvirolle.betaseries.utilitaires.JsonParser;
+import com.example.thibautvirolle.betaseries.utilitaires.Progress;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -26,10 +28,11 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import java.io.InputStream;
 import java.util.ArrayList;
 
-
 public class EpisodesActivity extends Activity {
 
     private static String TAG = EpisodesActivity.class.getSimpleName();
+    ViewPager viewPager;
+    MyPagerAdapter myPagerAdapter;
     private ArrayList<Episode> userShowEpisodesList = new ArrayList<Episode>();
     private View mContentView;
     private View mProgressView;
@@ -39,6 +42,9 @@ public class EpisodesActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.episodes_activity);
+
+        setTitle("Épisodes");
+        getActionBar().setIcon(R.drawable.ic_shows);
 
 
         mContentView = findViewById(R.id.episodesListContainer);
@@ -50,7 +56,11 @@ public class EpisodesActivity extends Activity {
 
         API request = new API("https://api.betaseries.com/shows/episodes?id=" + showId + "&token=" + token + "&key=" + Config.API_KEY);
         request.execute((Void) null);
-        showProgress(true);
+        Progress.showProgress(true, mContentView, mProgressView);
+
+
+        //PagerTitleStrip pagerTitleStrip = (PagerTitleStrip)findViewById(R.id.titlestrip);
+
     }
 
 
@@ -77,42 +87,6 @@ public class EpisodesActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * Shows the progress UI and hides the login form.
-     */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-    public void showProgress(final boolean show) {
-        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-        // for very easy animations. If available, use these APIs to fade-in
-        // the progress spinner.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-
-            mContentView.setVisibility(show ? View.GONE : View.VISIBLE);
-            mContentView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mContentView.setVisibility(show ? View.GONE : View.VISIBLE);
-                }
-            });
-
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mProgressView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-                }
-            });
-        } else {
-            // The ViewPropertyAnimator APIs are not available, so simply show
-            // and hide the relevant UI components.
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mContentView.setVisibility(show ? View.GONE : View.VISIBLE);
-        }
-    }
-
     private class API extends AsyncTask<Void, Void, Boolean> {
 
         private String target = "";
@@ -125,26 +99,15 @@ public class EpisodesActivity extends Activity {
         @Override
         protected Boolean doInBackground(Void... voids) {
 
-            Log.d(TAG, "3");
             HttpGet httpget = new HttpGet(target);
-            Log.d(TAG, "3.1");
 
             try {
                 HttpClient httpclient = new DefaultHttpClient();
-                Log.d(TAG, "3.2");
 
                 HttpResponse response = httpclient.execute(httpget);
-                Log.d(TAG, "3.3");
                 InputStream is = response.getEntity().getContent();
 
-                Log.d(TAG, "4");
-
                 userShowEpisodesList = JsonParser.readShowEpisodesJsonStream(is);
-                for (Episode ep : userShowEpisodesList) {
-                    if (ep.isSeen())
-                        Log.d(TAG, ep.getTitle());
-                }
-                Log.d(TAG, "5");
 
                 is.close();
 
@@ -161,12 +124,13 @@ public class EpisodesActivity extends Activity {
         protected void onPostExecute(final Boolean success) {
 
             if (success) {
-                Log.d(TAG, "success");
-                ListView episodesListView = (ListView) findViewById(R.id.episodesListView);
-                adapter = new EpisodesAdapter(getApplicationContext(), userShowEpisodesList);
-                episodesListView.setAdapter(adapter);
-                showProgress(false);
-                Log.d(TAG, "post adapter");
+
+                viewPager = (ViewPager) findViewById(R.id.myviewpager);
+                myPagerAdapter = new MyPagerAdapter(getApplicationContext(), userShowEpisodesList);
+                viewPager.setAdapter(myPagerAdapter);
+
+                Progress.showProgress(false, mContentView, mProgressView);
+
             } else {
                 // TODO : Erreur à gérer
             }
@@ -179,6 +143,85 @@ public class EpisodesActivity extends Activity {
             // TODO : annulation requête
         }
 
+
+    }
+
+
+    private class MyPagerAdapter extends PagerAdapter {
+
+        int NumberOfPages;
+        ArrayList<Episode> episodesList;
+        ArrayList<Integer> seasons = new ArrayList<>();
+        Context context;
+
+        String[] title;
+
+        public MyPagerAdapter(Context context, ArrayList<Episode> liste) {
+            this.context = context;
+            this.episodesList = liste;
+
+            ArrayList<String> titles = new ArrayList<>();
+
+            for (int i = 0; i < liste.size(); i++) {
+                int season = liste.get(i).getSeason();
+                if (!seasons.contains(season)) {
+                    seasons.add(season);
+                    titles.add("Saison " + season);
+                }
+            }
+
+            title = titles.toArray(new String[0]);
+            NumberOfPages = title.length;
+
+        }
+
+        @Override
+        public int getCount() {
+            return NumberOfPages;
+        }
+
+        @Override
+        public boolean isViewFromObject(View view, Object object) {
+            return view == object;
+        }
+
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+
+            ListView episodesListView = new ListView(EpisodesActivity.this);
+
+            ArrayList<Episode> seasonEpisodesList = new ArrayList<>();
+
+            for (int i = 0; i < userShowEpisodesList.size(); i++) {
+                Episode episode = userShowEpisodesList.get(i);
+                if (episode.getSeason() == seasons.get(position))
+                    seasonEpisodesList.add(episode);
+            }
+
+            adapter = new EpisodesAdapter(EpisodesActivity.this, seasonEpisodesList);
+
+            episodesListView.setAdapter(adapter);
+
+            LinearLayout layout = new LinearLayout(EpisodesActivity.this);
+            layout.setOrientation(LinearLayout.VERTICAL);
+            LayoutParams layoutParams = new LayoutParams(
+                    LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+            layout.setLayoutParams(layoutParams);
+
+            layout.addView(episodesListView);
+            container.addView(layout);
+            return layout;
+        }
+
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            container.removeView((LinearLayout) object);
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return title[position];
+        }
 
     }
 

@@ -28,6 +28,7 @@ public class User implements Parcelable {
     private int friends;
     private int badges;
     private int xp;
+    private String avatar;
     private int seasons;
     private int episodes;
     private int comments;
@@ -54,12 +55,31 @@ public class User implements Parcelable {
         setTimeToSpend(timeToSpend);
     }
 
+    public User(String login, int id, int friends, int badges,
+                int seasons, int episodes, int comments, float progress,
+                int episodesToWatch, int timeOnTv, int timeToSpend, int xp, String avatar) {
+        setLogin(login);
+        setId(id);
+        setFriends(friends);
+        setBadges(badges);
+        setSeasons(seasons);
+        setEpisodes(episodes);
+        setComments(comments);
+        setProgress(progress);
+        setEpisodesToWatch(episodesToWatch);
+        setTimeOnTv(timeOnTv);
+        setTimeToSpend(timeToSpend);
+        setAvatar(avatar);
+        setXp(xp);
+    }
+
     public User(Parcel in) {
         this.login = in.readString();
         this.id = in.readInt();
         this.friends = in.readInt();
         this.badges = in.readInt();
         this.xp = in.readInt();
+        this.avatar = in.readString();
 
         this.seasons = in.readInt();
         this.episodes = in.readInt();
@@ -177,6 +197,14 @@ public class User implements Parcelable {
         this.showsList = showsList;
     }
 
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -190,6 +218,7 @@ public class User implements Parcelable {
         parcel.writeInt(friends);
         parcel.writeInt(badges);
         parcel.writeInt(xp);
+        parcel.writeString(avatar);
 
         parcel.writeInt(seasons);
         parcel.writeInt(episodes);

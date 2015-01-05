@@ -1,22 +1,15 @@
 package com.example.thibautvirolle.betaseries;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.LoaderManager.LoaderCallbacks;
-import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
 import android.util.JsonReader;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -31,6 +24,7 @@ import com.example.thibautvirolle.betaseries.episodes.Episode;
 import com.example.thibautvirolle.betaseries.user.User;
 import com.example.thibautvirolle.betaseries.utilitaires.Config;
 import com.example.thibautvirolle.betaseries.utilitaires.JsonParser;
+import com.example.thibautvirolle.betaseries.utilitaires.Progress;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -41,13 +35,9 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.math.BigInteger;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -146,57 +136,43 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
 
         // Check for a valid password, if the user entered one.
-        /*if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
+        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
             mPasswordView.setError(getString(R.string.error_invalid_password));
             focusView = mPasswordView;
             cancel = true;
-        } else if (TextUtils.isEmpty(password)){
+        } else if (TextUtils.isEmpty(password)) {
             mPasswordView.setError(getString(R.string.error_field_required));
             focusView = mPasswordView;
             cancel = true;
-        }*/
+        }
 
-        /*// Check for a valid email address.
-        // Useless car login !!!
         if (TextUtils.isEmpty(email)) {
             mLoginView.setError(getString(R.string.error_field_required));
             focusView = mLoginView;
             cancel = true;
-        } else if (!isEmailValid(email)) {
-            mLoginView.setError(getString(R.string.error_invalid_email));
-            focusView = mLoginView;
-            cancel = true;
-        }*/
-
-        /*if(TextUtils.isEmpty(email)){
-            mLoginView.setError(getString(R.string.error_field_required));
-            focusView = mLoginView;
-            cancel = true;
-        } else if (!isLoginValid(email)){
+        } else if (!isLoginValid(email)) {
             mLoginView.setError(getString(R.string.error_invalid_login));
             focusView = mLoginView;
             cancel = true;
-        }*/
+        }
 
 
         if (cancel) {
             // There was an error; don't attempt login and focus the first
             // form field with an error.
             focusView.requestFocus();
-            showProgress(false);
+
+            Progress.showProgress(false, mLoginFormView, mProgressView);
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
-            showProgress(true);
-            //mAuthTask = new UserLoginTask(email, password);
-            mAuthTask = new UserLoginTask("thibaut.virolle@gmail.com", "23tivi03");
+
+            Progress.showProgress(true, mLoginFormView, mProgressView);
+            mAuthTask = new UserLoginTask(email, password);
+            //mAuthTask = new UserLoginTask("thibaut.virolle@gmail.com", "23tivi03");
             mAuthTask.execute((Void) null);
 
         }
-    }
-
-    private boolean isEmailValid(String email) {
-        return !TextUtils.isEmpty(email) && android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 
     private boolean isLoginValid(String login) {
@@ -208,57 +184,10 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         return password.length() > 4;
     }
 
-    /**
-     * Shows the progress UI and hides the login form.
-     */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-    public void showProgress(final boolean show) {
-        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-        // for very easy animations. If available, use these APIs to fade-in
-        // the progress spinner.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-            mLoginFormView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-                }
-            });
-
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mProgressView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-                }
-            });
-        } else {
-            // The ViewPropertyAnimator APIs are not available, so simply show
-            // and hide the relevant UI components.
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-        }
-    }
 
     @Override
-    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        return new CursorLoader(this,
-                // Retrieve data rows for the device user's 'profile' contact.
-                Uri.withAppendedPath(ContactsContract.Profile.CONTENT_URI,
-                        ContactsContract.Contacts.Data.CONTENT_DIRECTORY), ProfileQuery.PROJECTION,
-
-                // Select only email addresses.
-                ContactsContract.Contacts.Data.MIMETYPE +
-                        " = ?", new String[]{ContactsContract.CommonDataKinds.Email
-                .CONTENT_ITEM_TYPE},
-
-                // Show primary email addresses first. Note that there won't be
-                // a primary email address if the user hasn't specified one.
-                ContactsContract.Contacts.Data.IS_PRIMARY + " DESC");
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return null;
     }
 
     @Override
@@ -424,10 +353,6 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
                 user = JsonParser.readUserJsonStream(is);
 
-                Log.d(TAG, "-------------------------" + user.getShowsList().size());
-
-                Log.d(TAG, user.getLogin());
-
                 is.close();
 
             } catch (Exception e) {
@@ -452,7 +377,8 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                 setResult(RESULT_OK, returnIntent);
                 finish();
             } else {
-                showProgress(false);
+
+                Progress.showProgress(false, mLoginFormView, mProgressView);
                 switch (error) {
                     case NO_USER_FOUND:
                         mLoginView.setError(getString(R.string.error_no_user_found));
@@ -474,52 +400,10 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         @Override
         protected void onCancelled() {
             mAuthTask = null;
-            showProgress(false);
+
+            Progress.showProgress(false, mLoginFormView, mProgressView);
         }
 
-        private InputStream downloadData(String requestUrl) throws IOException, DownloadException {
-
-            InputStream inputStream = null;
-
-            HttpURLConnection urlConnection = null;
-
-        /* forming th java.net.URL object */
-            URL url = new URL(requestUrl);
-
-            urlConnection = (HttpURLConnection) url.openConnection();
-
-        /* optional request header */
-            urlConnection.setRequestProperty("Content-Type", "application/json");
-
-        /* optional request header */
-            urlConnection.setRequestProperty("Accept", "application/json");
-
-        /* for Get request */
-            urlConnection.setRequestMethod("GET");
-
-            int statusCode = urlConnection.getResponseCode();
-
-        /* 200 represents HTTP OK */
-            if (statusCode == 200) {
-                inputStream = new BufferedInputStream(urlConnection.getInputStream());
-                return inputStream;
-            } else {
-                Log.d(TAG, String.valueOf(statusCode));
-                throw new DownloadException("Failed to fetch data!!");
-            }
-        }
-
-
-        public class DownloadException extends Exception {
-
-            public DownloadException(String message) {
-                super(message);
-            }
-
-            public DownloadException(String message, Throwable cause) {
-                super(message, cause);
-            }
-        }
     }
 }
 

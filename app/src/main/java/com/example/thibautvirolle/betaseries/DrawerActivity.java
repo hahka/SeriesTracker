@@ -56,12 +56,6 @@ public class DrawerActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
 
-
-        /*Intent callingIntent = getIntent();
-        userId = callingIntent.getStringExtra(Config.USER_ID);
-        token = callingIntent.getStringExtra(Config.TOKEN);
-        planningList = callingIntent.getParcelableArrayListExtra(Config.PLANNING_LIST);*/
-
         mTitle = mDrawerTitle = "BetaSeries";
 
         // load slide menu items
@@ -122,6 +116,7 @@ public class DrawerActivity extends Activity {
             if (userId != null) {
                 // on first time display view for first nav item
                 displayView(0);
+                getActionBar().setIcon(null);
             } else {
                 Intent loginIntent = new Intent(DrawerActivity.this, LoginActivity.class);
                 startActivityForResult(loginIntent, Config.AUTH_REQUEST_CODE);
@@ -159,7 +154,6 @@ public class DrawerActivity extends Activity {
     public boolean onPrepareOptionsMenu(Menu menu) {
         // if nav drawer is opened, hide the action items
         boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
-        //menu.findItem(R.id.action_settings).setVisible(!drawerOpen);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -176,12 +170,14 @@ public class DrawerActivity extends Activity {
                 bundle = new Bundle();
                 bundle.putParcelable(Config.USER, user);
                 fragment.setArguments(bundle);
+                getActionBar().setIcon(R.drawable.ic_profile);
                 break;
             case 1:
                 fragment = new PlanningFragment();
                 bundle = new Bundle();
                 bundle.putParcelableArrayList(Config.PLANNING_LIST, planningList);
                 fragment.setArguments(bundle);
+                getActionBar().setIcon(R.drawable.ic_planning);
                 break;
             case 2:
                 fragment = new ShowsFragment();
@@ -189,10 +185,7 @@ public class DrawerActivity extends Activity {
                 bundle.putString(Config.TOKEN, token);
                 bundle.putParcelable(Config.USER, user);
                 fragment.setArguments(bundle);
-                break;
-            case 3:
-                // TODO : user non-connecté
-                //fragment = new HomeFragment();
+                getActionBar().setIcon(R.drawable.ic_shows);
                 break;
 
             default:

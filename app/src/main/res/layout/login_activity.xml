@@ -37,7 +37,8 @@
                 android:hint="@string/prompt_email"
                 android:inputType="textEmailAddress"
                 android:maxLines="1"
-                android:singleLine="true" />
+                android:singleLine="true"
+                android:text="Hahka" />
 
             <EditText
                 android:id="@+id/password"
@@ -49,7 +50,8 @@
                 android:imeOptions="actionUnspecified"
                 android:inputType="textPassword"
                 android:maxLines="1"
-                android:singleLine="true" />
+                android:singleLine="true"
+                android:text="23tivi03" />
 
             <Button
                 android:id="@+id/email_sign_in_button"
