@@ -14,39 +14,9 @@ import java.util.List;
 
 /**
  * Created by thibautvirolle on 10/11/14.
+ * Classe pour parser les json récupérés grâce à l'API BetaSeries
  */
 public class JsonParser {
-
-    private static final String TAG = JsonParser.class.getSimpleName();
-
-    public static ArrayList readUserShowsJsonStream(InputStream in) throws IOException {
-
-        JsonReader reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
-
-        ArrayList values = new ArrayList();
-        try {
-            reader.beginObject();
-            while (reader.hasNext() && (reader.peek().toString().equals("NAME"))) {
-                String value = reader.nextName();
-                if (value.equals("member")) {
-                    List<Show> shows = readShowsArray(reader);
-                    for (Show show : shows) {
-                        values.add(show);
-                    }
-                } else if (value.equals("error")) {
-                    reader.skipValue();
-                } else
-                    reader.skipValue();
-
-            }
-            reader.endObject();
-        } finally {
-            reader.close();
-        }
-
-        return values;
-    }
-
 
     public static ArrayList readShowEpisodesJsonStream(InputStream in) throws IOException {
 
@@ -91,48 +61,34 @@ public class JsonParser {
     }
 
     private static Episode readEpisode(JsonReader reader) throws IOException {
-        int id = 0;
-        String title = "";
-        int season = 0;
-        int episode = 0;
-        String code = "";
+        int id = 0, season = 0, episode = 0;
+        String title = "", show = "", code = "";
         boolean seen = false;
-        String show = "";
 
         reader.beginObject();
 
         while (reader.hasNext()) {
 
-            //Log.d(TAG, reader.peek().toString());
-
             String name = reader.nextName();
             switch (name) {
                 case "id":
-                    //Log.d(TAG,name);
                     id = reader.nextInt();
                     break;
                 case "title":
-                    //Log.d(TAG,name);
                     title = reader.nextString();
                     break;
                 case "season":
-                    //Log.d(TAG,name);
                     season = Integer.parseInt(reader.nextString());
                     break;
                 case "episode":
-                    //Log.d(TAG,name);
                     episode = Integer.parseInt(reader.nextString());
                     break;
                 case "show":
-                    //Log.d(TAG,name);
                     reader.beginObject();
                     while (reader.hasNext()) {
 
-                        //Log.d(TAG, reader.peek().toString());
-
                         String nameBis = reader.nextName();
                         if (nameBis.equals("title")) {
-                            //Log.d(TAG, nameBis);
                             show = reader.nextString();
                         } else {
                             reader.skipValue();
@@ -142,27 +98,21 @@ public class JsonParser {
 
                     break;
                 case "code":
-                    //Log.d(TAG,name);
                     code = reader.nextString();
                     break;
                 case "user":
-                    //Log.d(TAG,name);
 
                     reader.beginObject();
                     while (reader.hasNext()) {
 
-                        //Log.d(TAG, reader.peek().toString());
-
                         String nameBis = reader.nextName();
                         if (nameBis.equals("seen")) {
-                            //Log.d(TAG, nameBis);
                             seen = reader.nextBoolean();
                         } else {
                             reader.skipValue();
                         }
                     }
                     reader.endObject();
-
 
                     break;
                 default:
@@ -172,38 +122,9 @@ public class JsonParser {
         }
         reader.endObject();
 
-        //Episode newEpisode = new Episode(id, title, season, episode, code, seen);
         Episode newEpisode = new Episode(id, title, season, episode, code, seen, show);
 
         return newEpisode;
-    }
-
-
-    private static List<Show> readShowsArray(JsonReader reader) throws IOException {
-
-        List<Show> shows = new ArrayList<Show>();
-
-        //while (reader.hasNext()) {
-        reader.beginObject();
-        while (reader.hasNext()) {
-
-            String name = reader.nextName();
-
-            if (name.equals("shows")) {
-                // On arrive dans le trajet
-                reader.beginArray();
-                while (reader.hasNext()) {
-                    shows.add(readShow(reader));
-                }
-                reader.endArray();
-
-            } else {
-                reader.skipValue();
-            }
-        }
-        reader.endObject();
-        //}
-        return shows;
     }
 
     private static Show readShow(JsonReader reader) throws IOException {
@@ -216,28 +137,19 @@ public class JsonParser {
 
         while (reader.hasNext()) {
 
-            //Log.d(TAG, reader.peek().toString());
-
             String name = reader.nextName();
             if (name.equals("id")) {
-                //Log.d(TAG,name);
                 id = reader.nextInt();
             } else if (name.equals("title")) {
-                //Log.d(TAG,name);
                 title = reader.nextString();
             } else if (name.equals("seasons")) {
-                //Log.d(TAG,name);
                 seasons = Integer.parseInt(reader.nextString());
             } else if (name.equals("episodes")) {
-                //Log.d(TAG,name);
                 episodes = Integer.parseInt(reader.nextString());
             } else if (name.equals("user")) {
-                //Log.d(TAG,name);
 
                 reader.beginObject();
                 while (reader.hasNext()) {
-
-                    //Log.d(TAG, reader.peek().toString());
 
                     String nameBis = reader.nextName();
                     if (nameBis.equals("archived")) {
@@ -278,7 +190,6 @@ public class JsonParser {
 
         ArrayList<Show> showsList = new ArrayList<>();
 
-        User user = null;
         try {
             reader.beginObject();
             while (reader.hasNext() && (reader.peek().toString().equals("NAME"))) {
@@ -287,9 +198,7 @@ public class JsonParser {
 
                     reader.beginObject();
 
-
                     while (reader.hasNext()) {
-                        //Log.d(TAG, reader.peek().toString());
 
                         String nameBis = reader.nextName();
                         if (nameBis.equals("id")) {
@@ -355,7 +264,7 @@ public class JsonParser {
             reader.close();
         }
 
-        user = new User(login, id, friends, badges, seasons, episodes, comments, progress,
+        User user = new User(login, id, friends, badges, seasons, episodes, comments, progress,
                 episodesToWatch, timeOnTv, timeToSpend, xp, avatar);
         user.setShowsList(showsList);
 

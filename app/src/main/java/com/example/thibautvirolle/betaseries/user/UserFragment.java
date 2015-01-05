@@ -14,21 +14,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.thibautvirolle.betaseries.R;
-import com.example.thibautvirolle.betaseries.utilitaires.DownloadResultReceiver;
 
 import java.io.InputStream;
 
 
 public class UserFragment extends Fragment {
 
-    private static String TAG = UserFragment.class.getSimpleName();
-    private static View mContentView;
-    private static View mProgressView;
     View rootView;
     private User user;
-    private String token = "";
-    private String userId;
-    private DownloadResultReceiver mReceiver;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -57,9 +50,6 @@ public class UserFragment extends Fragment {
         TextView avancementTextView = (TextView) rootView.findViewById(R.id.avancementTextView);
         avancementTextView.setText(user.getProgress() + "% : " + user.getEpisodesToWatch() + " ÉPISODES À REGARDER");
 
-
-        mContentView = rootView.findViewById(R.id.profileContainer);
-        mProgressView = rootView.findViewById(R.id.progressBar);
 
         new DownloadImageTask((ImageView) rootView.findViewById(R.id.avatarImageView))
                 .execute(user.getAvatar());

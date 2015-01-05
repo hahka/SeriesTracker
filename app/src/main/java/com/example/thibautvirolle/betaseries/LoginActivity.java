@@ -7,7 +7,6 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.text.TextUtils;
 import android.util.JsonReader;
 import android.view.KeyEvent;
@@ -52,9 +51,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
     final private static int NO_USER_FOUND = 4002;
     final private static int INVALID_PASSWORD = 4003;
     private static String TAG = LoginActivity.class.getSimpleName();
-    /**
-     * Keep track of the login task to ensure we can cancel it if requested.
-     */
+
     private UserLoginTask mAuthTask = null;
 
     // UI references.
@@ -114,20 +111,19 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
     }
 
     /**
-     * Attempts to sign in or register the account specified by the login form.
-     * If there are form errors (invalid email, missing fields, etc.), the
-     * errors are presented and no actual login attempt is made.
+     * Tentative de connexion à BetaSeries
+     * Affiche les erreurs quand elle arrivent
      */
     public void attemptLogin() {
         if (mAuthTask != null) {
             return;
         }
 
-        // Reset errors.
+        // Reinitialise les erreurs
         mLoginView.setError(null);
         mPasswordView.setError(null);
 
-        // Store values at the time of the login attempt.
+        // Récupère les valeurs entrées pour la connexion
         String email = mLoginView.getText().toString();
         String password = mPasswordView.getText().toString();
 
@@ -169,19 +165,17 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
             Progress.showProgress(true, mLoginFormView, mProgressView);
             mAuthTask = new UserLoginTask(email, password);
-            //mAuthTask = new UserLoginTask("thibaut.virolle@gmail.com", "23tivi03");
             mAuthTask.execute((Void) null);
 
         }
     }
 
     private boolean isLoginValid(String login) {
-        return login.length() > 1;
+        return login.length() > 4;
     }
 
     private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
-        return password.length() > 4;
+        return password.length() > 6;
     }
 
 
@@ -192,10 +186,9 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-        List<String> emails = new ArrayList<String>();
+        List<String> emails = new ArrayList<>();
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
-            emails.add(cursor.getString(ProfileQuery.ADDRESS));
             cursor.moveToNext();
         }
 
@@ -216,15 +209,6 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         mLoginView.setAdapter(adapter);
     }
 
-    private interface ProfileQuery {
-        String[] PROJECTION = {
-                ContactsContract.CommonDataKinds.Email.ADDRESS,
-                ContactsContract.CommonDataKinds.Email.IS_PRIMARY,
-        };
-
-        int ADDRESS = 0;
-        int IS_PRIMARY = 1;
-    }
 
     /**
      * Represents an asynchronous login/registration task used to authenticate
@@ -264,6 +248,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             postParameters.add(new BasicNameValuePair("key", Config.API_KEY));
 
 
+            // Parsing json
             try {
                 UrlEncodedFormEntity entity = new UrlEncodedFormEntity(postParameters);
                 httppost.setEntity(entity);
@@ -328,6 +313,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             }
 
 
+            // Récupération du planning de l'utilisateur connecté
             HttpGet httpget = new HttpGet("https://api.betaseries.com/planning/member?id=" + userId + "&key=" + Config.API_KEY);
 
             try {
@@ -344,6 +330,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             }
 
 
+            // Récupération des informations du membre
             httpget = new HttpGet("https://api.betaseries.com/members/infos?id=" + userId + "&only=shows" + "&key=" + Config.API_KEY);
 
             try {
@@ -366,9 +353,10 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         @Override
         protected void onPostExecute(final Boolean success) {
             mAuthTask = null;
-            //showProgress(true);
 
             if (success) {
+                // Connexion réussie. Renvoie les objets user et planningList à DrawerActivity
+
                 Intent returnIntent = new Intent();
                 returnIntent.putExtra(Config.USER_ID, userId);
                 returnIntent.putExtra(Config.TOKEN, token);
@@ -400,7 +388,6 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         @Override
         protected void onCancelled() {
             mAuthTask = null;
-
             Progress.showProgress(false, mLoginFormView, mProgressView);
         }
 

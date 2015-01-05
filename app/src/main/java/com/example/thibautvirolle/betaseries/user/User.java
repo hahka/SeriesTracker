@@ -38,23 +38,6 @@ public class User implements Parcelable {
     private int timeToSpend;
     private ArrayList<Show> showsList;
 
-
-    public User(String login, int id, int friends, int badges,
-                int seasons, int episodes, int comments, float progress,
-                int episodesToWatch, int timeOnTv, int timeToSpend) {
-        setLogin(login);
-        setId(id);
-        setFriends(friends);
-        setBadges(badges);
-        setSeasons(seasons);
-        setEpisodes(episodes);
-        setComments(comments);
-        setProgress(progress);
-        setEpisodesToWatch(episodesToWatch);
-        setTimeOnTv(timeOnTv);
-        setTimeToSpend(timeToSpend);
-    }
-
     public User(String login, int id, int friends, int badges,
                 int seasons, int episodes, int comments, float progress,
                 int episodesToWatch, int timeOnTv, int timeToSpend, int xp, String avatar) {

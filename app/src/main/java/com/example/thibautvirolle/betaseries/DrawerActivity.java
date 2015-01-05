@@ -9,7 +9,6 @@ import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,7 +32,6 @@ import java.util.ArrayList;
  */
 public class DrawerActivity extends Activity {
 
-    private static String TAG = DrawerActivity.class.getSimpleName();
     private static String userId;
     private static String token;
     private static User user;
@@ -41,11 +39,8 @@ public class DrawerActivity extends Activity {
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
-    // nav drawer title
     private CharSequence mDrawerTitle;
-    // used to store app title
     private CharSequence mTitle;
-    // slide menu items
     private String[] navMenuTitles;
     private TypedArray navMenuIcons;
     private ArrayList<NavDrawerItem> navDrawerItems;
@@ -70,7 +65,7 @@ public class DrawerActivity extends Activity {
 
         navDrawerItems = new ArrayList<>();
 
-        // adding nav drawer items to array
+        // Ajoute les objets du nav drawer
         // Mon Profil
         navDrawerItems.add(new NavDrawerItem(navMenuTitles[0], navMenuIcons.getResourceId(0, -1)));
         // Mon Planning
@@ -132,21 +127,6 @@ public class DrawerActivity extends Activity {
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // toggle nav drawer on selecting action bar app icon/title
-        if (mDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-        // Handle action bar actions click
-        switch (item.getItemId()) {
-            case R.id.action_settings:
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
     /* *
      * Called when invalidateOptionsMenu() is triggered
      */
@@ -161,7 +141,7 @@ public class DrawerActivity extends Activity {
      * Diplaying fragment view for selected nav drawer list item
      */
     private void displayView(int position) {
-        // update the main content by replacing fragments
+        // met à jour le contenu en remplaçant le fragment
         Fragment fragment = null;
         Bundle bundle;
         switch (position) {
@@ -197,14 +177,11 @@ public class DrawerActivity extends Activity {
             fragmentManager.beginTransaction()
                     .replace(R.id.frame_container, fragment).commit();
 
-            // update selected item and title, then close the drawer
+            // met à jour la vue et le titre, puis ferme le drawer menu
             mDrawerList.setItemChecked(position, true);
             mDrawerList.setSelection(position);
             setTitle(navMenuTitles[position]);
             mDrawerLayout.closeDrawer(mDrawerList);
-        } else {
-            // error in creating fragment
-            Log.e("MainActivity", "Error in creating fragment");
         }
     }
 
@@ -214,22 +191,15 @@ public class DrawerActivity extends Activity {
         getActionBar().setTitle(mTitle);
     }
 
-    /**
-     * When using the ActionBarDrawerToggle, you must call it during
-     * onPostCreate() and onConfigurationChanged()...
-     */
-
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        // Sync the toggle state after onRestoreInstanceState has occurred.
         mDrawerToggle.syncState();
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        // Pass any configuration change to the drawer toggls
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
@@ -237,7 +207,7 @@ public class DrawerActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == Config.AUTH_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
 
-            // Access data from the completed intent
+            // Récupère les données de l'intent
             userId = data.getStringExtra(Config.USER_ID);
             token = data.getStringExtra(Config.TOKEN);
             user = data.getParcelableExtra(Config.USER);
@@ -246,20 +216,36 @@ public class DrawerActivity extends Activity {
             displayView(0);
 
         } else {
-            Toast.makeText(this, "Something went wrong!", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Echec de la connexion !", Toast.LENGTH_LONG).show();
+            Intent loginIntent = new Intent(DrawerActivity.this, LoginActivity.class);
+            startActivityForResult(loginIntent, Config.AUTH_REQUEST_CODE);
         }
 
     }
 
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // affiche le nav drawer en cliquant sur l'icon ou le titre
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        // Handle action bar actions click
+        switch (item.getItemId()) {
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     /**
      * Slide menu item click listener
+     * Affiche le fragment désiré (Mon Profil, Mon Planning, Mes Séries)
      */
     private class SlideMenuClickListener implements
             ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position,
                                 long id) {
-            // display view for selected nav drawer item
             displayView(position);
         }
     }

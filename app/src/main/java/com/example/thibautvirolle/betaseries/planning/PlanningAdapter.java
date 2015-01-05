@@ -1,6 +1,5 @@
 package com.example.thibautvirolle.betaseries.planning;
 
-import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,10 +19,8 @@ public class PlanningAdapter extends BaseAdapter {
 
     private static String TAG = PlanningAdapter.class.getSimpleName();
     ArrayList<Episode> episodesList = new ArrayList<>();
-    private Context context;
 
-    public PlanningAdapter(Context context, ArrayList<Episode> liste) {
-        this.context = context;
+    public PlanningAdapter(ArrayList<Episode> liste) {
         this.episodesList = liste;
     }
 
@@ -46,9 +43,9 @@ public class PlanningAdapter extends BaseAdapter {
     public View getView(int position, View view, ViewGroup viewGroup) {
         final Episode episode = getItem(position);
 
-        if(view == null) {
+        if (view == null) {
             view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.planning_row, viewGroup, false);
-        } else{
+        } else {
             // On a déjà une vue correspondant, on veut juste la modifier, et pas l'inflater
         }
 
@@ -71,7 +68,6 @@ public class PlanningAdapter extends BaseAdapter {
                 Log.d(TAG, String.valueOf(showId));
             }
         });
-
 
 
         return view;

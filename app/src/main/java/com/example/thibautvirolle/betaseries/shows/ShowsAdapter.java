@@ -18,8 +18,7 @@ import java.util.ArrayList;
  */
 public class ShowsAdapter extends BaseAdapter {
 
-    private static String TAG = ShowsAdapter.class.getSimpleName();
-    private ArrayList<Show> showsList = new ArrayList<Show>();
+    private ArrayList<Show> showsList = new ArrayList<>();
     private Context context;
     private String token;
 

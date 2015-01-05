@@ -7,8 +7,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -30,7 +28,6 @@ import java.util.ArrayList;
 
 public class EpisodesActivity extends Activity {
 
-    private static String TAG = EpisodesActivity.class.getSimpleName();
     ViewPager viewPager;
     MyPagerAdapter myPagerAdapter;
     private ArrayList<Episode> userShowEpisodesList = new ArrayList<Episode>();
@@ -58,33 +55,6 @@ public class EpisodesActivity extends Activity {
         request.execute((Void) null);
         Progress.showProgress(true, mContentView, mProgressView);
 
-
-        //PagerTitleStrip pagerTitleStrip = (PagerTitleStrip)findViewById(R.id.titlestrip);
-
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_episodes, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            int i = 0;
-
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     private class API extends AsyncTask<Void, Void, Boolean> {
@@ -131,10 +101,7 @@ public class EpisodesActivity extends Activity {
 
                 Progress.showProgress(false, mContentView, mProgressView);
 
-            } else {
-                // TODO : Erreur à gérer
             }
-
 
         }
 
@@ -198,7 +165,7 @@ public class EpisodesActivity extends Activity {
                     seasonEpisodesList.add(episode);
             }
 
-            adapter = new EpisodesAdapter(EpisodesActivity.this, seasonEpisodesList);
+            adapter = new EpisodesAdapter(seasonEpisodesList);
 
             episodesListView.setAdapter(adapter);
 

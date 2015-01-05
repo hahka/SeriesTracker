@@ -1,6 +1,5 @@
 package com.example.thibautvirolle.betaseries.episodes;
 
-import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,10 +19,8 @@ public class EpisodesAdapter extends BaseAdapter {
 
     private static String TAG = EpisodesAdapter.class.getSimpleName();
     ArrayList<Episode> episodesList = new ArrayList<>();
-    private Context context;
 
-    public EpisodesAdapter(Context context, ArrayList<Episode> liste) {
-        this.context = context;
+    public EpisodesAdapter(ArrayList<Episode> liste) {
         this.episodesList = liste;
     }
 
