@@ -4,7 +4,7 @@ package fr.hahka.seriestracker.utilitaires;
  * Created by thibautvirolle on 30/11/14.
  */
 public class Config {
-    public static final String API_KEY = "5913d425349a";
+    public static final String API_KEY = "a5c7abbec94a";
 
     public static final String USER_ID = "user_id";
     public static final String TOKEN = "token";
