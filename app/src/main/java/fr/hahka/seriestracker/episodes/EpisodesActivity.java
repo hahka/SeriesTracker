@@ -1,4 +1,4 @@
-package com.example.thibautvirolle.betaseries.episodes;
+package fr.hahka.seriestracker.episodes;
 
 import android.app.Activity;
 import android.content.Context;
@@ -13,10 +13,10 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
-import com.example.thibautvirolle.betaseries.R;
-import com.example.thibautvirolle.betaseries.utilitaires.Config;
-import com.example.thibautvirolle.betaseries.utilitaires.JsonParser;
-import com.example.thibautvirolle.betaseries.utilitaires.Progress;
+import fr.hahka.seriestracker.R;
+import fr.hahka.seriestracker.utilitaires.Config;
+import fr.hahka.seriestracker.utilitaires.JsonParser;
+import fr.hahka.seriestracker.utilitaires.Progress;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -30,10 +30,9 @@ public class EpisodesActivity extends Activity {
 
     ViewPager viewPager;
     MyPagerAdapter myPagerAdapter;
-    private ArrayList<Episode> userShowEpisodesList = new ArrayList<Episode>();
+    private ArrayList<Episode> userShowEpisodesList = new ArrayList<>();
     private View mContentView;
     private View mProgressView;
-    private EpisodesAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +50,7 @@ public class EpisodesActivity extends Activity {
         String showId = callingIntent.getStringExtra("showId");
         String token = callingIntent.getStringExtra("token");
 
-        API request = new API("https://api.betaseries.com/shows/episodes?id=" + showId + "&token=" + token + "&key=" + Config.API_KEY);
+        API request = new API("https://api.seriestracker.com/shows/episodes?id=" + showId + "&token=" + token + "&key=" + Config.API_KEY);
         request.execute((Void) null);
         Progress.showProgress(true, mContentView, mProgressView);
 
@@ -137,7 +136,7 @@ public class EpisodesActivity extends Activity {
                 }
             }
 
-            title = titles.toArray(new String[0]);
+            title = titles.toArray(new String[titles.size()]);
             NumberOfPages = title.length;
 
         }
@@ -165,7 +164,7 @@ public class EpisodesActivity extends Activity {
                     seasonEpisodesList.add(episode);
             }
 
-            adapter = new EpisodesAdapter(seasonEpisodesList);
+            EpisodesAdapter adapter = new EpisodesAdapter(seasonEpisodesList);
 
             episodesListView.setAdapter(adapter);
 

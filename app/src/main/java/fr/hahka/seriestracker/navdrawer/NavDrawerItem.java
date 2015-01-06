@@ -1,4 +1,4 @@
-package com.example.thibautvirolle.betaseries.navdrawer;
+package fr.hahka.seriestracker.navdrawer;
 
 public class NavDrawerItem {
 

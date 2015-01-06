@@ -1,4 +1,4 @@
-package com.example.thibautvirolle.betaseries;
+package fr.hahka.seriestracker;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -16,16 +16,17 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.example.thibautvirolle.betaseries.episodes.Episode;
-import com.example.thibautvirolle.betaseries.navdrawer.NavDrawerItem;
-import com.example.thibautvirolle.betaseries.navdrawer.NavDrawerListAdapter;
-import com.example.thibautvirolle.betaseries.planning.PlanningFragment;
-import com.example.thibautvirolle.betaseries.shows.ShowsFragment;
-import com.example.thibautvirolle.betaseries.user.User;
-import com.example.thibautvirolle.betaseries.user.UserFragment;
-import com.example.thibautvirolle.betaseries.utilitaires.Config;
 
 import java.util.ArrayList;
+
+import fr.hahka.seriestracker.episodes.Episode;
+import fr.hahka.seriestracker.navdrawer.NavDrawerItem;
+import fr.hahka.seriestracker.navdrawer.NavDrawerListAdapter;
+import fr.hahka.seriestracker.planning.PlanningFragment;
+import fr.hahka.seriestracker.shows.ShowsFragment;
+import fr.hahka.seriestracker.user.User;
+import fr.hahka.seriestracker.user.UserFragment;
+import fr.hahka.seriestracker.utilitaires.Config;
 
 /**
  * Created by thibautvirolle on 03/01/15.

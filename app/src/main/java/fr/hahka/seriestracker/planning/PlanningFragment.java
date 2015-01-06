@@ -1,4 +1,4 @@
-package com.example.thibautvirolle.betaseries.planning;
+package fr.hahka.seriestracker.planning;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -7,20 +7,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import com.example.thibautvirolle.betaseries.R;
-import com.example.thibautvirolle.betaseries.episodes.Episode;
-import com.example.thibautvirolle.betaseries.utilitaires.Config;
-import com.example.thibautvirolle.betaseries.utilitaires.Progress;
+import fr.hahka.seriestracker.R;
+import fr.hahka.seriestracker.episodes.Episode;
+import fr.hahka.seriestracker.utilitaires.Config;
+import fr.hahka.seriestracker.utilitaires.Progress;
 
 import java.util.ArrayList;
 
 
 public class PlanningFragment extends Fragment {
 
-    private static View mContentView;
-    private static View mProgressView;
     View rootView;
-    private ArrayList<Episode> planningList = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -28,11 +25,11 @@ public class PlanningFragment extends Fragment {
 
         rootView = inflater.inflate(R.layout.planning_fragment, container, false);
 
-        planningList = getArguments().getParcelableArrayList(Config.PLANNING_LIST);
+        ArrayList<Episode> planningList = getArguments().getParcelableArrayList(Config.PLANNING_LIST);
 
 
-        mContentView = rootView.findViewById(R.id.planningListContainer);
-        mProgressView = rootView.findViewById(R.id.loadingContainer);
+        View mContentView = rootView.findViewById(R.id.planningListContainer);
+        View mProgressView = rootView.findViewById(R.id.loadingContainer);
 
 
         ListView planningListView = (ListView) rootView.findViewById(R.id.planningListView);

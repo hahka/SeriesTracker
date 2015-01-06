@@ -1,4 +1,4 @@
-package com.example.thibautvirolle.betaseries.navdrawer;
+package fr.hahka.seriestracker.navdrawer;
 
 import android.app.Activity;
 import android.content.Context;
@@ -9,7 +9,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.thibautvirolle.betaseries.R;
+import fr.hahka.seriestracker.R;
 
 import java.util.ArrayList;
 

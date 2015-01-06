@@ -1,4 +1,4 @@
-package com.example.thibautvirolle.betaseries;
+package fr.hahka.seriestracker;
 
 import android.app.Activity;
 import android.app.LoaderManager.LoaderCallbacks;
@@ -19,11 +19,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.example.thibautvirolle.betaseries.episodes.Episode;
-import com.example.thibautvirolle.betaseries.user.User;
-import com.example.thibautvirolle.betaseries.utilitaires.Config;
-import com.example.thibautvirolle.betaseries.utilitaires.JsonParser;
-import com.example.thibautvirolle.betaseries.utilitaires.Progress;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -41,6 +36,12 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+
+import fr.hahka.seriestracker.episodes.Episode;
+import fr.hahka.seriestracker.user.User;
+import fr.hahka.seriestracker.utilitaires.Config;
+import fr.hahka.seriestracker.utilitaires.JsonParser;
+import fr.hahka.seriestracker.utilitaires.Progress;
 
 
 /**
@@ -65,8 +66,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         try {
             digest = MessageDigest.getInstance("MD5");
             digest.update(s.getBytes(), 0, s.length());
-            String hash = new BigInteger(1, digest.digest()).toString(16);
-            return hash;
+            return new BigInteger(1, digest.digest()).toString(16);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
@@ -203,7 +203,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
     private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
         //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
         ArrayAdapter<String> adapter =
-                new ArrayAdapter<String>(LoginActivity.this,
+                new ArrayAdapter<>(LoginActivity.this,
                         android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
 
         mLoginView.setAdapter(adapter);
@@ -239,8 +239,8 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             userId = null;
             token = null;
 
-            HttpPost httppost = new HttpPost("https://api.betaseries.com/members/auth");
-            List<NameValuePair> postParameters = new ArrayList<NameValuePair>();
+            HttpPost httppost = new HttpPost("https://api.seriestracker.com/members/auth");
+            List<NameValuePair> postParameters = new ArrayList<>();
             //On crée la liste qui contiendra tous nos paramètres
             //Et on y rajoute nos paramètres
             postParameters.add(new BasicNameValuePair("login", mEmail));
@@ -260,50 +260,47 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
                 JsonReader reader = new JsonReader(new InputStreamReader(is, "UTF-8"));
 
-                try {
-                    reader.beginObject();
-                    while (reader.hasNext() && (reader.peek().toString().equals("NAME"))) {
-                        String value = reader.nextName();
-                        if (value.equals("user")) {
+                reader.beginObject();
+                while (reader.hasNext() && (reader.peek().toString().equals("NAME"))) {
+                    String value = reader.nextName();
+                    if (value.equals("user")) {
+                        reader.beginObject();
+                        while (reader.hasNext()) {
+                            value = reader.nextName();
+                            if (value.equals("id")) {
+
+                                userId = String.valueOf(reader.nextInt());
+
+                            } else {
+                                reader.skipValue();
+                            }
+                        }
+                        reader.endObject();
+                    } else if (value.equals("token")) {
+                        token = reader.nextString();
+                    } else if (value.equals("errors")) {
+                        reader.beginArray();
+                        while (reader.hasNext()) {
                             reader.beginObject();
                             while (reader.hasNext()) {
                                 value = reader.nextName();
-                                if (value.equals("id")) {
-
-                                    userId = String.valueOf(reader.nextInt());
-
+                                if (value.equals("code")) {
+                                    error = reader.nextInt();
                                 } else {
                                     reader.skipValue();
                                 }
                             }
                             reader.endObject();
-                        } else if (value.equals("token")) {
-                            token = reader.nextString();
-                        } else if (value.equals("errors")) {
-                            reader.beginArray();
-                            while (reader.hasNext()) {
-                                reader.beginObject();
-                                while (reader.hasNext()) {
-                                    value = reader.nextName();
-                                    if (value.equals("code")) {
-                                        error = reader.nextInt();
-                                    } else {
-                                        reader.skipValue();
-                                    }
-                                }
-                                reader.endObject();
-                            }
+                        }
 
-                            reader.endArray();
-                        } else
-                            reader.skipValue();
+                        reader.endArray();
+                    } else
+                        reader.skipValue();
 
-                    }
-
-                    reader.endObject();
-                } finally {
-                    reader.close();
                 }
+
+                reader.endObject();
+                reader.close();
 
                 is.close();
 
@@ -314,7 +311,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
 
             // Récupération du planning de l'utilisateur connecté
-            HttpGet httpget = new HttpGet("https://api.betaseries.com/planning/member?id=" + userId + "&key=" + Config.API_KEY);
+            HttpGet httpget = new HttpGet("https://api.seriestracker.com/planning/member?id=" + userId + "&key=" + Config.API_KEY);
 
             try {
                 HttpClient httpclient = new DefaultHttpClient();
@@ -331,7 +328,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
 
             // Récupération des informations du membre
-            httpget = new HttpGet("https://api.betaseries.com/members/infos?id=" + userId + "&only=shows" + "&key=" + Config.API_KEY);
+            httpget = new HttpGet("https://api.seriestracker.com/members/infos?id=" + userId + "&only=shows" + "&key=" + Config.API_KEY);
 
             try {
                 HttpClient httpclient = new DefaultHttpClient();

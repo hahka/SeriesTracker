@@ -1,26 +1,26 @@
-package com.example.thibautvirolle.betaseries.planning;
+package fr.hahka.seriestracker.episodes;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.example.thibautvirolle.betaseries.R;
-import com.example.thibautvirolle.betaseries.episodes.Episode;
+import fr.hahka.seriestracker.R;
 
 import java.util.ArrayList;
 
 /**
  * Created by thibautvirolle on 07/12/14.
  */
-public class PlanningAdapter extends BaseAdapter {
+public class EpisodesAdapter extends BaseAdapter {
 
-    private static String TAG = PlanningAdapter.class.getSimpleName();
+    private static String TAG = EpisodesAdapter.class.getSimpleName();
     ArrayList<Episode> episodesList = new ArrayList<>();
 
-    public PlanningAdapter(ArrayList<Episode> liste) {
+    public EpisodesAdapter(ArrayList<Episode> liste) {
         this.episodesList = liste;
     }
 
@@ -44,21 +44,25 @@ public class PlanningAdapter extends BaseAdapter {
         final Episode episode = getItem(position);
 
         if (view == null) {
-            view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.planning_row, viewGroup, false);
-        } else {
-            // On a déjà une vue correspondant, on veut juste la modifier, et pas l'inflater
+            view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.episode_row, viewGroup, false);
         }
 
+        TextView codetv = (TextView) view.findViewById(R.id.episodeCodeTextView);
+        codetv.setText(String.valueOf(episode.getEpisode()));
 
-        TextView detailstv = (TextView) view.findViewById(R.id.episodeDetailsTextView);
-        detailstv.setText(episode.getCode() + " - " + episode.getTitle());
-
-        TextView titletv = (TextView) view.findViewById(R.id.showTitleTextView);
-        titletv.setText(episode.getShow());
+        TextView titletv = (TextView) view.findViewById(R.id.episodeTitleTextView);
+        titletv.setText(episode.getTitle());
 
         TextView idtv = (TextView) view.findViewById(R.id.episodeIdTextView);
         idtv.setText(String.valueOf(episode.getId()));
 
+        if (!episode.isSeen()) {
+            ImageButton isSeenImageButton = (ImageButton) view.findViewById(R.id.isSeenImageButton);
+            isSeenImageButton.setBackgroundResource(R.drawable.ic_check_box_outline_blank_black);
+        } else {
+            ImageButton isSeenImageButton = (ImageButton) view.findViewById(R.id.isSeenImageButton);
+            isSeenImageButton.setBackgroundResource(R.drawable.ic_check_box_black);
+        }
 
         view.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,7 +72,6 @@ public class PlanningAdapter extends BaseAdapter {
                 Log.d(TAG, String.valueOf(showId));
             }
         });
-
 
         return view;
     }

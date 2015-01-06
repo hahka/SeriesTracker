@@ -1,4 +1,4 @@
-package com.example.thibautvirolle.betaseries.shows;
+package fr.hahka.seriestracker.shows;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -7,20 +7,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import com.example.thibautvirolle.betaseries.R;
-import com.example.thibautvirolle.betaseries.user.User;
-import com.example.thibautvirolle.betaseries.utilitaires.Progress;
+import fr.hahka.seriestracker.R;
+import fr.hahka.seriestracker.user.User;
+import fr.hahka.seriestracker.utilitaires.Progress;
 
 import java.util.ArrayList;
 
 
 public class ShowsFragment extends Fragment {
 
-    private static View mContentView;
-    private static View mProgressView;
     View rootView;
-    private ArrayList<Show> userShowsList = new ArrayList<>();
-    private String token = "";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -28,13 +24,13 @@ public class ShowsFragment extends Fragment {
 
         rootView = inflater.inflate(R.layout.shows_fragment, container, false);
 
-        token = getArguments().getString("token");
+        String token = getArguments().getString("token");
 
-        mContentView = rootView.findViewById(R.id.showsListContainer);
-        mProgressView = rootView.findViewById(R.id.progressBar);
+        View mContentView = rootView.findViewById(R.id.showsListContainer);
+        View mProgressView = rootView.findViewById(R.id.progressBar);
 
         User user = getArguments().getParcelable("user");
-        userShowsList = user.getShowsList();
+        ArrayList<Show> userShowsList = user.getShowsList();
 
         ListView showsListView = (ListView) rootView.findViewById(R.id.showsListView);
         showsListView.setAdapter(new ShowsAdapter(getActivity().getApplicationContext(), userShowsList, token));

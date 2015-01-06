@@ -1,4 +1,4 @@
-package com.example.thibautvirolle.betaseries.utilitaires;
+package fr.hahka.seriestracker.utilitaires;
 
 /**
  * Created by thibautvirolle on 30/11/14.

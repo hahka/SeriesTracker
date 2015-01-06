@@ -1,4 +1,4 @@
-package com.example.thibautvirolle.betaseries.episodes;
+package fr.hahka.seriestracker.episodes;
 
 import android.os.Parcel;
 import android.os.Parcelable;

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.thibautvirolle.betaseries">
+    package="fr.hahka.seriestracker">
 
     <!-- To access Google+ APIs: -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -23,11 +23,11 @@
         android:theme="@style/MyCustomTheme">
 
         <activity
-            android:name=".LoginActivity"
+            android:name="fr.hahka.seriestracker.LoginActivity"
             android:label="@string/title_activity_login"
-            android:windowSoftInputMode="adjustResize|stateVisible"></activity>
+            android:windowSoftInputMode="adjustResize|stateVisible"/>
         <activity
-            android:name=".DrawerActivity"
+            android:name="fr.hahka.seriestracker.DrawerActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -36,8 +36,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".episodes.EpisodesActivity"
-            android:label="@string/title_activity_episodes_show_user"></activity>
+            android:name="fr.hahka.seriestracker.episodes.EpisodesActivity"
+            android:label="@string/title_activity_episodes_show_user"/>
 
 
     </application>

@@ -1,4 +1,4 @@
-package com.example.thibautvirolle.betaseries.utilitaires;
+package fr.hahka.seriestracker.utilitaires;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;

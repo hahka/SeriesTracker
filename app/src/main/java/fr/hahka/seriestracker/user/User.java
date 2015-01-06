@@ -1,11 +1,12 @@
-package com.example.thibautvirolle.betaseries.user;
+package fr.hahka.seriestracker.user;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.example.thibautvirolle.betaseries.shows.Show;
 
 import java.util.ArrayList;
+
+import fr.hahka.seriestracker.shows.Show;
 
 /**
  * Created by thibautvirolle on 04/01/15.

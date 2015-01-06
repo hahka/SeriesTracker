@@ -1,4 +1,4 @@
-package com.example.thibautvirolle.betaseries.shows;
+package fr.hahka.seriestracker.shows;
 
 import android.content.Context;
 import android.content.Intent;
@@ -8,10 +8,11 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.example.thibautvirolle.betaseries.R;
-import com.example.thibautvirolle.betaseries.episodes.EpisodesActivity;
 
 import java.util.ArrayList;
+
+import fr.hahka.seriestracker.R;
+import fr.hahka.seriestracker.episodes.EpisodesActivity;
 
 /**
  * Created by thibautvirolle on 07/12/14.
@@ -50,8 +51,6 @@ public class ShowsAdapter extends BaseAdapter {
 
         if (view == null) {
             view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.show_row, viewGroup, false);
-        } else {
-            // On a déjà une vue correspondant, on veut juste la modifier, et pas l'inflater
         }
 
 

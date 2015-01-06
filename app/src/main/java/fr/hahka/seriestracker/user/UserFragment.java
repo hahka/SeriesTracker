@@ -1,4 +1,4 @@
-package com.example.thibautvirolle.betaseries.user;
+package fr.hahka.seriestracker.user;
 
 import android.app.Fragment;
 import android.graphics.Bitmap;
@@ -13,7 +13,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.example.thibautvirolle.betaseries.R;
+import fr.hahka.seriestracker.R;
 
 import java.io.InputStream;
 
@@ -21,7 +21,6 @@ import java.io.InputStream;
 public class UserFragment extends Fragment {
 
     View rootView;
-    private User user;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -29,7 +28,7 @@ public class UserFragment extends Fragment {
 
         rootView = inflater.inflate(R.layout.profile_fragment, container, false);
 
-        user = getArguments().getParcelable("user");
+        User user = getArguments().getParcelable("user");
 
         TextView mTitleView = (TextView) rootView.findViewById(R.id.profileTitleTextView);
         mTitleView.setText("Résumé de " + user.getLogin());
