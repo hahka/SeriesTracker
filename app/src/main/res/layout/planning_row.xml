@@ -1,34 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<GridLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    >
+    android:columnCount="3"
+    android:rowCount="3">
 
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="@string/showTitle"
+        android:text="07/01"
+        android:id="@+id/dateTextView"
+        android:layout_row="0"
+        android:layout_column="0"
+        android:layout_columnSpan="1"
+        android:layout_rowSpan="2"
+        android:layout_gravity="center_vertical|left"
+        android:width="60dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Show&apos;s Title"
         android:id="@+id/showTitleTextView"
-        android:layout_gravity="center_horizontal" />
-
+        android:layout_row="0"
+        android:layout_column="1"
+        android:textStyle="bold" />
 
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="@string/details"
+        android:text="S01E01 - Title"
         android:id="@+id/episodeDetailsTextView"
-        android:layout_gravity="center_horizontal" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:visibility="gone"
-        android:id="@+id/episodeIdTextView"
-        android:layout_gravity="center_horizontal" />
-
-
-</LinearLayout>
+        android:layout_row="1"
+        android:layout_column="1" />
+</GridLayout>

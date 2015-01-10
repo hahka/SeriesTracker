@@ -7,11 +7,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import java.util.ArrayList;
+
 import fr.hahka.seriestracker.R;
 import fr.hahka.seriestracker.user.User;
-import fr.hahka.seriestracker.utilitaires.Progress;
-
-import java.util.ArrayList;
+import fr.hahka.seriestracker.utilitaires.UserInterface;
 
 
 public class ShowsFragment extends Fragment {
@@ -34,7 +34,7 @@ public class ShowsFragment extends Fragment {
 
         ListView showsListView = (ListView) rootView.findViewById(R.id.showsListView);
         showsListView.setAdapter(new ShowsAdapter(getActivity().getApplicationContext(), userShowsList, token));
-        Progress.showProgress(false, mContentView, mProgressView);
+        UserInterface.showProgress(false, mContentView, mProgressView);
 
         return rootView;
     }

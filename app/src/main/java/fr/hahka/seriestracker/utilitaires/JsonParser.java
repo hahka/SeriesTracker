@@ -2,15 +2,15 @@ package fr.hahka.seriestracker.utilitaires;
 
 import android.util.JsonReader;
 
-import fr.hahka.seriestracker.episodes.Episode;
-import fr.hahka.seriestracker.shows.Show;
-import fr.hahka.seriestracker.user.User;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+
+import fr.hahka.seriestracker.episodes.Episode;
+import fr.hahka.seriestracker.shows.Show;
+import fr.hahka.seriestracker.user.User;
 
 /**
  * Created by thibautvirolle on 10/11/14.
@@ -61,7 +61,7 @@ public class JsonParser {
 
     private static Episode readEpisode(JsonReader reader) throws IOException {
         int id = 0, season = 0, episode = 0;
-        String title = "", show = "", code = "";
+        String title = "", show = "", code = "", date = "";
         boolean seen = false;
 
         reader.beginObject();
@@ -99,6 +99,9 @@ public class JsonParser {
                 case "code":
                     code = reader.nextString();
                     break;
+                case "date":
+                    date = reader.nextString();
+                    break;
                 case "user":
 
                     reader.beginObject();
@@ -121,7 +124,7 @@ public class JsonParser {
         }
         reader.endObject();
 
-        return new Episode(id, title, season, episode, code, seen, show);
+        return new Episode(id, title, season, episode, code, seen, show, date);
     }
 
     private static Show readShow(JsonReader reader) throws IOException {

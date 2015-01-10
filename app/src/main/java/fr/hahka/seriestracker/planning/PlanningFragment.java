@@ -7,12 +7,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import java.util.ArrayList;
+
 import fr.hahka.seriestracker.R;
 import fr.hahka.seriestracker.episodes.Episode;
 import fr.hahka.seriestracker.utilitaires.Config;
-import fr.hahka.seriestracker.utilitaires.Progress;
-
-import java.util.ArrayList;
+import fr.hahka.seriestracker.utilitaires.UserInterface;
 
 
 public class PlanningFragment extends Fragment {
@@ -35,7 +35,7 @@ public class PlanningFragment extends Fragment {
         ListView planningListView = (ListView) rootView.findViewById(R.id.planningListView);
         planningListView.setAdapter(new PlanningAdapter(planningList));
 
-        Progress.showProgress(false, mContentView, mProgressView);
+        UserInterface.showProgress(false, mContentView, mProgressView);
 
 
         return rootView;

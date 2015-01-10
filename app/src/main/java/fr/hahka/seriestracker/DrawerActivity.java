@@ -1,5 +1,6 @@
 package fr.hahka.seriestracker;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -14,8 +15,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
-
 
 import java.util.ArrayList;
 
@@ -33,6 +32,8 @@ import fr.hahka.seriestracker.utilitaires.Config;
  */
 public class DrawerActivity extends Activity {
 
+    private static String TAG = DrawerActivity.class.getSimpleName();
+
     private static String userId;
     private static String token;
     private static User user;
@@ -46,13 +47,14 @@ public class DrawerActivity extends Activity {
     private TypedArray navMenuIcons;
     private ArrayList<NavDrawerItem> navDrawerItems;
     private NavDrawerListAdapter adapter;
+    private ActionBar ab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
 
-        mTitle = mDrawerTitle = "BetaSeries";
+        mTitle = mDrawerTitle = "SeriesTracker";
 
         // load slide menu items
         navMenuTitles = getResources().getStringArray(R.array.nav_drawer_items);
@@ -73,6 +75,8 @@ public class DrawerActivity extends Activity {
         navDrawerItems.add(new NavDrawerItem(navMenuTitles[1], navMenuIcons.getResourceId(1, -1)));
         // Mes Séries
         navDrawerItems.add(new NavDrawerItem(navMenuTitles[2], navMenuIcons.getResourceId(2, -1)));
+        // Déconnexion
+        navDrawerItems.add(new NavDrawerItem(navMenuTitles[3], navMenuIcons.getResourceId(3, -1)));
 
 
         // Recycle the typed array
@@ -86,8 +90,12 @@ public class DrawerActivity extends Activity {
         mDrawerList.setAdapter(adapter);
 
         // enabling action bar app icon and behaving it as toggle button
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        getActionBar().setHomeButtonEnabled(true);
+
+        ab = getActionBar();
+        if(ab != null) {
+            ab.setDisplayHomeAsUpEnabled(true);
+            ab.setHomeButtonEnabled(true);
+        }
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
                 R.drawable.ic_drawer, //nav menu toggle icon
@@ -151,14 +159,16 @@ public class DrawerActivity extends Activity {
                 bundle = new Bundle();
                 bundle.putParcelable(Config.USER, user);
                 fragment.setArguments(bundle);
-                getActionBar().setIcon(R.drawable.ic_profile);
+                if(ab != null)
+                    ab.setIcon(R.drawable.ic_profile);
                 break;
             case 1:
                 fragment = new PlanningFragment();
                 bundle = new Bundle();
                 bundle.putParcelableArrayList(Config.PLANNING_LIST, planningList);
                 fragment.setArguments(bundle);
-                getActionBar().setIcon(R.drawable.ic_planning);
+                if(ab != null)
+                    ab.setIcon(R.drawable.ic_planning);
                 break;
             case 2:
                 fragment = new ShowsFragment();
@@ -166,7 +176,8 @@ public class DrawerActivity extends Activity {
                 bundle.putString(Config.TOKEN, token);
                 bundle.putParcelable(Config.USER, user);
                 fragment.setArguments(bundle);
-                getActionBar().setIcon(R.drawable.ic_shows);
+                if(ab != null)
+                    ab.setIcon(R.drawable.ic_shows);
                 break;
 
             default:
@@ -189,7 +200,8 @@ public class DrawerActivity extends Activity {
     @Override
     public void setTitle(CharSequence title) {
         mTitle = title;
-        getActionBar().setTitle(mTitle);
+        if(ab != null)
+            ab.setTitle(mTitle);
     }
 
     @Override
@@ -214,12 +226,15 @@ public class DrawerActivity extends Activity {
             user = data.getParcelableExtra(Config.USER);
             planningList = data.getParcelableArrayListExtra(Config.PLANNING_LIST);
 
+            if(planningList.size() > 0) {
+                navDrawerItems.get(1).setCounterVisibility(true);
+                navDrawerItems.get(1).setCount(String.valueOf(planningList.size()));
+            }
+
             displayView(0);
 
         } else {
-            Toast.makeText(this, "Echec de la connexion !", Toast.LENGTH_LONG).show();
-            Intent loginIntent = new Intent(DrawerActivity.this, LoginActivity.class);
-            startActivityForResult(loginIntent, Config.AUTH_REQUEST_CODE);
+            finish();
         }
 
     }
@@ -245,10 +260,19 @@ public class DrawerActivity extends Activity {
     private class SlideMenuClickListener implements
             ListView.OnItemClickListener {
         @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position,
-                                long id) {
-            displayView(position);
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            if(position != (navDrawerItems.size() - 1))
+                displayView(position);
+            else
+                logout();
         }
+    }
+
+    private void logout() {
+        Intent restart = new Intent(DrawerActivity.this,DrawerActivity.class);
+        userId = null;
+        startActivity(restart);
+        finish();
     }
 
 }

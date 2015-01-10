@@ -1,5 +1,6 @@
 package fr.hahka.seriestracker.episodes;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -13,11 +14,6 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
-import fr.hahka.seriestracker.R;
-import fr.hahka.seriestracker.utilitaires.Config;
-import fr.hahka.seriestracker.utilitaires.JsonParser;
-import fr.hahka.seriestracker.utilitaires.Progress;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -25,6 +21,13 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+
+import fr.hahka.seriestracker.R;
+import fr.hahka.seriestracker.utilitaires.Config;
+import fr.hahka.seriestracker.utilitaires.JsonParser;
+import fr.hahka.seriestracker.utilitaires.UserInterface;
+
+import static fr.hahka.seriestracker.R.drawable.ic_shows;
 
 public class EpisodesActivity extends Activity {
 
@@ -40,7 +43,11 @@ public class EpisodesActivity extends Activity {
         setContentView(R.layout.episodes_activity);
 
         setTitle("Épisodes");
-        getActionBar().setIcon(R.drawable.ic_shows);
+
+        ActionBar ab = getActionBar();
+        if(ab != null) {
+            ab.setIcon(ic_shows);
+        }
 
 
         mContentView = findViewById(R.id.episodesListContainer);
@@ -50,9 +57,9 @@ public class EpisodesActivity extends Activity {
         String showId = callingIntent.getStringExtra("showId");
         String token = callingIntent.getStringExtra("token");
 
-        API request = new API("https://api.seriestracker.com/shows/episodes?id=" + showId + "&token=" + token + "&key=" + Config.API_KEY);
+        API request = new API("https://api.betaseries.com/shows/episodes?id=" + showId + "&token=" + token + "&key=" + Config.API_KEY);
         request.execute((Void) null);
-        Progress.showProgress(true, mContentView, mProgressView);
+        UserInterface.showProgress(true, mContentView, mProgressView);
 
     }
 
@@ -98,7 +105,7 @@ public class EpisodesActivity extends Activity {
                 myPagerAdapter = new MyPagerAdapter(getApplicationContext(), userShowEpisodesList);
                 viewPager.setAdapter(myPagerAdapter);
 
-                Progress.showProgress(false, mContentView, mProgressView);
+                UserInterface.showProgress(false, mContentView, mProgressView);
 
             }
 

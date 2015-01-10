@@ -9,6 +9,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.JsonReader;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -18,7 +19,6 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -31,9 +31,6 @@ import org.apache.http.message.BasicNameValuePair;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +38,9 @@ import fr.hahka.seriestracker.episodes.Episode;
 import fr.hahka.seriestracker.user.User;
 import fr.hahka.seriestracker.utilitaires.Config;
 import fr.hahka.seriestracker.utilitaires.JsonParser;
-import fr.hahka.seriestracker.utilitaires.Progress;
+import fr.hahka.seriestracker.utilitaires.UserInterface;
+
+import static fr.hahka.seriestracker.utilitaires.Miscellaneous.md5;
 
 
 /**
@@ -49,9 +48,9 @@ import fr.hahka.seriestracker.utilitaires.Progress;
  */
 public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
+    private static String TAG = LoginActivity.class.getSimpleName();
     final private static int NO_USER_FOUND = 4002;
     final private static int INVALID_PASSWORD = 4003;
-    private static String TAG = LoginActivity.class.getSimpleName();
 
     private UserLoginTask mAuthTask = null;
 
@@ -61,17 +60,6 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
     private View mProgressView;
     private View mLoginFormView;
 
-    public static String md5(String s) {
-        MessageDigest digest;
-        try {
-            digest = MessageDigest.getInstance("MD5");
-            digest.update(s.getBytes(), 0, s.length());
-            return new BigInteger(1, digest.digest()).toString(16);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        return "";
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,7 +112,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         mPasswordView.setError(null);
 
         // Récupère les valeurs entrées pour la connexion
-        String email = mLoginView.getText().toString();
+        String login = mLoginView.getText().toString();
         String password = mPasswordView.getText().toString();
 
         boolean cancel = false;
@@ -142,11 +130,11 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             cancel = true;
         }
 
-        if (TextUtils.isEmpty(email)) {
+        if (TextUtils.isEmpty(login)) {
             mLoginView.setError(getString(R.string.error_field_required));
             focusView = mLoginView;
             cancel = true;
-        } else if (!isLoginValid(email)) {
+        } else if (!isLoginValid(login)) {
             mLoginView.setError(getString(R.string.error_invalid_login));
             focusView = mLoginView;
             cancel = true;
@@ -158,20 +146,22 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             // form field with an error.
             focusView.requestFocus();
 
-            Progress.showProgress(false, mLoginFormView, mProgressView);
+            UserInterface.showProgress(false, mLoginFormView, mProgressView);
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
 
-            Progress.showProgress(true, mLoginFormView, mProgressView);
-            mAuthTask = new UserLoginTask(email, password);
+            UserInterface.showProgress(true, mLoginFormView, mProgressView);
+            mAuthTask = new UserLoginTask(login, password);
+
+
             mAuthTask.execute((Void) null);
 
         }
     }
 
     private boolean isLoginValid(String login) {
-        return login.length() > 4;
+        return login.length() > 3;
     }
 
     private boolean isPasswordValid(String password) {
@@ -231,6 +221,9 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         UserLoginTask(String email, String password) {
             mEmail = email;
             mPassword = md5(password);
+            //mEmail = "PH16";
+            //mPassword = "f447df8362a4d0d9f5142f563595684b";
+
         }
 
         @Override
@@ -239,7 +232,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             userId = null;
             token = null;
 
-            HttpPost httppost = new HttpPost("https://api.seriestracker.com/members/auth");
+            HttpPost httppost = new HttpPost("https://api.betaseries.com/members/auth");
             List<NameValuePair> postParameters = new ArrayList<>();
             //On crée la liste qui contiendra tous nos paramètres
             //Et on y rajoute nos paramètres
@@ -263,13 +256,16 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                 reader.beginObject();
                 while (reader.hasNext() && (reader.peek().toString().equals("NAME"))) {
                     String value = reader.nextName();
+                    Log.d(TAG,"------------------"+value);
                     if (value.equals("user")) {
                         reader.beginObject();
                         while (reader.hasNext()) {
                             value = reader.nextName();
+                            Log.d(TAG,value);
                             if (value.equals("id")) {
 
                                 userId = String.valueOf(reader.nextInt());
+                                Log.d(TAG,String.valueOf(userId));
 
                             } else {
                                 reader.skipValue();
@@ -278,6 +274,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                         reader.endObject();
                     } else if (value.equals("token")) {
                         token = reader.nextString();
+                        Log.d(TAG,token);
                     } else if (value.equals("errors")) {
                         reader.beginArray();
                         while (reader.hasNext()) {
@@ -311,7 +308,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
 
             // Récupération du planning de l'utilisateur connecté
-            HttpGet httpget = new HttpGet("https://api.seriestracker.com/planning/member?id=" + userId + "&key=" + Config.API_KEY);
+            HttpGet httpget = new HttpGet("https://api.betaseries.com/planning/member?id=" + userId + "&token=" + token + "&key=" + Config.API_KEY);
 
             try {
                 HttpClient httpclient = new DefaultHttpClient();
@@ -328,9 +325,10 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
 
             // Récupération des informations du membre
-            httpget = new HttpGet("https://api.seriestracker.com/members/infos?id=" + userId + "&only=shows" + "&key=" + Config.API_KEY);
+            httpget = new HttpGet("https://api.betaseries.com/members/infos?id=" + userId + "&only=shows" + "&token=" + token + "&key=" + Config.API_KEY);
 
             try {
+
                 HttpClient httpclient = new DefaultHttpClient();
                 HttpResponse response = httpclient.execute(httpget);
                 InputStream is = response.getEntity().getContent();
@@ -363,7 +361,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                 finish();
             } else {
 
-                Progress.showProgress(false, mLoginFormView, mProgressView);
+                UserInterface.showProgress(false, mLoginFormView, mProgressView);
                 switch (error) {
                     case NO_USER_FOUND:
                         mLoginView.setError(getString(R.string.error_no_user_found));
@@ -385,7 +383,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         @Override
         protected void onCancelled() {
             mAuthTask = null;
-            Progress.showProgress(false, mLoginFormView, mProgressView);
+            UserInterface.showProgress(false, mLoginFormView, mProgressView);
         }
 
     }

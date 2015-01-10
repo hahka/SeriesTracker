@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">BetaSeries</string>
+    <string name="app_name">SeriesTracker</string>
     <string name="title_section1">Mes Amis</string>
     <string name="title_section2">Mon Planning</string>
     <string name="title_section3">Mon Calendrier</string>
@@ -17,7 +17,7 @@
     <string name="title_activity_user_shows">UserShows</string>
     <string name="title_activity_api_get_request">API Get Request</string>
     <string name="hello_world">Hello world!</string>
-    <string name="title_activity_episodes_show_user">EpisodesShowUser</string>
+    <string name="title_activity_episodes_show_user">Épisodes</string>
     <string name="episode_code">S01E01</string>
     <string name="episode_details_separator">&#xA0;—&#xA0;</string>
     <string name="serverData">Récupération des données depuis le serveur...</string>
@@ -26,6 +26,7 @@
     <string name="desc_list_item_icon">Item Icon</string>
     <string name="title_activity_drawer">DrawerMenu</string>
     <string name="profile_title">Résumé de ...</string>
+    <string name="planning_header_text_view">CETTE SEMAINE</string>
 
 
     <!-- Nav Drawer Menu Items -->
@@ -33,6 +34,7 @@
         <item>Mon Profil</item>
         <item>Mon Planning</item>
         <item>Mes Séries</item>
+        <item>Déconnexion</item>
     </string-array>
 
     <!-- Nav Drawer List Item Icons -->
@@ -41,6 +43,7 @@
         <item>@drawable/ic_profile</item>
         <item>@drawable/ic_planning</item>
         <item>@drawable/ic_shows</item>
+        <item>@drawable/ic_logout</item>
     </array>
 
 </resources>
