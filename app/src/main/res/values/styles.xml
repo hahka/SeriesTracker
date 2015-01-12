@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar">
@@ -14,6 +14,9 @@
     <style name="MyActionBar"
         parent="@android:style/Widget.Holo.Light.ActionBar.Solid">
         <item name="android:background">@color/primary</item>
+        <item name="android:displayOptions">showTitle</item>
+        <item name="displayOptions">showTitle</item>
+        <item name="android:icon">@android:color/transparent</item>
     </style>
 
 </resources>

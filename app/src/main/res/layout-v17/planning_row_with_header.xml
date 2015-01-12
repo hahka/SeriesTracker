@@ -12,8 +12,8 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="@string/planning_header_text_view"
         android:id="@+id/headerTextView"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"/>
+        android:paddingStart="@dimen/activity_horizontal_margin"
+        android:paddingEnd="@dimen/activity_horizontal_margin"/>
 
     <View
         android:layout_width="fill_parent"
@@ -24,7 +24,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:columnCount="2"
-        android:rowCount="2">
+        android:rowCount="2"
+        android:paddingStart="@dimen/activity_horizontal_margin"
+        android:paddingEnd="@dimen/activity_horizontal_margin">
 
 
         <TextView

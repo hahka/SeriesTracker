@@ -1,24 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:id="@+id/showImageView"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="@string/showTitle"
-        android:id="@+id/showsTitleTextView"
-        android:layout_gravity="center_horizontal" />
+        android:text="Medium Text"
+        android:id="@+id/showTitleTextView"
+        android:layout_alignBottom="@+id/showImageView"
+        android:layout_centerHorizontal="true"
+        android:autoText="false"
+        android:gravity="center_horizontal"
+        android:background="#CC000000"
+        android:textColor="#FFFFFF" />
 
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="@string/details"
-        android:id="@+id/showsDetailsTextView"
-        android:layout_gravity="center_horizontal" />
 
     <TextView
         android:layout_width="match_parent"
@@ -26,8 +31,8 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="@string/details"
         android:visibility="gone"
-        android:id="@+id/showsIdTextView"
+        android:id="@+id/showIdTextView"
         android:layout_gravity="center_horizontal" />
 
 
-</LinearLayout>
+</RelativeLayout>

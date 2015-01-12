@@ -8,8 +8,8 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.Bundle;
-import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -64,7 +64,7 @@ public class DrawerActivity extends Activity {
                 .obtainTypedArray(R.array.nav_drawer_icons);
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerList = (ListView) findViewById(R.id.list_slidermenu);
+        mDrawerList = (ListView) findViewById(R.id.list_slider_menu);
 
         navDrawerItems = new ArrayList<>();
 
@@ -98,7 +98,6 @@ public class DrawerActivity extends Activity {
         }
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
-                R.drawable.ic_drawer, //nav menu toggle icon
                 R.string.app_name, // nav drawer open - description for accessibility
                 R.string.app_name // nav drawer close - description for accessibility
         ) {
@@ -159,16 +158,20 @@ public class DrawerActivity extends Activity {
                 bundle = new Bundle();
                 bundle.putParcelable(Config.USER, user);
                 fragment.setArguments(bundle);
-                if(ab != null)
-                    ab.setIcon(R.drawable.ic_profile);
+                if(ab != null) {
+                    //ab.setIcon(R.drawable.ic_profile);
+                    ab.setIcon(null);
+                }
                 break;
             case 1:
                 fragment = new PlanningFragment();
                 bundle = new Bundle();
                 bundle.putParcelableArrayList(Config.PLANNING_LIST, planningList);
                 fragment.setArguments(bundle);
-                if(ab != null)
-                    ab.setIcon(R.drawable.ic_planning);
+                if(ab != null) {
+                    //ab.setIcon(R.drawable.ic_planning);
+                    ab.setIcon(null);
+                }
                 break;
             case 2:
                 fragment = new ShowsFragment();
@@ -176,8 +179,10 @@ public class DrawerActivity extends Activity {
                 bundle.putString(Config.TOKEN, token);
                 bundle.putParcelable(Config.USER, user);
                 fragment.setArguments(bundle);
-                if(ab != null)
-                    ab.setIcon(R.drawable.ic_shows);
+                if(ab != null) {
+                    //ab.setIcon(R.drawable.ic_shows);
+                    ab.setIcon(null);
+                }
                 break;
 
             default:

@@ -1,6 +1,7 @@
 package fr.hahka.seriestracker.utilitaires;
 
 import android.util.JsonReader;
+import android.util.JsonToken;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -198,54 +199,63 @@ public class JsonParser {
                 while (reader.hasNext()) {
 
                     String nameBis = reader.nextName();
-                    if (nameBis.equals("id")) {
-                        id = reader.nextInt();
-                    } else if (nameBis.equals("login")) {
-                        login = reader.nextString();
-                    } else if (nameBis.equals("xp")) {
-                        xp = reader.nextInt();
-                    } else if (nameBis.equals("avatar")) {
-                        avatar = reader.nextString();
-                    } else if (nameBis.equals("stats")) {
 
-                        reader.beginObject();
-
-                        while (reader.hasNext()) {
-                            String stats = reader.nextName();
-                            if (stats.equals("badges")) {
-                                badges = reader.nextInt();
-                            } else if (stats.equals("seasons")) {
-                                seasons = reader.nextInt();
-                            } else if (stats.equals("episodes")) {
-                                episodes = reader.nextInt();
-                            } else if (stats.equals("comments")) {
-                                comments = reader.nextInt();
-                            } else if (stats.equals("progress")) {
-                                progress = (float) reader.nextDouble();
-                            } else if (stats.equals("episodes_to_watch")) {
-                                episodesToWatch = reader.nextInt();
-                            } else if (stats.equals("time_on_tv")) {
-                                timeOnTv = reader.nextInt();
-                            } else if (stats.equals("time_to_spend")) {
-                                timeToSpend = reader.nextInt();
-                            } else {
-                                reader.skipValue();
-                            }
-                        }
-
-                        reader.endObject();
-
-                    } else if (nameBis.equals("shows")) {
-                        // On arrive dans le trajet
-                        reader.beginArray();
-                        while (reader.hasNext()) {
-                            showsList.add(readShow(reader));
-                        }
-                        reader.endArray();
-
+                    if(reader.peek() == JsonToken.NULL) {
+                        reader.nextNull();
                     } else {
-                        reader.skipValue();
+
+                        if (nameBis.equals("id")) {
+                            id = reader.nextInt();
+                        } else if (nameBis.equals("login")) {
+                            login = reader.nextString();
+                        } else if (nameBis.equals("xp")) {
+                            xp = reader.nextInt();
+                        } else if (nameBis.equals("avatar")) {
+                            avatar = reader.nextString();
+                        } else if (nameBis.equals("stats")) {
+
+                            reader.beginObject();
+
+                            while (reader.hasNext()) {
+                                String stats = reader.nextName();
+                                if (stats.equals("badges")) {
+                                    badges = reader.nextInt();
+                                } else if (stats.equals("seasons")) {
+                                    seasons = reader.nextInt();
+                                } else if (stats.equals("episodes")) {
+                                    episodes = reader.nextInt();
+                                } else if (stats.equals("comments")) {
+                                    comments = reader.nextInt();
+                                } else if (stats.equals("progress")) {
+                                    progress = (float) reader.nextDouble();
+                                } else if (stats.equals("episodes_to_watch")) {
+                                    episodesToWatch = reader.nextInt();
+                                } else if (stats.equals("time_on_tv")) {
+                                    timeOnTv = reader.nextInt();
+                                } else if (stats.equals("time_to_spend")) {
+                                    timeToSpend = reader.nextInt();
+                                } else {
+                                    reader.skipValue();
+                                }
+                            }
+
+                            reader.endObject();
+
+                        } else if (nameBis.equals("shows")) {
+                            // On arrive dans le trajet
+                            reader.beginArray();
+                            while (reader.hasNext()) {
+                                showsList.add(readShow(reader));
+                            }
+                            reader.endArray();
+
+                        } else {
+                            reader.skipValue();
+                        }
+
                     }
+
+
                 }
 
                 reader.endObject();

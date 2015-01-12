@@ -2,23 +2,27 @@ package fr.hahka.seriestracker.shows;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
-
 
 import java.util.ArrayList;
 
 import fr.hahka.seriestracker.R;
 import fr.hahka.seriestracker.episodes.EpisodesActivity;
+import fr.hahka.seriestracker.utilitaires.DownloadImageTask;
 
 /**
  * Created by thibautvirolle on 07/12/14.
+ * Adapter pour la liste des shows
  */
 public class ShowsAdapter extends BaseAdapter {
 
+    private static String TAG = ShowsAdapter.class.getSimpleName();
     private ArrayList<Show> showsList = new ArrayList<>();
     private Context context;
     private String token;
@@ -53,20 +57,25 @@ public class ShowsAdapter extends BaseAdapter {
             view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.show_row, viewGroup, false);
         }
 
-
-        TextView titletv = (TextView) view.findViewById(R.id.showsTitleTextView);
+        TextView titletv = (TextView) view.findViewById(R.id.showTitleTextView);
         titletv.setText(show.getTitle());
 
-        TextView detailstv = (TextView) view.findViewById(R.id.showsDetailsTextView);
-        detailstv.setText(show.getSeasonsEpisodesToString());
+        ImageView showImageView = (ImageView) view.findViewById(R.id.showImageView);
 
-        TextView idtv = (TextView) view.findViewById(R.id.showsIdTextView);
+        new DownloadImageTask(showImageView)
+                .execute("http://cdn.betaseries.com//betaseries//images//fonds//original//1275_1362361611.jpg");
+
+        Log.d(TAG,"Image downloaded");
+
+
+
+        TextView idtv = (TextView) view.findViewById(R.id.showIdTextView);
         idtv.setText(String.valueOf(show.getId()));
 
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                TextView idtv = (TextView) view.findViewById(R.id.showsIdTextView);
+                TextView idtv = (TextView) view.findViewById(R.id.showIdTextView);
                 String showId = idtv.getText().toString();
 
                 Intent userShowEpisodesIntent;
