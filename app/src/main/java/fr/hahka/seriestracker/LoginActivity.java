@@ -34,7 +34,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.hahka.seriestracker.episodes.Planning;
+import fr.hahka.seriestracker.episodes.planning.Planning;
 import fr.hahka.seriestracker.user.User;
 import fr.hahka.seriestracker.utilitaires.Config;
 import fr.hahka.seriestracker.utilitaires.JsonParser;
@@ -46,10 +46,9 @@ import fr.hahka.seriestracker.utilitaires.UserInterface;
  */
 public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
-    private static String TAG = LoginActivity.class.getSimpleName();
     final private static int NO_USER_FOUND = 4002;
     final private static int INVALID_PASSWORD = 4003;
-
+    private static String TAG = LoginActivity.class.getSimpleName();
     private UserLoginTask mAuthTask = null;
 
     // UI references.

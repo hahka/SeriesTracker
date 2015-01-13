@@ -1,4 +1,4 @@
-package fr.hahka.seriestracker.episodes;
+package fr.hahka.seriestracker.episodes.episodes;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -8,9 +8,9 @@ import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import fr.hahka.seriestracker.R;
-
 import java.util.ArrayList;
+
+import fr.hahka.seriestracker.R;
 
 /**
  * Created by thibautvirolle on 07/12/14.

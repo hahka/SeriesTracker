@@ -9,8 +9,8 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.hahka.seriestracker.episodes.Episode;
-import fr.hahka.seriestracker.episodes.Planning;
+import fr.hahka.seriestracker.episodes.episodes.Episode;
+import fr.hahka.seriestracker.episodes.planning.Planning;
 import fr.hahka.seriestracker.shows.Show;
 import fr.hahka.seriestracker.user.User;
 

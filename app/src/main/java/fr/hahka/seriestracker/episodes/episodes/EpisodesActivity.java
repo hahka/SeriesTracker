@@ -1,4 +1,4 @@
-package fr.hahka.seriestracker.episodes;
+package fr.hahka.seriestracker.episodes.episodes;
 
 import android.app.ActionBar;
 import android.app.Activity;

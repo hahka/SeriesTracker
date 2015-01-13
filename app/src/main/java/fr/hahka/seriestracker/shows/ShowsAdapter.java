@@ -18,7 +18,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 import fr.hahka.seriestracker.R;
-import fr.hahka.seriestracker.episodes.EpisodesActivity;
+import fr.hahka.seriestracker.episodes.episodes.EpisodesActivity;
 
 /**
  * Created by thibautvirolle on 07/12/14.
@@ -81,41 +81,6 @@ public class ShowsAdapter extends BaseAdapter {
         }
     }
 
-    class BitmapWorkerTask extends AsyncTask<String, Void, Bitmap> {
-
-
-        ImageView bmImage;
-
-        public BitmapWorkerTask(ImageView bmImage) {
-            this.bmImage = bmImage;
-        }
-
-        // Decode image in background.
-        @Override
-        protected Bitmap doInBackground(String... urls) {
-            Bitmap bitmap = null;
-            try {
-                InputStream in = new java.net.URL(urls[0]).openStream();
-
-                bitmap = BitmapFactory.decodeStream(in);
-                addBitmapToMemoryCache(urls[0], bitmap);
-            } catch (Exception e) {
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
-            }
-
-
-            return bitmap;
-        }
-
-        protected void onPostExecute(Bitmap result) {
-
-            bmImage.setImageBitmap(result);
-        }
-
-    }
-
-
     @Override
     public int getCount() {
         return showsList.size();
@@ -174,6 +139,40 @@ public class ShowsAdapter extends BaseAdapter {
 
 
         return view;
+    }
+
+    class BitmapWorkerTask extends AsyncTask<String, Void, Bitmap> {
+
+
+        ImageView bmImage;
+
+        public BitmapWorkerTask(ImageView bmImage) {
+            this.bmImage = bmImage;
+        }
+
+        // Decode image in background.
+        @Override
+        protected Bitmap doInBackground(String... urls) {
+            Bitmap bitmap = null;
+            try {
+                InputStream in = new java.net.URL(urls[0]).openStream();
+
+                bitmap = BitmapFactory.decodeStream(in);
+                addBitmapToMemoryCache(urls[0], bitmap);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+
+
+            return bitmap;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+
+            bmImage.setImageBitmap(result);
+        }
+
     }
 }
 

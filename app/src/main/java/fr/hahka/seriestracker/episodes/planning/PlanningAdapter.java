@@ -1,4 +1,4 @@
-package fr.hahka.seriestracker.episodes;
+package fr.hahka.seriestracker.episodes.planning;
 
 import android.content.Context;
 import android.util.Log;
@@ -14,38 +14,28 @@ import fr.hahka.seriestracker.R;
 
 /**
  * Created by thibautvirolle on 07/12/14.
+ * Adapter pour afficher la listView du planning
  */
 public class PlanningAdapter extends BaseAdapter {
 
     private static String TAG = PlanningAdapter.class.getSimpleName();
     ArrayList<Planning> episodesList = new ArrayList<>();
-    //ArrayList<Integer> headerList = new ArrayList<>();
-
     private String[] headerList;
-
-    private Context context;
-
-    private static boolean inflated = false;
 
     public PlanningAdapter(Context context,ArrayList<Planning> liste) {
         this.episodesList = liste;
-        this.context = context;
 
         headerList = context.getResources().getStringArray(R.array.header_items);
-        /*String header = "";
-        int i = 0;
-        for(Episode ep : episodesList) {
-            String newHeader = ep.getHeader();
-            if(!header.equals(newHeader)){
-                headerList.add(i);
-                header = newHeader;
+        int headerIndice = -1;
+
+        for(Planning p : episodesList) {
+            int newHeaderIndice = p.getHeaderIndice();
+            if(!(headerIndice == newHeaderIndice)){
+                headerIndice = newHeaderIndice;
+                p.setHeader(headerList[headerIndice]);
             }
-            i++;
         }
 
-        for(int h : headerList){
-            Log.d(TAG,String.valueOf(h));
-        }*/
     }
 
     @Override
@@ -68,43 +58,21 @@ public class PlanningAdapter extends BaseAdapter {
 
         final Planning episode = getItem(position);
 
-        //String header = episode.getHeader();
-
-        //long diff = episode.getNbJourAvantDiffusion() + episode.getCurrentDayOfWeek();
-
-        /*Log.d(TAG, episode.getTitle()+" : "+episode.getDateShortString());
-        Log.d(TAG,header + " : " + diff);*/
-
-        /*if(headerList.contains(position)) {
-            view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.planning_row_with_header, viewGroup, false);
-            TextView headerTextView = (TextView) view.findViewById(R.id.headerTextView);
-            headerTextView.setText(header);
-            Log.d(TAG,episode.getTitle()+ " : "+episode.getIndice());
-            inflated = false;
-
-        } else {
-            Log.d(TAG,"Without header");
-            view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.planning_row, viewGroup, false);
-
-        }*/
 
         int headerIndice = episode.getHeaderIndice();
 
-        String header = headerList[headerIndice];
 
         if(position == 0) {
             view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.planning_row_with_header, viewGroup, false);
             Log.d(TAG,"First row");
             TextView headerTextView = (TextView) view.findViewById(R.id.headerTextView);
-            headerTextView.setText(header);
+            headerTextView.setText(headerList[headerIndice]);
 
         } else {
 
-            final Planning previousEpisode = getItem(position-1);
-            int prevHeader = previousEpisode.getHeaderIndice();
-            if(!(headerIndice == prevHeader)) {
+            String header = episode.getHeader();
+            if(!(header == null)) {
                 Log.d(TAG,"With header");
-                Log.d(TAG,episode.getTitle() + " : " + headerIndice + " / " + prevHeader);
                 view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.planning_row_with_header, viewGroup, false);
 
                 TextView headerTextView = (TextView) view.findViewById(R.id.headerTextView);
@@ -116,10 +84,6 @@ public class PlanningAdapter extends BaseAdapter {
             }
 
         }
-
-
-
-
 
         TextView dateTextView = (TextView) view.findViewById(R.id.dateTextView);
         dateTextView.setText(episode.getDateShortString());

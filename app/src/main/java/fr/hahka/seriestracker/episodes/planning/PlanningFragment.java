@@ -1,4 +1,4 @@
-package fr.hahka.seriestracker.episodes;
+package fr.hahka.seriestracker.episodes.planning;
 
 import android.app.Fragment;
 import android.os.Bundle;

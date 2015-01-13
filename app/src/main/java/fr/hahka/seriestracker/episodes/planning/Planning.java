@@ -1,20 +1,17 @@
-package fr.hahka.seriestracker.episodes;
+package fr.hahka.seriestracker.episodes.planning;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.Calendar;
 
+import fr.hahka.seriestracker.episodes.AbstractEpisode;
+
 /**
  * Created by thibautvirolle on 13/01/15.
  * Classe Planning : Episode plus header pour affichage
  */
 public class Planning extends AbstractEpisode implements Parcelable{
-
-    private String header = "";
-    private String show = "";
-    private String date = "";
-    private String code = "";
 
     public static final Parcelable.Creator<Planning> CREATOR = new Parcelable.Creator<Planning>() {
         @Override
@@ -27,6 +24,10 @@ public class Planning extends AbstractEpisode implements Parcelable{
             return new Planning[size];
         }
     };
+    private String header = null;
+    private String show = "";
+    private String date = "";
+    private String code = "";
 
     public Planning(int id, String title, String show, String code, String date) {
 
@@ -39,6 +40,14 @@ public class Planning extends AbstractEpisode implements Parcelable{
     }
 
 
+    public Planning(Parcel in) {
+        this.id = in.readInt();
+        this.title = in.readString();
+        this.show = in.readString();
+        this.date = in.readString();
+        this.code = in.readString();
+    }
+
     public String getHeader() {
         return header;
     }
@@ -46,7 +55,6 @@ public class Planning extends AbstractEpisode implements Parcelable{
     public void setHeader(String header) {
         this.header = header;
     }
-
 
     public String getCode() {
         return code;
@@ -56,7 +64,6 @@ public class Planning extends AbstractEpisode implements Parcelable{
         this.code = code;
     }
 
-
     public String getShow() {
         return show;
     }
@@ -65,22 +72,12 @@ public class Planning extends AbstractEpisode implements Parcelable{
         this.show = show;
     }
 
-
     public String getDate() {
         return date;
     }
 
     public void setDate(String date) {
         this.date = date;
-    }
-
-
-    public Planning(Parcel in) {
-        this.id = in.readInt();
-        this.title = in.readString();
-        this.show = in.readString();
-        this.date = in.readString();
-        this.code = in.readString();
     }
 
     @Override
@@ -121,9 +118,6 @@ public class Planning extends AbstractEpisode implements Parcelable{
 
         Calendar today = Calendar.getInstance();
 
-        //System.out.println("ThatDayOfWeekInMonth : "+thatDay.get(Calendar.DAY_OF_WEEK_IN_MONTH));
-
-
         long diff = thatDay.getTimeInMillis() - today.getTimeInMillis();
         return (diff / (24 * 60 * 60 * 1000));
     }
@@ -163,13 +157,13 @@ public class Planning extends AbstractEpisode implements Parcelable{
 
         if(indice < 1) {
             return 0;
-        } else if(indice <=7) {
+        } else if(indice <7) {
             return 1;
-        } else if(indice <= 14) {
+        } else if(indice < 14) {
             return 2;
-        } else if(indice <= 21) {
+        } else if(indice < 21) {
             return 3;
-        } else if(indice <= 28) {
+        } else if(indice < 28) {
             return 4;
         } else {
             int currentMonth = getCurrentMonth();

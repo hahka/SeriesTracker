@@ -18,8 +18,8 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 
-import fr.hahka.seriestracker.episodes.Episode;
-import fr.hahka.seriestracker.episodes.PlanningFragment;
+import fr.hahka.seriestracker.episodes.episodes.Episode;
+import fr.hahka.seriestracker.episodes.planning.PlanningFragment;
 import fr.hahka.seriestracker.navdrawer.NavDrawerItem;
 import fr.hahka.seriestracker.navdrawer.NavDrawerListAdapter;
 import fr.hahka.seriestracker.shows.ShowsFragment;
@@ -258,6 +258,13 @@ public class DrawerActivity extends Activity {
         }
     }
 
+    private void logout() {
+        Intent restart = new Intent(DrawerActivity.this,DrawerActivity.class);
+        userId = null;
+        startActivity(restart);
+        finish();
+    }
+
     /**
      * Slide menu item click listener
      * Affiche le fragment désiré (Mon Profil, Mon Planning, Mes Séries)
@@ -271,13 +278,6 @@ public class DrawerActivity extends Activity {
             else
                 logout();
         }
-    }
-
-    private void logout() {
-        Intent restart = new Intent(DrawerActivity.this,DrawerActivity.class);
-        userId = null;
-        startActivity(restart);
-        finish();
     }
 
 }

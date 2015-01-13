@@ -1,15 +1,15 @@
-package fr.hahka.seriestracker.episodes;
+package fr.hahka.seriestracker.episodes.episodes;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import fr.hahka.seriestracker.episodes.AbstractEpisode;
 
 /**
  * Created by thibautvirolle on 06/12/14.
  * Objet Episode
  */
 public class Episode extends AbstractEpisode implements Parcelable {
-
-    private static String TAG = Episode.class.getSimpleName();
 
     public static final Parcelable.Creator<Episode> CREATOR = new Parcelable.Creator<Episode>() {
         @Override
@@ -22,8 +22,7 @@ public class Episode extends AbstractEpisode implements Parcelable {
             return new Episode[size];
         }
     };
-
-
+    private static String TAG = Episode.class.getSimpleName();
     private int season = 0;
     private int episode = 0;
     private boolean seen = false;
@@ -42,6 +41,21 @@ public class Episode extends AbstractEpisode implements Parcelable {
     }
 
 
+
+    /**
+     * Ce qui suit sert à passer des objets Episode entre activité par les intent.
+     */
+
+    // Permet de recréer l'épisode
+    public Episode(Parcel in) {
+        this.id = in.readInt();
+        this.title = in.readString();
+        this.season = in.readInt();
+        this.episode = in.readInt();
+        this.seen = (in.readByte() != 0);
+        this.show = in.readString();
+        this.date = in.readString();
+    }
 
     public int getSeason() {
         return season;
@@ -81,23 +95,6 @@ public class Episode extends AbstractEpisode implements Parcelable {
 
     public void setDate(String date) {
         this.date = date;
-    }
-
-
-
-    /**
-     * Ce qui suit sert à passer des objets Episode entre activité par les intent.
-     */
-
-    // Permet de recréer l'épisode
-    public Episode(Parcel in) {
-        this.id = in.readInt();
-        this.title = in.readString();
-        this.season = in.readInt();
-        this.episode = in.readInt();
-        this.seen = (in.readByte() != 0);
-        this.show = in.readString();
-        this.date = in.readString();
     }
 
     @Override
