@@ -19,9 +19,9 @@ import android.widget.ListView;
 import java.util.ArrayList;
 
 import fr.hahka.seriestracker.episodes.Episode;
+import fr.hahka.seriestracker.episodes.PlanningFragment;
 import fr.hahka.seriestracker.navdrawer.NavDrawerItem;
 import fr.hahka.seriestracker.navdrawer.NavDrawerListAdapter;
-import fr.hahka.seriestracker.planning.PlanningFragment;
 import fr.hahka.seriestracker.shows.ShowsFragment;
 import fr.hahka.seriestracker.user.User;
 import fr.hahka.seriestracker.user.UserFragment;

@@ -3,10 +3,10 @@ package fr.hahka.seriestracker.user;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-
 import java.util.ArrayList;
 
 import fr.hahka.seriestracker.shows.Show;
+import fr.hahka.seriestracker.shows.SimpleShow;
 
 /**
  * Created by thibautvirolle on 04/01/15.
@@ -74,7 +74,8 @@ public class User implements Parcelable {
         this.timeOnTv = in.readInt();
         this.timeToSpend = in.readInt();
 
-        this.showsList = in.readArrayList(Show.class.getClassLoader());
+        //this.showsList = in.readArrayList(Show.class.getClassLoader());
+        this.showsList = in.readArrayList(SimpleShow.class.getClassLoader());
     }
 
     public String getLogin() {

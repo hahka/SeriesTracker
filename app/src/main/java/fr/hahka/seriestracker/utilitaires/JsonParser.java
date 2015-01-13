@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.hahka.seriestracker.episodes.Episode;
+import fr.hahka.seriestracker.episodes.Planning;
 import fr.hahka.seriestracker.shows.Show;
 import fr.hahka.seriestracker.user.User;
 
@@ -125,8 +126,101 @@ public class JsonParser {
         }
         reader.endObject();
 
-        return new Episode(id, title, season, episode, code, seen, show, date);
+        return new Episode(id, title, season, episode, seen, show, date);
     }
+
+
+
+    public static ArrayList<Planning> readUserPlanningJsonStream(InputStream in) throws IOException {
+
+        JsonReader reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
+
+        ArrayList<Planning> values = new ArrayList<>();
+
+        reader.beginObject();
+        while (reader.hasNext() && (reader.peek().toString().equals("NAME"))) {
+            String value = reader.nextName();
+            if (value.equals("episodes")) {
+
+                List<Planning> episodes = readPlanningArray(reader);
+
+                for (Planning episode : episodes) {
+                    values.add(episode);
+                }
+            } else if (value.equals("error")) {
+                reader.skipValue();
+            } else
+                reader.skipValue();
+
+        }
+        reader.endObject();
+        reader.close();
+
+
+        return values;
+    }
+
+
+    private static List<Planning> readPlanningArray(JsonReader reader) throws IOException {
+        List<Planning> episodes = new ArrayList<>();
+
+        reader.beginArray();
+        while (reader.hasNext()) {
+            episodes.add(readPlanning(reader));
+        }
+        reader.endArray();
+
+        return episodes;
+    }
+
+
+    private static Planning readPlanning(JsonReader reader) throws IOException {
+        int id = 0, season = 0, episode = 0;
+        String title = "", show = "", code = "", date = "";
+        boolean seen = false;
+
+        reader.beginObject();
+
+        while (reader.hasNext()) {
+
+            String name = reader.nextName();
+            switch (name) {
+                case "id":
+                    id = reader.nextInt();
+                    break;
+                case "title":
+                    title = reader.nextString();
+                    break;
+                case "show":
+                    reader.beginObject();
+                    while (reader.hasNext()) {
+
+                        String nameBis = reader.nextName();
+                        if (nameBis.equals("title")) {
+                            show = reader.nextString();
+                        } else {
+                            reader.skipValue();
+                        }
+                    }
+                    reader.endObject();
+
+                    break;
+                case "code":
+                    code = reader.nextString();
+                    break;
+                case "date":
+                    date = reader.nextString();
+                    break;
+                default:
+                    reader.skipValue();
+                    break;
+            }
+        }
+        reader.endObject();
+
+        return new Planning(id, title, show, code, date);
+    }
+
 
     private static Show readShow(JsonReader reader) throws IOException {
 

@@ -18,6 +18,7 @@ public class Show implements Parcelable {
         public Show[] newArray(int size) {
             return new Show[size];
         }
+
     };
     private int id;
     private String title;

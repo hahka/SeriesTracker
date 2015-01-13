@@ -2,6 +2,10 @@ package fr.hahka.seriestracker.shows;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
+import android.support.v4.util.LruCache;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,11 +14,11 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 
 import fr.hahka.seriestracker.R;
 import fr.hahka.seriestracker.episodes.EpisodesActivity;
-import fr.hahka.seriestracker.utilitaires.DownloadImageTask;
 
 /**
  * Created by thibautvirolle on 07/12/14.
@@ -27,10 +31,88 @@ public class ShowsAdapter extends BaseAdapter {
     private Context context;
     private String token;
 
+    private LruCache<String, Bitmap> mMemoryCache;
+
     public ShowsAdapter(Context context, ArrayList<Show> liste, String token) {
         this.context = context;
         this.showsList = liste;
         this.token = token;
+
+
+        // Get max available VM memory, exceeding this amount will throw an
+        // OutOfMemory exception. Stored in kilobytes as LruCache takes an
+        // int in its constructor.
+        final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+
+        // Use 1/8th of the available memory for this memory cache.
+        final int cacheSize = maxMemory / 8;
+
+        mMemoryCache = new LruCache<String, Bitmap>(cacheSize) {
+            @Override
+            protected int sizeOf(String key, Bitmap bitmap) {
+                // The cache size will be measured in kilobytes rather than
+                // number of items.
+                return bitmap.getByteCount() / 1024;
+            }
+        };
+    }
+
+    public void addBitmapToMemoryCache(String key, Bitmap bitmap) {
+        if (getBitmapFromMemCache(key) == null) {
+            mMemoryCache.put(key, bitmap);
+        }
+    }
+
+    public Bitmap getBitmapFromMemCache(String key) {
+        return mMemoryCache.get(key);
+    }
+
+    public void loadBitmap(String key, ImageView mImageView) {
+
+        final Bitmap bitmap = getBitmapFromMemCache(key);
+        if (bitmap != null) {
+            mImageView.setImageBitmap(bitmap);
+            Log.d(TAG,"bitmap found");
+        } else {
+            mImageView.setImageResource(R.drawable.ic_launcher);
+            BitmapWorkerTask task = new BitmapWorkerTask(mImageView);
+            task.execute("http://cdn.betaseries.com//betaseries//images//fonds//original//1275_1362361611.jpg");
+            Log.d(TAG,"bitmap downloaded");
+        }
+    }
+
+    class BitmapWorkerTask extends AsyncTask<String, Void, Bitmap> {
+
+
+        ImageView bmImage;
+
+        public BitmapWorkerTask(ImageView bmImage) {
+            this.bmImage = bmImage;
+        }
+
+        // Decode image in background.
+        @Override
+        protected Bitmap doInBackground(String... urls) {
+            Bitmap bitmap = null;
+            try {
+                InputStream in = new java.net.URL(urls[0]).openStream();
+
+                bitmap = BitmapFactory.decodeStream(in);
+                addBitmapToMemoryCache(urls[0], bitmap);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+
+
+            return bitmap;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+
+            bmImage.setImageBitmap(result);
+        }
+
     }
 
 
@@ -62,11 +144,13 @@ public class ShowsAdapter extends BaseAdapter {
 
         ImageView showImageView = (ImageView) view.findViewById(R.id.showImageView);
 
-        new DownloadImageTask(showImageView)
-                .execute("http://cdn.betaseries.com//betaseries//images//fonds//original//1275_1362361611.jpg");
+        /*new DownloadImageTask(showImageView)
+                .execute("http://cdn.betaseries.com//betaseries//images//fonds//original//1275_1362361611.jpg");*/
 
-        Log.d(TAG,"Image downloaded");
+        //Log.d(TAG,"Image downloaded");
 
+        loadBitmap("http://cdn.betaseries.com//betaseries//images//fonds//original//1275_1362361611.jpg",showImageView);
+        //loadBitmap(String.valueOf(show.getId()),showImageView);
 
 
         TextView idtv = (TextView) view.findViewById(R.id.showIdTextView);

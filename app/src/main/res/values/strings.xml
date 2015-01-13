@@ -39,4 +39,18 @@
         <item>@drawable/ic_logout</item>
     </array>
 
+
+    <string-array name="header_items">
+        <item>LA SEMAINE DERNIÈRE</item>
+        <item>CETTE SEMAINE</item>
+        <item>LA SEMAINE PROCHAINE</item>
+        <item>DANS 2 SEMAINES</item>
+        <item>DANS 3 SEMAINES</item>
+        <item>DANS 4 SEMAINES</item>
+        <item>LE MOIS PROCHAIN</item>
+        <item>DANS 2 MOIS</item>
+        <item>DANS 3 MOIS</item>
+        <item>PLUS TARD…</item>
+    </string-array>
+
 </resources>
