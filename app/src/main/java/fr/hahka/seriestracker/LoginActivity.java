@@ -34,13 +34,10 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.hahka.seriestracker.episodes.planning.Planning;
 import fr.hahka.seriestracker.user.User;
 import fr.hahka.seriestracker.utilitaires.Config;
 import fr.hahka.seriestracker.utilitaires.JsonParser;
 import fr.hahka.seriestracker.utilitaires.UserInterface;
-
-import static fr.hahka.seriestracker.utilitaires.Miscellaneous.md5;
 
 
 /**
@@ -211,15 +208,16 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
         String userId = null;
         String token = null;
-        ArrayList<Planning> planningList;
         int error = -1;
 
         User user;
 
 
         UserLoginTask(String email, String password) {
-            mEmail = email;
-            mPassword = md5(password);
+            //mEmail = email;
+            //mPassword = md5(password);
+            mEmail = "PH16";
+            mPassword = "f447df8362a4d0d9f5142f563595684b";
         }
 
         @Override
@@ -310,28 +308,8 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                 e.printStackTrace();
             }
 
-            Log.d(TAG,"connection ok");
-
-            // Récupération du planning de l'utilisateur connecté
-            HttpGet httpget = new HttpGet("https://api.betaseries.com/planning/member?id=" + userId + "&token=" + token + "&key=" + Config.API_KEY);
-
-            try {
-                HttpClient httpclient = new DefaultHttpClient();
-                HttpResponse response = httpclient.execute(httpget);
-                InputStream is = response.getEntity().getContent();
-
-                planningList = JsonParser.readUserPlanningJsonStream(is);
-
-                is.close();
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            Log.d(TAG,"planning ok");
-
             // Récupération des informations du membre
-            httpget = new HttpGet("https://api.betaseries.com/members/infos?id=" + userId + "&only=shows" + "&token=" + token + "&key=" + Config.API_KEY);
+            HttpGet httpget = new HttpGet("https://api.betaseries.com/members/infos?id=" + userId + "&only=shows" + "&token=" + token + "&key=" + Config.API_KEY);
 
             try {
 
@@ -363,7 +341,6 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                 returnIntent.putExtra(Config.USER_ID, userId);
                 returnIntent.putExtra(Config.TOKEN, token);
                 returnIntent.putExtra(Config.USER, user);
-                returnIntent.putParcelableArrayListExtra(Config.PLANNING_LIST, planningList);
                 setResult(RESULT_OK, returnIntent);
                 finish();
             } else {

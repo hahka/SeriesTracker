@@ -24,10 +24,12 @@ public class Planning extends AbstractEpisode implements Parcelable{
             return new Planning[size];
         }
     };
+    private static Calendar today = Calendar.getInstance();
     private String header = null;
     private String show = "";
     private String date = "";
     private String code = "";
+
 
     public Planning(int id, String title, String show, String code, String date) {
 
@@ -46,6 +48,15 @@ public class Planning extends AbstractEpisode implements Parcelable{
         this.show = in.readString();
         this.date = in.readString();
         this.code = in.readString();
+    }
+
+    public static int getCurrentDayOfWeek() {
+        int dayOfWeek = today.get(Calendar.DAY_OF_WEEK);
+        dayOfWeek -= 1;
+        if(dayOfWeek == 0)
+            dayOfWeek = 7;
+
+        return dayOfWeek;
     }
 
     public String getHeader() {
@@ -94,8 +105,6 @@ public class Planning extends AbstractEpisode implements Parcelable{
         dest.writeString(code);
     }
 
-
-
     public int getJour() {
         return Integer.parseInt(getDate().split("-")[2]);
     }
@@ -107,7 +116,6 @@ public class Planning extends AbstractEpisode implements Parcelable{
     public int getAnnee() {
         return Integer.parseInt(getDate().split("-")[0]);
     }
-
 
     public long getNbJourAvantDiffusion(){
 
@@ -122,21 +130,8 @@ public class Planning extends AbstractEpisode implements Parcelable{
         return (diff / (24 * 60 * 60 * 1000));
     }
 
-
     public String getDateShortString() {
         return getDate().split("-")[2] + "/" + getDate().split("-")[1];
-    }
-
-
-
-    public int getCurrentDayOfWeek() {
-        Calendar today = Calendar.getInstance();
-        int dayOfWeek = today.get(Calendar.DAY_OF_WEEK_IN_MONTH);
-        dayOfWeek -= 1;
-        if(dayOfWeek == 0)
-            dayOfWeek = 7;
-
-        return dayOfWeek;
     }
 
     public int getCurrentMonth() {

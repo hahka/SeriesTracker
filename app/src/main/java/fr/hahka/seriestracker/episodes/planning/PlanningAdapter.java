@@ -61,6 +61,7 @@ public class PlanningAdapter extends BaseAdapter {
 
         int headerIndice = episode.getHeaderIndice();
 
+        Log.d(TAG,episode.getTitle()+ " : " +episode.getCurrentDayOfWeek() + "/" +episode.getIndice()+"/"+headerIndice);
 
         if(position == 0) {
             view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.planning_row_with_header, viewGroup, false);

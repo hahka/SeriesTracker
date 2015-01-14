@@ -1,4 +1,4 @@
-package fr.hahka.seriestracker;
+package fr.hahka.seriestracker.navdrawer;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -18,10 +18,10 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 
+import fr.hahka.seriestracker.LoginActivity;
+import fr.hahka.seriestracker.R;
 import fr.hahka.seriestracker.episodes.episodes.Episode;
 import fr.hahka.seriestracker.episodes.planning.PlanningFragment;
-import fr.hahka.seriestracker.navdrawer.NavDrawerItem;
-import fr.hahka.seriestracker.navdrawer.NavDrawerListAdapter;
 import fr.hahka.seriestracker.shows.ShowsFragment;
 import fr.hahka.seriestracker.user.User;
 import fr.hahka.seriestracker.user.UserFragment;
@@ -165,7 +165,8 @@ public class DrawerActivity extends Activity {
             case 1:
                 fragment = new PlanningFragment();
                 bundle = new Bundle();
-                bundle.putParcelableArrayList(Config.PLANNING_LIST, planningList);
+                bundle.putString(Config.TOKEN, token);
+                bundle.putString(Config.USER_ID, userId);
                 fragment.setArguments(bundle);
                 if(ab != null) {
                     //ab.setIcon(R.drawable.ic_planning);
@@ -228,12 +229,12 @@ public class DrawerActivity extends Activity {
             userId = data.getStringExtra(Config.USER_ID);
             token = data.getStringExtra(Config.TOKEN);
             user = data.getParcelableExtra(Config.USER);
-            planningList = data.getParcelableArrayListExtra(Config.PLANNING_LIST);
+            /*planningList = data.getParcelableArrayListExtra(Config.PLANNING_LIST);
 
             if(planningList.size() > 0) {
                 navDrawerItems.get(1).setCounterVisibility(true);
                 navDrawerItems.get(1).setCount(String.valueOf(planningList.size()));
-            }
+            }*/
 
             displayView(0);
 
