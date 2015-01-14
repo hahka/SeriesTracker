@@ -14,6 +14,7 @@ import fr.hahka.seriestracker.R;
 
 /**
  * Created by thibautvirolle on 07/12/14.
+ * Adapter pour afficher la listView des épisodes
  */
 public class EpisodesAdapter extends BaseAdapter {
 

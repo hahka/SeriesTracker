@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 /**
  * Created by thibautvirolle on 02/12/14.
+ * Objet show
  */
 public class Show implements Parcelable {
 

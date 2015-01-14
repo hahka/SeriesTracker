@@ -40,6 +40,8 @@ import fr.hahka.seriestracker.utilitaires.Config;
 import fr.hahka.seriestracker.utilitaires.JsonParser;
 import fr.hahka.seriestracker.utilitaires.UserInterface;
 
+import static fr.hahka.seriestracker.utilitaires.Miscellaneous.md5;
+
 
 /**
  * A login screen that offers login via email/password.
@@ -216,11 +218,8 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
 
         UserLoginTask(String email, String password) {
-            //mEmail = email;
-            //mPassword = md5(password);
-            mEmail = "PH16";
-            mPassword = "f447df8362a4d0d9f5142f563595684b";
-
+            mEmail = email;
+            mPassword = md5(password);
         }
 
         @Override
@@ -256,42 +255,48 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                 while (reader.hasNext() && (reader.peek().toString().equals("NAME"))) {
                     String value = reader.nextName();
                     Log.d(TAG,"------------------"+value);
-                    if (value.equals("user")) {
-                        reader.beginObject();
-                        while (reader.hasNext()) {
-                            value = reader.nextName();
-                            Log.d(TAG,value);
-                            if (value.equals("id")) {
-
-                                userId = String.valueOf(reader.nextInt());
-                                Log.d(TAG,String.valueOf(userId));
-
-                            } else {
-                                reader.skipValue();
-                            }
-                        }
-                        reader.endObject();
-                    } else if (value.equals("token")) {
-                        token = reader.nextString();
-                        Log.d(TAG,token);
-                    } else if (value.equals("errors")) {
-                        reader.beginArray();
-                        while (reader.hasNext()) {
+                    switch (value) {
+                        case "user":
                             reader.beginObject();
                             while (reader.hasNext()) {
                                 value = reader.nextName();
-                                if (value.equals("code")) {
-                                    error = reader.nextInt();
+                                Log.d(TAG, value);
+                                if (value.equals("id")) {
+
+                                    userId = String.valueOf(reader.nextInt());
+                                    Log.d(TAG, String.valueOf(userId));
+
                                 } else {
                                     reader.skipValue();
                                 }
                             }
                             reader.endObject();
-                        }
+                            break;
+                        case "token":
+                            token = reader.nextString();
+                            Log.d(TAG, token);
+                            break;
+                        case "errors":
+                            reader.beginArray();
+                            while (reader.hasNext()) {
+                                reader.beginObject();
+                                while (reader.hasNext()) {
+                                    value = reader.nextName();
+                                    if (value.equals("code")) {
+                                        error = reader.nextInt();
+                                    } else {
+                                        reader.skipValue();
+                                    }
+                                }
+                                reader.endObject();
+                            }
 
-                        reader.endArray();
-                    } else
-                        reader.skipValue();
+                            reader.endArray();
+                            break;
+                        default:
+                            reader.skipValue();
+                            break;
+                    }
 
                 }
 

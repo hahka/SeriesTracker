@@ -29,10 +29,11 @@ import fr.hahka.seriestracker.utilitaires.Config;
 
 /**
  * Created by thibautvirolle on 03/01/15.
+ * Activity contenant le drawerMenu principal, et les fragments associés
  */
 public class DrawerActivity extends Activity {
 
-    private static String TAG = DrawerActivity.class.getSimpleName();
+    //private static String TAG = DrawerActivity.class.getSimpleName();
 
     private static String userId;
     private static String token;
@@ -44,9 +45,7 @@ public class DrawerActivity extends Activity {
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
     private String[] navMenuTitles;
-    private TypedArray navMenuIcons;
     private ArrayList<NavDrawerItem> navDrawerItems;
-    private NavDrawerListAdapter adapter;
     private ActionBar ab;
 
     @Override
@@ -60,7 +59,7 @@ public class DrawerActivity extends Activity {
         navMenuTitles = getResources().getStringArray(R.array.nav_drawer_items);
 
         // nav drawer icons from resources
-        navMenuIcons = getResources()
+        TypedArray navMenuIcons = getResources()
                 .obtainTypedArray(R.array.nav_drawer_icons);
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -85,7 +84,7 @@ public class DrawerActivity extends Activity {
         mDrawerList.setOnItemClickListener(new SlideMenuClickListener());
 
         // setting the nav drawer list adapter
-        adapter = new NavDrawerListAdapter(getApplicationContext(),
+        NavDrawerListAdapter adapter = new NavDrawerListAdapter(getApplicationContext(),
                 navDrawerItems);
         mDrawerList.setAdapter(adapter);
 
@@ -141,7 +140,7 @@ public class DrawerActivity extends Activity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         // if nav drawer is opened, hide the action items
-        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
+        //boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
         return super.onPrepareOptionsMenu(menu);
     }
 

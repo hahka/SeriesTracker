@@ -10,6 +10,7 @@ import fr.hahka.seriestracker.shows.SimpleShow;
 
 /**
  * Created by thibautvirolle on 04/01/15.
+ * Objet User (pour le profil)
  */
 public class User implements Parcelable {
 

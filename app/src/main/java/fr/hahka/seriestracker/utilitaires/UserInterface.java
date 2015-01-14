@@ -8,6 +8,7 @@ import android.view.View;
 
 /**
  * Created by thibautvirolle on 05/01/15.
+ * Classe pour les actions sur l'interface communes à plusieurs classes
  */
 public class UserInterface {
 

@@ -141,9 +141,7 @@ public class Planning extends AbstractEpisode implements Parcelable{
 
     public int getCurrentMonth() {
         Calendar today = Calendar.getInstance();
-        int month = today.get(Calendar.MONTH) + 1;
-
-        return month;
+        return today.get(Calendar.MONTH) + 1;
     }
 
 

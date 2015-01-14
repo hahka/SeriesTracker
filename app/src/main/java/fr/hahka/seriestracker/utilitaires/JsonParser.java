@@ -29,17 +29,22 @@ public class JsonParser {
         reader.beginObject();
         while (reader.hasNext() && (reader.peek().toString().equals("NAME"))) {
             String value = reader.nextName();
-            if (value.equals("episodes")) {
+            switch (value) {
+                case "episodes":
 
-                List<Episode> episodes = readEpisodesArray(reader);
+                    List<Episode> episodes = readEpisodesArray(reader);
 
-                for (Episode episode : episodes) {
-                    values.add(episode);
-                }
-            } else if (value.equals("error")) {
-                reader.skipValue();
-            } else
-                reader.skipValue();
+                    for (Episode episode : episodes) {
+                        values.add(episode);
+                    }
+                    break;
+                case "error":
+                    reader.skipValue();
+                    break;
+                default:
+                    reader.skipValue();
+                    break;
+            }
 
         }
         reader.endObject();
@@ -50,7 +55,7 @@ public class JsonParser {
     }
 
     private static List<Episode> readEpisodesArray(JsonReader reader) throws IOException {
-        List<Episode> episodes = new ArrayList<Episode>();
+        List<Episode> episodes = new ArrayList<>();
 
         reader.beginArray();
         while (reader.hasNext()) {
@@ -63,7 +68,7 @@ public class JsonParser {
 
     private static Episode readEpisode(JsonReader reader) throws IOException {
         int id = 0, season = 0, episode = 0;
-        String title = "", show = "", code = "", date = "";
+        String title = "", show = "", date = "";
         boolean seen = false;
 
         reader.beginObject();
@@ -97,9 +102,6 @@ public class JsonParser {
                     }
                     reader.endObject();
 
-                    break;
-                case "code":
-                    code = reader.nextString();
                     break;
                 case "date":
                     date = reader.nextString();
@@ -140,17 +142,22 @@ public class JsonParser {
         reader.beginObject();
         while (reader.hasNext() && (reader.peek().toString().equals("NAME"))) {
             String value = reader.nextName();
-            if (value.equals("episodes")) {
+            switch (value) {
+                case "episodes":
 
-                List<Planning> episodes = readPlanningArray(reader);
+                    List<Planning> episodes = readPlanningArray(reader);
 
-                for (Planning episode : episodes) {
-                    values.add(episode);
-                }
-            } else if (value.equals("error")) {
-                reader.skipValue();
-            } else
-                reader.skipValue();
+                    for (Planning episode : episodes) {
+                        values.add(episode);
+                    }
+                    break;
+                case "error":
+                    reader.skipValue();
+                    break;
+                default:
+                    reader.skipValue();
+                    break;
+            }
 
         }
         reader.endObject();
@@ -175,9 +182,8 @@ public class JsonParser {
 
 
     private static Planning readPlanning(JsonReader reader) throws IOException {
-        int id = 0, season = 0, episode = 0;
+        int id = 0;
         String title = "", show = "", code = "", date = "";
-        boolean seen = false;
 
         reader.beginObject();
 
@@ -233,35 +239,44 @@ public class JsonParser {
         while (reader.hasNext()) {
 
             String name = reader.nextName();
-            if (name.equals("id")) {
-                id = reader.nextInt();
-            } else if (name.equals("title")) {
-                title = reader.nextString();
-            } else if (name.equals("seasons")) {
-                seasons = Integer.parseInt(reader.nextString());
-            } else if (name.equals("episodes")) {
-                episodes = Integer.parseInt(reader.nextString());
-            } else if (name.equals("user")) {
+            switch (name) {
+                case "id":
+                    id = reader.nextInt();
+                    break;
+                case "title":
+                    title = reader.nextString();
+                    break;
+                case "seasons":
+                    seasons = Integer.parseInt(reader.nextString());
+                    break;
+                case "episodes":
+                    episodes = Integer.parseInt(reader.nextString());
+                    break;
+                case "user":
 
-                reader.beginObject();
-                while (reader.hasNext()) {
+                    reader.beginObject();
+                    while (reader.hasNext()) {
 
-                    String nameBis = reader.nextName();
-                    if (nameBis.equals("archived")) {
-                        //Log.d(TAG,nameBis);
-                        archived = reader.nextBoolean();
-                    } else if (nameBis.equals("favorited")) {
-                        //Log.d(TAG,nameBis);
-                        favorited = reader.nextBoolean();
-                    } else {
-                        reader.skipValue();
+                        String nameBis = reader.nextName();
+                        switch (nameBis) {
+                            case "archived":
+                                archived = reader.nextBoolean();
+                                break;
+                            case "favorited":
+                                favorited = reader.nextBoolean();
+                                break;
+                            default:
+                                reader.skipValue();
+                                break;
+                        }
                     }
-                }
-                reader.endObject();
+                    reader.endObject();
 
 
-            } else {
-                reader.skipValue();
+                    break;
+                default:
+                    reader.skipValue();
+                    break;
             }
         }
         reader.endObject();
@@ -286,78 +301,101 @@ public class JsonParser {
         reader.beginObject();
         while (reader.hasNext() && (reader.peek().toString().equals("NAME"))) {
             String value = reader.nextName();
-            if (value.equals("member")) {
+            switch (value) {
+                case "member":
 
-                reader.beginObject();
+                    reader.beginObject();
 
-                while (reader.hasNext()) {
+                    while (reader.hasNext()) {
 
-                    String nameBis = reader.nextName();
+                        String nameBis = reader.nextName();
 
-                    if(reader.peek() == JsonToken.NULL) {
-                        reader.nextNull();
-                    } else {
-
-                        if (nameBis.equals("id")) {
-                            id = reader.nextInt();
-                        } else if (nameBis.equals("login")) {
-                            login = reader.nextString();
-                        } else if (nameBis.equals("xp")) {
-                            xp = reader.nextInt();
-                        } else if (nameBis.equals("avatar")) {
-                            avatar = reader.nextString();
-                        } else if (nameBis.equals("stats")) {
-
-                            reader.beginObject();
-
-                            while (reader.hasNext()) {
-                                String stats = reader.nextName();
-                                if (stats.equals("badges")) {
-                                    badges = reader.nextInt();
-                                } else if (stats.equals("seasons")) {
-                                    seasons = reader.nextInt();
-                                } else if (stats.equals("episodes")) {
-                                    episodes = reader.nextInt();
-                                } else if (stats.equals("comments")) {
-                                    comments = reader.nextInt();
-                                } else if (stats.equals("progress")) {
-                                    progress = (float) reader.nextDouble();
-                                } else if (stats.equals("episodes_to_watch")) {
-                                    episodesToWatch = reader.nextInt();
-                                } else if (stats.equals("time_on_tv")) {
-                                    timeOnTv = reader.nextInt();
-                                } else if (stats.equals("time_to_spend")) {
-                                    timeToSpend = reader.nextInt();
-                                } else {
-                                    reader.skipValue();
-                                }
-                            }
-
-                            reader.endObject();
-
-                        } else if (nameBis.equals("shows")) {
-                            // On arrive dans le trajet
-                            reader.beginArray();
-                            while (reader.hasNext()) {
-                                showsList.add(readShow(reader));
-                            }
-                            reader.endArray();
-
+                        if (reader.peek() == JsonToken.NULL) {
+                            reader.nextNull();
                         } else {
-                            reader.skipValue();
+
+                            switch (nameBis) {
+                                case "id":
+                                    id = reader.nextInt();
+                                    break;
+                                case "login":
+                                    login = reader.nextString();
+                                    break;
+                                case "xp":
+                                    xp = reader.nextInt();
+                                    break;
+                                case "avatar":
+                                    avatar = reader.nextString();
+                                    break;
+                                case "stats":
+
+                                    reader.beginObject();
+
+                                    while (reader.hasNext()) {
+                                        String stats = reader.nextName();
+                                        switch (stats) {
+                                            case "badges":
+                                                badges = reader.nextInt();
+                                                break;
+                                            case "seasons":
+                                                seasons = reader.nextInt();
+                                                break;
+                                            case "episodes":
+                                                episodes = reader.nextInt();
+                                                break;
+                                            case "comments":
+                                                comments = reader.nextInt();
+                                                break;
+                                            case "progress":
+                                                progress = (float) reader.nextDouble();
+                                                break;
+                                            case "episodes_to_watch":
+                                                episodesToWatch = reader.nextInt();
+                                                break;
+                                            case "time_on_tv":
+                                                timeOnTv = reader.nextInt();
+                                                break;
+                                            case "time_to_spend":
+                                                timeToSpend = reader.nextInt();
+                                                break;
+                                            default:
+                                                reader.skipValue();
+                                                break;
+                                        }
+                                    }
+
+                                    reader.endObject();
+
+                                    break;
+                                case "shows":
+                                    // On arrive dans le trajet
+                                    reader.beginArray();
+                                    while (reader.hasNext()) {
+                                        showsList.add(readShow(reader));
+                                    }
+                                    reader.endArray();
+
+                                    break;
+                                default:
+                                    reader.skipValue();
+                                    break;
+                            }
+
                         }
+
 
                     }
 
+                    reader.endObject();
 
-                }
-
-                reader.endObject();
-
-            } else if (value.equals("error")) {
-                reader.skipValue();
-            } else
-                reader.skipValue();
+                    break;
+                case "error":
+                    reader.skipValue();
+                    break;
+                default:
+                    reader.skipValue();
+                    break;
+            }
 
         }
         reader.endObject();
