@@ -35,7 +35,9 @@ public class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         return mIcon11;
     }
 
+    //@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     protected void onPostExecute(Bitmap result) {
         bmImage.setImageBitmap(result);
+        //bmImage.setBackground(null);
     }
 }

@@ -18,7 +18,7 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/ic_launcher_st"
         android:label="@string/app_name"
         android:theme="@style/MyCustomTheme">
 
@@ -41,6 +41,14 @@
 
         <service
             android:name=".episodes.planning.PlanningService"
+            android:exported="false" />
+
+        <service
+            android:name=".episodes.episodes.EpisodesService"
+            android:exported="false" />
+
+        <service
+            android:name=".user.UserService"
             android:exported="false" />
 
     </application>

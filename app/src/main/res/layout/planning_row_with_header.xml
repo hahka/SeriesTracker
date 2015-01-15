@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_height="fill_parent"
     android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
     android:orientation="vertical"
     android:paddingTop="10dp">
 
     <TextView
+        android:id="@+id/headerTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="@string/planning_header_text_view"
-        android:id="@+id/headerTextView"
         android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"/>
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:text="@string/planning_header_text_view"
+        android:textAppearance="?android:attr/textAppearanceMedium"/>
 
     <View
         android:layout_width="fill_parent"
@@ -23,41 +23,45 @@
     <GridLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:columnCount="2"
+        android:columnCount="3"
         android:rowCount="2">
 
 
         <TextView
+            android:id="@+id/dateTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="07/01"
-            android:id="@+id/dateTextView"
-            android:layout_row="0"
             android:layout_column="0"
             android:layout_gravity="center_vertical|start"
+            android:layout_row="0"
+            android:layout_rowSpan="2"
             android:width="60dp"
-            android:layout_rowSpan="2" />
+            android:text="07/01"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
 
         <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Show&apos;s Title"
             android:id="@+id/showTitleTextView"
-            android:layout_row="0"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:layout_column="1"
+            android:layout_columnSpan="2"
+            android:layout_gravity="fill_horizontal"
+            android:layout_row="0"
+            android:text="Show&apos;s Title"
+            android:textAppearance="?android:attr/textAppearanceMedium"
             android:textStyle="bold" />
 
         <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="S01E01 - Title"
             android:id="@+id/episodeDetailsTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_column="1"
+            android:layout_columnSpan="2"
+            android:layout_gravity="fill_horizontal"
             android:layout_row="1"
-            android:layout_column="1" />
+            android:text="S01E01 - Title"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
     </GridLayout>
 
 </LinearLayout>

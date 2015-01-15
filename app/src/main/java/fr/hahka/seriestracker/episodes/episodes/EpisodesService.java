@@ -1,4 +1,4 @@
-package fr.hahka.seriestracker.episodes.planning;
+package fr.hahka.seriestracker.episodes.episodes;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -19,38 +19,38 @@ import fr.hahka.seriestracker.utilitaires.Config;
  * Created by thibautvirolle on 14/01/15.
  * Service pour récupérer le planning
  */
-public class PlanningService extends IntentService {
+public class EpisodesService extends IntentService {
 
-    public PlanningService() {
-        super("Planning Service");
+    public EpisodesService() {
+        super("Episode Service");
     }
 
-    public PlanningService(String name) {
+    public EpisodesService(String name) {
         super(name);
     }
 
     @Override
     protected void onHandleIntent(Intent workIntent) {
 
-        ArrayList<Planning> planningList;
+        ArrayList<Episode> episodesList;
         Bundle bundle = new Bundle();
         final ResultReceiver receiver = workIntent.getParcelableExtra("receiver");
 
-        String userId = workIntent.getStringExtra(Config.USER_ID);
+        String showId = workIntent.getStringExtra(Config.SHOW_ID);
         String token = workIntent.getStringExtra(Config.TOKEN);
         // Récupération du planning de l'utilisateur connecté
-        HttpGet httpget = new HttpGet("https://api.betaseries.com/planning/member?id=" + userId + "&token=" + token + "&key=" + Config.API_KEY);
+        HttpGet httpget = new HttpGet("https://api.betaseries.com/shows/episodes?id=" + showId + "&token=" + token + "&key=" + Config.API_KEY);
 
         try {
             HttpClient httpclient = new DefaultHttpClient();
             HttpResponse response = httpclient.execute(httpget);
             InputStream is = response.getEntity().getContent();
 
-            planningList = PlanningJsonParser.readUserPlanningJsonStream(is);
+            episodesList = EpisodesJsonParser.readShowEpisodesJsonStream(is);
 
             is.close();
 
-            bundle.putParcelableArrayList(Config.PLANNING_LIST, planningList);
+            bundle.putParcelableArrayList(Config.EPISODES_LIST, episodesList);
             receiver.send(Config.STATUS_FINISHED, bundle);
 
         } catch (Exception e) {

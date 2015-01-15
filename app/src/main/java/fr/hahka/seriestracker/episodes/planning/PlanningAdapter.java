@@ -1,7 +1,6 @@
 package fr.hahka.seriestracker.episodes.planning;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,11 +60,11 @@ public class PlanningAdapter extends BaseAdapter {
 
         int headerIndice = episode.getHeaderIndice();
 
-        Log.d(TAG,episode.getTitle()+ " : " +episode.getCurrentDayOfWeek() + "/" +episode.getIndice()+"/"+headerIndice);
+        //Log.d(TAG,episode.getTitle()+ " : " +episode.getCurrentDayOfWeek() + "/" +episode.getIndice()+"/"+headerIndice);
 
         if(position == 0) {
             view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.planning_row_with_header, viewGroup, false);
-            Log.d(TAG,"First row");
+            //Log.d(TAG,"First row");
             TextView headerTextView = (TextView) view.findViewById(R.id.headerTextView);
             headerTextView.setText(headerList[headerIndice]);
 
@@ -73,14 +72,14 @@ public class PlanningAdapter extends BaseAdapter {
 
             String header = episode.getHeader();
             if(!(header == null)) {
-                Log.d(TAG,"With header");
+                //Log.d(TAG,"With header");
                 view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.planning_row_with_header, viewGroup, false);
 
                 TextView headerTextView = (TextView) view.findViewById(R.id.headerTextView);
                 headerTextView.setText(header);
 
             } else {
-                Log.d(TAG,"Without header");
+                //Log.d(TAG,"Without header");
                 view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.planning_row, viewGroup, false);
             }
 

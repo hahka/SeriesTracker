@@ -20,11 +20,12 @@
         <ImageView
             android:id="@+id/avatarImageView"
             android:layout_width="100dp"
-            android:layout_height="125dp"
+            android:layout_height="128dp"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_below="@+id/profileTitleTextView"
             android:layout_gravity="center_horizontal|top"
+            android:background="@drawable/avatar"
             android:contentDescription="Photo de profile" />
 
         <ProgressBar
@@ -86,6 +87,9 @@
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
     </RelativeLayout>
+
+
+    <include layout="@layout/progress_bar_layout"/>
 
 
 </RelativeLayout>

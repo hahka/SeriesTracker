@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">SeriesTracker</string>
+    <string name="app_name">Series Tracker</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_settings">Paramètres</string>
@@ -52,5 +52,14 @@
         <item>DANS 3 MOIS</item>
         <item>PLUS TARD…</item>
     </string-array>
+
+
+    <integer-array name="google_colors">
+        <item>@color/red</item>
+        <item>@color/blue</item>
+        <item>@color/yellow</item>
+        <item>@color/green</item>
+    </integer-array>
+
 
 </resources>

@@ -19,6 +19,7 @@ import java.util.ArrayList;
 
 import fr.hahka.seriestracker.R;
 import fr.hahka.seriestracker.episodes.episodes.EpisodesActivity;
+import fr.hahka.seriestracker.utilitaires.Config;
 
 /**
  * Created by thibautvirolle on 07/12/14.
@@ -130,8 +131,8 @@ public class ShowsAdapter extends BaseAdapter {
                 Intent userShowEpisodesIntent;
                 userShowEpisodesIntent = new Intent(context, EpisodesActivity.class);
                 userShowEpisodesIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                userShowEpisodesIntent.putExtra("showId", showId);
-                userShowEpisodesIntent.putExtra("token", token);
+                userShowEpisodesIntent.putExtra(Config.SHOW_ID, showId);
+                userShowEpisodesIntent.putExtra(Config.TOKEN, token);
                 context.startActivity(userShowEpisodesIntent);
 
             }

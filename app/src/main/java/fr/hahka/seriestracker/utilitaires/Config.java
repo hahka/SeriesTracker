@@ -11,10 +11,17 @@ public class Config {
     public static final String USER_ID = "user_id";
     public static final String TOKEN = "token";
     public static final String USER = "user";
+    public static final String SHOW_ID = "show_id";
 
     public static final String PLANNING_LIST = "planning_list";
+    public static final String EPISODES_LIST = "episodes_list";
 
     public static final int AUTH_REQUEST_CODE = 0;
+
+
+    public static final int STATUS_RUNNING = 0;
+    public static final int STATUS_FINISHED = 1;
+    public static final int STATUS_ERROR = 2;
 
 }
 

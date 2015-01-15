@@ -4,8 +4,8 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
@@ -13,23 +13,18 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Toast;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-
-import java.io.InputStream;
 import java.util.ArrayList;
 
+import fr.hahka.seriestracker.DownloadResultReceiver;
 import fr.hahka.seriestracker.R;
 import fr.hahka.seriestracker.utilitaires.Config;
-import fr.hahka.seriestracker.utilitaires.JsonParser;
 import fr.hahka.seriestracker.utilitaires.UserInterface;
 
 import static fr.hahka.seriestracker.R.drawable.ic_shows;
 
-public class EpisodesActivity extends Activity {
+public class EpisodesActivity extends Activity implements DownloadResultReceiver.Receiver{
 
     ViewPager viewPager;
     MyPagerAdapter myPagerAdapter;
@@ -53,53 +48,35 @@ public class EpisodesActivity extends Activity {
         mContentView = findViewById(R.id.episodesListContainer);
         mProgressView = findViewById(R.id.loadingContainer);
 
-        Intent callingIntent = getIntent();
-        String showId = callingIntent.getStringExtra("showId");
-        String token = callingIntent.getStringExtra("token");
-
-        API request = new API("https://api.betaseries.com/shows/episodes?id=" + showId + "&token=" + token + "&key=" + Config.API_KEY);
-        request.execute((Void) null);
         UserInterface.showProgress(true, mContentView, mProgressView);
+
+        DownloadResultReceiver mReceiver = new DownloadResultReceiver(new Handler());
+        mReceiver.setReceiver(this);
+        Intent intent = new Intent(Intent.ACTION_SYNC, null, getApplicationContext(), EpisodesService.class);
+
+        Intent callingIntent = getIntent();
+        String showId = callingIntent.getStringExtra(Config.SHOW_ID);
+        String token = callingIntent.getStringExtra(Config.TOKEN);
+
+        /* Send optional extras to Download IntentService */
+        intent.putExtra("receiver", mReceiver);
+        intent.putExtra(Config.SHOW_ID, showId);
+        intent.putExtra(Config.TOKEN, token);
+        intent.putExtra("requestId", 101);
+
+        startService(intent);
 
     }
 
-    private class API extends AsyncTask<Void, Void, Boolean> {
+    @Override
+    public void onReceiveResult(int resultCode, Bundle resultData) {
 
-        private String target = "";
+        switch (resultCode) {
+            case Config.STATUS_RUNNING:
+                break;
+            case Config.STATUS_FINISHED:
 
-        public API(String pTarget) {
-            this.target = pTarget;
-        }
-
-
-        @Override
-        protected Boolean doInBackground(Void... voids) {
-
-            HttpGet httpget = new HttpGet(target);
-
-            try {
-                HttpClient httpclient = new DefaultHttpClient();
-
-                HttpResponse response = httpclient.execute(httpget);
-                InputStream is = response.getEntity().getContent();
-
-                userShowEpisodesList = JsonParser.readShowEpisodesJsonStream(is);
-
-                is.close();
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            return (!userShowEpisodesList.isEmpty());
-
-        }
-
-
-        @Override
-        protected void onPostExecute(final Boolean success) {
-
-            if (success) {
+                userShowEpisodesList = resultData.getParcelableArrayList(Config.EPISODES_LIST);
 
                 viewPager = (ViewPager) findViewById(R.id.myviewpager);
                 myPagerAdapter = new MyPagerAdapter(getApplicationContext(), userShowEpisodesList);
@@ -107,15 +84,14 @@ public class EpisodesActivity extends Activity {
 
                 UserInterface.showProgress(false, mContentView, mProgressView);
 
-            }
 
+                break;
+            case Config.STATUS_ERROR:
+
+                String error = resultData.getString(Intent.EXTRA_TEXT);
+                Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG).show();
+                break;
         }
-
-        @Override
-        protected void onCancelled() {
-            // TODO : annulation requête
-        }
-
 
     }
 

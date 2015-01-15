@@ -155,7 +155,8 @@ public class DrawerActivity extends Activity {
             case 0:
                 fragment = new UserFragment();
                 bundle = new Bundle();
-                bundle.putParcelable(Config.USER, user);
+                bundle.putString(Config.TOKEN, token);
+                bundle.putString(Config.USER_ID, userId);
                 fragment.setArguments(bundle);
                 if(ab != null) {
                     //ab.setIcon(R.drawable.ic_profile);
@@ -177,7 +178,8 @@ public class DrawerActivity extends Activity {
                 fragment = new ShowsFragment();
                 bundle = new Bundle();
                 bundle.putString(Config.TOKEN, token);
-                bundle.putParcelable(Config.USER, user);
+                //bundle.putParcelable(Config.USER, user);
+                bundle.putString(Config.USER_ID, userId);
                 fragment.setArguments(bundle);
                 if(ab != null) {
                     //ab.setIcon(R.drawable.ic_shows);

@@ -14,5 +14,10 @@
 
     <color name="text_background">#e6f0f8</color>
 
+    <color name="red">#FFC93437</color>
+    <color name="blue">#FF375BF1</color>
+    <color name="yellow">#FFF7D23E</color>
+    <color name="green">#FF34A350</color>
+
 
 </resources>

@@ -9,7 +9,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.JsonReader;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -24,7 +23,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
@@ -34,10 +32,10 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.hahka.seriestracker.user.User;
 import fr.hahka.seriestracker.utilitaires.Config;
-import fr.hahka.seriestracker.utilitaires.JsonParser;
 import fr.hahka.seriestracker.utilitaires.UserInterface;
+
+import static fr.hahka.seriestracker.utilitaires.Miscellaneous.md5;
 
 
 /**
@@ -210,14 +208,10 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         String token = null;
         int error = -1;
 
-        User user;
-
 
         UserLoginTask(String email, String password) {
-            //mEmail = email;
-            //mPassword = md5(password);
-            mEmail = "PH16";
-            mPassword = "f447df8362a4d0d9f5142f563595684b";
+            mEmail = email;
+            mPassword = md5(password);
         }
 
         @Override
@@ -226,7 +220,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             userId = null;
             token = null;
 
-            Log.d(TAG,"début connection");
+            //Log.d(TAG,"début connection");
 
             HttpPost httppost = new HttpPost("https://api.betaseries.com/members/auth");
             List<NameValuePair> postParameters = new ArrayList<>();
@@ -252,17 +246,16 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                 reader.beginObject();
                 while (reader.hasNext() && (reader.peek().toString().equals("NAME"))) {
                     String value = reader.nextName();
-                    Log.d(TAG,"------------------"+value);
                     switch (value) {
                         case "user":
                             reader.beginObject();
                             while (reader.hasNext()) {
                                 value = reader.nextName();
-                                Log.d(TAG, value);
+                                //Log.d(TAG, value);
                                 if (value.equals("id")) {
 
                                     userId = String.valueOf(reader.nextInt());
-                                    Log.d(TAG, String.valueOf(userId));
+                                    //Log.d(TAG, String.valueOf(userId));
 
                                 } else {
                                     reader.skipValue();
@@ -272,7 +265,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                             break;
                         case "token":
                             token = reader.nextString();
-                            Log.d(TAG, token);
+                            //Log.d(TAG, token);
                             break;
                         case "errors":
                             reader.beginArray();
@@ -308,24 +301,6 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                 e.printStackTrace();
             }
 
-            // Récupération des informations du membre
-            HttpGet httpget = new HttpGet("https://api.betaseries.com/members/infos?id=" + userId + "&only=shows" + "&token=" + token + "&key=" + Config.API_KEY);
-
-            try {
-
-                HttpClient httpclient = new DefaultHttpClient();
-                HttpResponse response = httpclient.execute(httpget);
-                InputStream is = response.getEntity().getContent();
-
-                user = JsonParser.readUserJsonStream(is);
-
-                is.close();
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            Log.d(TAG, "infos ok");
 
             return (userId != null);
         }
@@ -340,7 +315,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                 Intent returnIntent = new Intent();
                 returnIntent.putExtra(Config.USER_ID, userId);
                 returnIntent.putExtra(Config.TOKEN, token);
-                returnIntent.putExtra(Config.USER, user);
+                //returnIntent.putExtra(Config.USER, user);
                 setResult(RESULT_OK, returnIntent);
                 finish();
             } else {
