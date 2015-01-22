@@ -5,7 +5,8 @@ package fr.hahka.seriestracker.utilitaires;
  * Fichier de configuration pour des variables accessibles depuis plusieurs classes.
  */
 public class Config {
-    public static final String API_KEY = "a5c7abbec94a";
+    public static final String BETASERIES_API_KEY = "a5c7abbec94a";
+    public static final String THETVDB_API_KEY = "5A2625842D0FB89C";
 
 
     public static final String USER_ID = "user_id";
@@ -15,6 +16,7 @@ public class Config {
 
     public static final String PLANNING_LIST = "planning_list";
     public static final String EPISODES_LIST = "episodes_list";
+    public static final String SHOWS_LIST = "shows_list";
 
     public static final int AUTH_REQUEST_CODE = 0;
 

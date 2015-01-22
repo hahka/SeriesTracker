@@ -45,7 +45,6 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
     final private static int NO_USER_FOUND = 4002;
     final private static int INVALID_PASSWORD = 4003;
-    private static String TAG = LoginActivity.class.getSimpleName();
     private UserLoginTask mAuthTask = null;
 
     // UI references.
@@ -228,7 +227,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             //Et on y rajoute nos paramètres
             postParameters.add(new BasicNameValuePair("login", mEmail));
             postParameters.add(new BasicNameValuePair("password", mPassword));
-            postParameters.add(new BasicNameValuePair("key", Config.API_KEY));
+            postParameters.add(new BasicNameValuePair("key", Config.BETASERIES_API_KEY));
 
 
             // Parsing json

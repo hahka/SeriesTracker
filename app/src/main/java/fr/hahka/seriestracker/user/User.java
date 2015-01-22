@@ -5,7 +5,6 @@ import android.os.Parcelable;
 
 import java.util.ArrayList;
 
-import fr.hahka.seriestracker.shows.Show;
 import fr.hahka.seriestracker.shows.SimpleShow;
 
 /**
@@ -38,7 +37,7 @@ public class User implements Parcelable {
     private int episodesToWatch;
     private int timeOnTv;
     private int timeToSpend;
-    private ArrayList<Show> showsList;
+    private ArrayList<SimpleShow> showsList;
 
     public User(String login, int id, int friends, int badges,
                 int seasons, int episodes, int comments, float progress,
@@ -175,11 +174,11 @@ public class User implements Parcelable {
         this.timeToSpend = timeToSpend;
     }
 
-    public ArrayList<Show> getShowsList() {
+    public ArrayList<SimpleShow> getShowsList() {
         return showsList;
     }
 
-    public void setShowsList(ArrayList<Show> showsList) {
+    public void setShowsList(ArrayList<SimpleShow> showsList) {
         this.showsList = showsList;
     }
 

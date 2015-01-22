@@ -17,7 +17,6 @@ import fr.hahka.seriestracker.R;
  */
 public class PlanningAdapter extends BaseAdapter {
 
-    private static String TAG = PlanningAdapter.class.getSimpleName();
     ArrayList<Planning> episodesList = new ArrayList<>();
     private String[] headerList;
 
@@ -60,11 +59,9 @@ public class PlanningAdapter extends BaseAdapter {
 
         int headerIndice = episode.getHeaderIndice();
 
-        //Log.d(TAG,episode.getTitle()+ " : " +episode.getCurrentDayOfWeek() + "/" +episode.getIndice()+"/"+headerIndice);
 
         if(position == 0) {
             view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.planning_row_with_header, viewGroup, false);
-            //Log.d(TAG,"First row");
             TextView headerTextView = (TextView) view.findViewById(R.id.headerTextView);
             headerTextView.setText(headerList[headerIndice]);
 
@@ -72,14 +69,12 @@ public class PlanningAdapter extends BaseAdapter {
 
             String header = episode.getHeader();
             if(!(header == null)) {
-                //Log.d(TAG,"With header");
                 view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.planning_row_with_header, viewGroup, false);
 
                 TextView headerTextView = (TextView) view.findViewById(R.id.headerTextView);
                 headerTextView.setText(header);
 
             } else {
-                //Log.d(TAG,"Without header");
                 view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.planning_row, viewGroup, false);
             }
 

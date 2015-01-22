@@ -85,8 +85,9 @@ public class UserFragment extends Fragment implements DownloadResultReceiver.Rec
                 avancementTextView.setText(user.getProgress() + "% : " + user.getEpisodesToWatch() + " ÉPISODES À REGARDER");
 
 
-                new DownloadImageTask((ImageView) rootView.findViewById(R.id.avatarImageView))
-                        .execute(user.getAvatar());
+                String urlAvatar;
+                if((urlAvatar = user.getAvatar()).length() > 1)
+                    new DownloadImageTask((ImageView) rootView.findViewById(R.id.avatarImageView)).execute(urlAvatar);
 
 
                 UserInterface.showProgress(false, mContentView, mProgressView);

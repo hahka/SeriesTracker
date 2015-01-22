@@ -20,7 +20,6 @@ import java.util.ArrayList;
 
 import fr.hahka.seriestracker.LoginActivity;
 import fr.hahka.seriestracker.R;
-import fr.hahka.seriestracker.episodes.episodes.Episode;
 import fr.hahka.seriestracker.episodes.planning.PlanningFragment;
 import fr.hahka.seriestracker.shows.ShowsFragment;
 import fr.hahka.seriestracker.user.User;
@@ -38,7 +37,7 @@ public class DrawerActivity extends Activity {
     private static String userId;
     private static String token;
     private static User user;
-    private static ArrayList<Episode> planningList;
+    //private static ArrayList<Episode> planningList;
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -159,7 +158,6 @@ public class DrawerActivity extends Activity {
                 bundle.putString(Config.USER_ID, userId);
                 fragment.setArguments(bundle);
                 if(ab != null) {
-                    //ab.setIcon(R.drawable.ic_profile);
                     ab.setIcon(null);
                 }
                 break;
@@ -170,7 +168,6 @@ public class DrawerActivity extends Activity {
                 bundle.putString(Config.USER_ID, userId);
                 fragment.setArguments(bundle);
                 if(ab != null) {
-                    //ab.setIcon(R.drawable.ic_planning);
                     ab.setIcon(null);
                 }
                 break;
@@ -182,7 +179,6 @@ public class DrawerActivity extends Activity {
                 bundle.putString(Config.USER_ID, userId);
                 fragment.setArguments(bundle);
                 if(ab != null) {
-                    //ab.setIcon(R.drawable.ic_shows);
                     ab.setIcon(null);
                 }
                 break;

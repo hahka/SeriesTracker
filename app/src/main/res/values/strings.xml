@@ -41,6 +41,7 @@
 
 
     <string-array name="header_items">
+        <item>IL Y A 2 SEMAINES</item>
         <item>LA SEMAINE DERNIÈRE</item>
         <item>CETTE SEMAINE</item>
         <item>LA SEMAINE PROCHAINE</item>

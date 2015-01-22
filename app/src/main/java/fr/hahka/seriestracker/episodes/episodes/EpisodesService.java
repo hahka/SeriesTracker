@@ -39,7 +39,7 @@ public class EpisodesService extends IntentService {
         String showId = workIntent.getStringExtra(Config.SHOW_ID);
         String token = workIntent.getStringExtra(Config.TOKEN);
         // Récupération du planning de l'utilisateur connecté
-        HttpGet httpget = new HttpGet("https://api.betaseries.com/shows/episodes?id=" + showId + "&token=" + token + "&key=" + Config.API_KEY);
+        HttpGet httpget = new HttpGet("https://api.betaseries.com/shows/episodes?id=" + showId + "&token=" + token + "&key=" + Config.BETASERIES_API_KEY);
 
         try {
             HttpClient httpclient = new DefaultHttpClient();

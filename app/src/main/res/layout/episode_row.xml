@@ -37,6 +37,7 @@
         android:layout_alignBottom="@+id/isSeenImageButton"
         android:layout_alignParentTop="true"
         android:layout_gravity="center_horizontal"
+        android:layout_toEndOf="@+id/episodeSeparatorTextView"
         android:layout_toLeftOf="@+id/isSeenImageButton"
         android:layout_toRightOf="@+id/episodeSeparatorTextView"
         android:layout_toStartOf="@+id/isSeenImageButton"
@@ -67,7 +68,8 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:background="@drawable/ic_check_box_black" />
+        android:background="@drawable/ic_check_box_black"
+        android:contentDescription="" />
 
 
 </RelativeLayout>

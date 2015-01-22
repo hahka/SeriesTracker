@@ -8,13 +8,13 @@ import android.widget.ImageView;
 
 import java.io.InputStream;
 
+import static fr.hahka.seriestracker.utilitaires.images.BitmapTasks.fillViewWithBitmap;
+
 /**
  * Created by thibautvirolle on 07/01/15.
  * AsyncTack pour télécharger une image à partir d'un lien
  */
 public class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
-
-    //private static final String TAG = DownloadImageTask.class.getSimpleName();
 
     ImageView bmImage;
 
@@ -25,19 +25,22 @@ public class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
     protected Bitmap doInBackground(String... urls) {
         String urldisplay = urls[0];
         Bitmap mIcon11 = null;
-        try {
-            InputStream in = new java.net.URL(urldisplay).openStream();
-            mIcon11 = BitmapFactory.decodeStream(in);
-        } catch (Exception e) {
-            Log.e("Error", e.getMessage());
-            e.printStackTrace();
+        if(urldisplay != null) {
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
         }
+
         return mIcon11;
     }
 
-    //@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     protected void onPostExecute(Bitmap result) {
-        bmImage.setImageBitmap(result);
-        //bmImage.setBackground(null);
+
+        fillViewWithBitmap(bmImage,result);
+
     }
 }

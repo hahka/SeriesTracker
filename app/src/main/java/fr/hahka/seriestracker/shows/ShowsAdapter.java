@@ -4,22 +4,26 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
-import android.support.v4.util.LruCache;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
+import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 
 import fr.hahka.seriestracker.R;
 import fr.hahka.seriestracker.episodes.episodes.EpisodesActivity;
 import fr.hahka.seriestracker.utilitaires.Config;
+import fr.hahka.seriestracker.utilitaires.images.BitmapTasks;
+
+import static fr.hahka.seriestracker.utilitaires.images.BitmapTasks.loadBitmap;
 
 /**
  * Created by thibautvirolle on 07/12/14.
@@ -28,58 +32,23 @@ import fr.hahka.seriestracker.utilitaires.Config;
 public class ShowsAdapter extends BaseAdapter {
 
     private static String TAG = ShowsAdapter.class.getSimpleName();
-    private ArrayList<Show> showsList = new ArrayList<>();
+    private ArrayList<SimpleShow> showsList = new ArrayList<>();
     private Context context;
     private String token;
 
-    private LruCache<String, Bitmap> mMemoryCache;
 
-    public ShowsAdapter(Context context, ArrayList<Show> liste, String token) {
+    public ShowsAdapter(Context context, ArrayList<SimpleShow> liste, String token) {
         this.context = context;
         this.showsList = liste;
         this.token = token;
 
+        BitmapTasks.setCache();
 
-        // Get max available VM memory, exceeding this amount will throw an
-        // OutOfMemory exception. Stored in kilobytes as LruCache takes an
-        // int in its constructor.
-        final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+        Bitmap fond = BitmapFactory.decodeResource(context.getResources(),R.drawable.blackground);
+        Log.d(TAG,"fond : "+fond.getWidth()+"/"+fond.getHeight());
+        BitmapTasks.addBitmapToMemoryCache("blackground", fond);
 
-        // Use 1/8th of the available memory for this memory cache.
-        final int cacheSize = maxMemory / 8;
 
-        mMemoryCache = new LruCache<String, Bitmap>(cacheSize) {
-            @Override
-            protected int sizeOf(String key, Bitmap bitmap) {
-                // The cache size will be measured in kilobytes rather than
-                // number of items.
-                return bitmap.getByteCount() / 1024;
-            }
-        };
-    }
-
-    public void addBitmapToMemoryCache(String key, Bitmap bitmap) {
-        if (getBitmapFromMemCache(key) == null) {
-            mMemoryCache.put(key, bitmap);
-        }
-    }
-
-    public Bitmap getBitmapFromMemCache(String key) {
-        return mMemoryCache.get(key);
-    }
-
-    public void loadBitmap(String key, ImageView mImageView) {
-
-        final Bitmap bitmap = getBitmapFromMemCache(key);
-        if (bitmap != null) {
-            mImageView.setImageBitmap(bitmap);
-            Log.d(TAG,"bitmap found");
-        } else {
-            mImageView.setImageResource(R.drawable.ic_launcher);
-            BitmapWorkerTask task = new BitmapWorkerTask(mImageView);
-            task.execute("http://cdn.betaseries.com//betaseries//images//fonds//original//1275_1362361611.jpg");
-            Log.d(TAG,"bitmap downloaded");
-        }
     }
 
     @Override
@@ -88,7 +57,7 @@ public class ShowsAdapter extends BaseAdapter {
     }
 
     @Override
-    public Show getItem(int position) {
+    public SimpleShow getItem(int position) {
         return showsList.get(position);
     }
 
@@ -99,24 +68,59 @@ public class ShowsAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View view, ViewGroup viewGroup) {
-        final Show show = getItem(position);
+        final SimpleShow show = getItem(position);
 
         if (view == null) {
             view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.show_row, viewGroup, false);
         }
 
-        TextView titletv = (TextView) view.findViewById(R.id.showTitleTextView);
-        titletv.setText(show.getTitle());
-
         ImageView showImageView = (ImageView) view.findViewById(R.id.showImageView);
 
-        /*new DownloadImageTask(showImageView)
-                .execute("http://cdn.betaseries.com//betaseries//images//fonds//original//1275_1362361611.jpg");*/
+        if(show.getUrl() != null) {
 
-        //Log.d(TAG,"Image downloaded");
+            //new DownloadImageTask(showImageView).execute(show.getUrl());
 
-        loadBitmap("http://cdn.betaseries.com//betaseries//images//fonds//original//1275_1362361611.jpg",showImageView);
-        //loadBitmap(String.valueOf(show.getId()),showImageView);
+            //showImageView.setVisibility(View.VISIBLE);
+            loadBitmap(String.valueOf(show.getId()),show.getUrl(),showImageView);
+
+        } else {
+            TextView titletv = (TextView) view.findViewById(R.id.showTitleTextView);
+            titletv.setText(show.getTitle());
+            titletv.setVisibility(View.VISIBLE);
+
+            //showImageView.setVisibility(View.GONE);
+            loadBitmap("blackground",null,showImageView);
+
+            //fillViewWithBitmap(showImageView,fond);
+        }
+
+        Display display = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+        int rotationEcran = display.getRotation();
+        // Et positionner ainsi le nombre de degrés de rotation
+        if(rotationEcran == Surface.ROTATION_90 || rotationEcran == Surface.ROTATION_270) {
+
+            ProgressBar statusProgressBar = (ProgressBar) view.findViewById(R.id.statusProgressBar);
+            statusProgressBar.setProgress((int)show.getStatus());
+
+            TextView remainingTextView = (TextView) view.findViewById(R.id.remainingTextView);
+            int remaining = show.getRemaining();
+            float status = show.getStatus();
+            if(remaining == 0) {
+                if(status == 100)
+                    remainingTextView.setText("Série terminée");
+                else
+                    remainingTextView.setText("Diffusion prochaine");
+            }
+            else if (remaining == 1) {
+                remainingTextView.setText("1 épisode restant");
+            }
+            else {
+                remainingTextView.setText(show.getRemaining() + " épisodes restants");
+            }
+
+
+        }
+
 
 
         TextView idtv = (TextView) view.findViewById(R.id.showIdTextView);
@@ -142,38 +146,6 @@ public class ShowsAdapter extends BaseAdapter {
         return view;
     }
 
-    class BitmapWorkerTask extends AsyncTask<String, Void, Bitmap> {
 
-
-        ImageView bmImage;
-
-        public BitmapWorkerTask(ImageView bmImage) {
-            this.bmImage = bmImage;
-        }
-
-        // Decode image in background.
-        @Override
-        protected Bitmap doInBackground(String... urls) {
-            Bitmap bitmap = null;
-            try {
-                InputStream in = new java.net.URL(urls[0]).openStream();
-
-                bitmap = BitmapFactory.decodeStream(in);
-                addBitmapToMemoryCache(urls[0], bitmap);
-            } catch (Exception e) {
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
-            }
-
-
-            return bitmap;
-        }
-
-        protected void onPostExecute(Bitmap result) {
-
-            bmImage.setImageBitmap(result);
-        }
-
-    }
 }
 

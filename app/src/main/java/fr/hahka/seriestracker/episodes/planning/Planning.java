@@ -148,30 +148,33 @@ public class Planning extends AbstractEpisode implements Parcelable{
 
         long indice = getIndice();
 
-        if(indice < 1) {
+
+        if(indice < -7) {
             return 0;
-        } else if(indice <7) {
+        } else if(indice < 0) {
             return 1;
-        } else if(indice < 14) {
+        } else if(indice < 7) {
             return 2;
-        } else if(indice < 21) {
+        } else if(indice < 14) {
             return 3;
-        } else if(indice < 28) {
+        } else if(indice < 21) {
             return 4;
+        } else if(indice < 28) {
+            return 5;
         } else {
             int currentMonth = getCurrentMonth();
             int episodeMonth = getMois();
 
             if(currentMonth == episodeMonth) {
-                return 5;
-            } else if(currentMonth == episodeMonth -1) {
                 return 6;
-            } else if(currentMonth == episodeMonth -2) {
+            } else if(currentMonth == episodeMonth -1) {
                 return 7;
-            } else if(currentMonth == episodeMonth -3) {
+            } else if(currentMonth == episodeMonth -2) {
                 return 8;
-            } else {
+            } else if(currentMonth == episodeMonth -3) {
                 return 9;
+            } else {
+                return 10;
             }
 
         }

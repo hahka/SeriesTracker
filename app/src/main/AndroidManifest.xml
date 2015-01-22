@@ -48,6 +48,10 @@
             android:exported="false" />
 
         <service
+            android:name=".shows.ShowsService"
+            android:exported="false" />
+
+        <service
             android:name=".user.UserService"
             android:exported="false" />
 

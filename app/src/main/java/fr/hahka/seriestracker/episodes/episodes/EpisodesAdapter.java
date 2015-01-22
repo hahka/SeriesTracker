@@ -57,11 +57,12 @@ public class EpisodesAdapter extends BaseAdapter {
         TextView idtv = (TextView) view.findViewById(R.id.episodeIdTextView);
         idtv.setText(String.valueOf(episode.getId()));
 
+
+        ImageButton isSeenImageButton = (ImageButton) view.findViewById(R.id.isSeenImageButton);
+
         if (!episode.isSeen()) {
-            ImageButton isSeenImageButton = (ImageButton) view.findViewById(R.id.isSeenImageButton);
             isSeenImageButton.setBackgroundResource(R.drawable.ic_check_box_outline_blank_black);
         } else {
-            ImageButton isSeenImageButton = (ImageButton) view.findViewById(R.id.isSeenImageButton);
             isSeenImageButton.setBackgroundResource(R.drawable.ic_check_box_black);
         }
 

@@ -38,8 +38,9 @@ public class PlanningService extends IntentService {
 
         String userId = workIntent.getStringExtra(Config.USER_ID);
         String token = workIntent.getStringExtra(Config.TOKEN);
+
         // Récupération du planning de l'utilisateur connecté
-        HttpGet httpget = new HttpGet("https://api.betaseries.com/planning/member?id=" + userId + "&token=" + token + "&key=" + Config.API_KEY);
+        HttpGet httpget = new HttpGet("https://api.betaseries.com/planning/member?id=" + userId + "&token=" + token + "&key=" + Config.BETASERIES_API_KEY);
 
         try {
             HttpClient httpclient = new DefaultHttpClient();

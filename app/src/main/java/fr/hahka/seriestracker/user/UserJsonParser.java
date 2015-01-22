@@ -1,4 +1,4 @@
-package fr.hahka.seriestracker.utilitaires;
+package fr.hahka.seriestracker.user;
 
 import android.util.JsonReader;
 import android.util.JsonToken;
@@ -8,71 +8,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-import fr.hahka.seriestracker.shows.Show;
-import fr.hahka.seriestracker.user.User;
+import fr.hahka.seriestracker.shows.SimpleShow;
+
+import static fr.hahka.seriestracker.shows.ShowsJsonParser.readSimpleShow;
 
 /**
- * Created by thibautvirolle on 10/11/14.
- * Classe pour parser les json récupérés grâce à l'API BetaSeries
+ * Created by thibautvirolle on 16/01/15.
+ * Parser Json pour l'objet User
  */
-public class JsonParser {
-
-    private static Show readShow(JsonReader reader) throws IOException {
-
-        int id = 0, seasons = 0, episodes = 0;
-        String title = "";
-        boolean favorited = false, archived = false;
-
-        reader.beginObject();
-
-        while (reader.hasNext()) {
-
-            String name = reader.nextName();
-            switch (name) {
-                case "id":
-                    id = reader.nextInt();
-                    break;
-                case "title":
-                    title = reader.nextString();
-                    break;
-                case "seasons":
-                    seasons = Integer.parseInt(reader.nextString());
-                    break;
-                case "episodes":
-                    episodes = Integer.parseInt(reader.nextString());
-                    break;
-                case "user":
-
-                    reader.beginObject();
-                    while (reader.hasNext()) {
-
-                        String nameBis = reader.nextName();
-                        switch (nameBis) {
-                            case "archived":
-                                archived = reader.nextBoolean();
-                                break;
-                            case "favorited":
-                                favorited = reader.nextBoolean();
-                                break;
-                            default:
-                                reader.skipValue();
-                                break;
-                        }
-                    }
-                    reader.endObject();
-
-
-                    break;
-                default:
-                    reader.skipValue();
-                    break;
-            }
-        }
-        reader.endObject();
-
-        return new Show(id, title, seasons, episodes, archived, favorited);
-    }
-
+public class UserJsonParser {
 
     public static User readUserJsonStream(InputStream in) throws IOException {
 
@@ -85,7 +29,7 @@ public class JsonParser {
 
         float progress = 0;
 
-        ArrayList<Show> showsList = new ArrayList<>();
+        ArrayList<SimpleShow> showsList = new ArrayList<>();
 
         reader.beginObject();
         while (reader.hasNext() && (reader.peek().toString().equals("NAME"))) {
@@ -129,6 +73,9 @@ public class JsonParser {
                                             case "seasons":
                                                 seasons = reader.nextInt();
                                                 break;
+                                            case "shows":
+                                                seasons = reader.nextInt();
+                                                break;
                                             case "episodes":
                                                 episodes = reader.nextInt();
                                                 break;
@@ -160,7 +107,7 @@ public class JsonParser {
                                     // On arrive dans le trajet
                                     reader.beginArray();
                                     while (reader.hasNext()) {
-                                        showsList.add(readShow(reader));
+                                        showsList.add(readSimpleShow(reader));
                                     }
                                     reader.endArray();
 
@@ -196,6 +143,5 @@ public class JsonParser {
 
         return user;
     }
-
 
 }

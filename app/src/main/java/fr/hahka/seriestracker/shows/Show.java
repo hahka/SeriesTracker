@@ -7,7 +7,7 @@ import android.os.Parcelable;
  * Created by thibautvirolle on 02/12/14.
  * Objet show
  */
-public class Show implements Parcelable {
+public class Show extends SimpleShow implements Parcelable {
 
     public static final Parcelable.Creator<Show> CREATOR = new Parcelable.Creator<Show>() {
         @Override
@@ -29,18 +29,17 @@ public class Show implements Parcelable {
     private boolean favorited;
 
     public Show(int id, String title, int seasons, int episodes, boolean archived, boolean favorited) {
-        this.id = id;
-        this.title = title;
+        super(id,title);
         this.seasons = seasons;
         this.episodes = episodes;
         this.archived = archived;
         this.favorited = favorited;
     }
 
+
     // Permet de recréer le show
     public Show(Parcel in) {
-        this.id = in.readInt();
-        this.title = in.readString();
+        super(in.readInt(),in.readInt(),in.readString());
         this.seasons = in.readInt();
         this.episodes = in.readInt();
         this.archived = (in.readByte() != 0);
