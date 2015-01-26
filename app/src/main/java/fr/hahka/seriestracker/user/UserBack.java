@@ -11,17 +11,17 @@ import fr.hahka.seriestracker.shows.SimpleShow;
  * Created by thibautvirolle on 04/01/15.
  * Objet User (pour le profil)
  */
-public class User implements Parcelable {
+public class UserBack implements Parcelable {
 
-    public static final Parcelable.Creator<User> CREATOR = new Parcelable.Creator<User>() {
+    public static final Creator<UserBack> CREATOR = new Creator<UserBack>() {
         @Override
-        public User createFromParcel(Parcel source) {
-            return new User(source);
+        public UserBack createFromParcel(Parcel source) {
+            return new UserBack(source);
         }
 
         @Override
-        public User[] newArray(int size) {
-            return new User[size];
+        public UserBack[] newArray(int size) {
+            return new UserBack[size];
         }
     };
     private String login;
@@ -39,9 +39,9 @@ public class User implements Parcelable {
     private int timeToSpend;
     private ArrayList<SimpleShow> showsList;
 
-    public User(String login, int id, int friends, int badges,
-                int seasons, int episodes, int comments, float progress,
-                int episodesToWatch, int timeOnTv, int timeToSpend, int xp, String avatar) {
+    public UserBack(String login, int id, int friends, int badges,
+                    int seasons, int episodes, int comments, float progress,
+                    int episodesToWatch, int timeOnTv, int timeToSpend, int xp, String avatar) {
         setLogin(login);
         setId(id);
         setFriends(friends);
@@ -57,7 +57,7 @@ public class User implements Parcelable {
         setXp(xp);
     }
 
-    public User(Parcel in) {
+    public UserBack(Parcel in) {
         this.login = in.readString();
         this.id = in.readInt();
         this.friends = in.readInt();
@@ -74,6 +74,7 @@ public class User implements Parcelable {
         this.timeOnTv = in.readInt();
         this.timeToSpend = in.readInt();
 
+        //this.showsList = in.readArrayList(Show.class.getClassLoader());
         this.showsList = in.readArrayList(SimpleShow.class.getClassLoader());
     }
 

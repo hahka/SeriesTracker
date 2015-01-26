@@ -64,17 +64,14 @@ public class ShowsService extends IntentService {
 
             for(SimpleShow show : showsList){
 
+                show.setUserId(Integer.parseInt(userId));
                 HttpGet httpgetImage = new HttpGet("http://thetvdb.com/api/"+Config.THETVDB_API_KEY+"/series/" + show.getThetvdbId());
 
                 HttpResponse showsPicturesService = httpclient.execute(httpgetImage);
 
                 InputStream is2 = showsPicturesService.getEntity().getContent();
 
-                /*BufferedReader r = new BufferedReader(new InputStreamReader(is2));
-                String line;
-                while ((line = r.readLine()) != null) {
-                    Log.d(TAG,line);
-                }*/
+                //DebugUtils.streamDebugger(is2);
 
                 String url = XmlParser.readBannerUrlFromXml(is2);
                 if(!url.equals(""))

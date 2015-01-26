@@ -47,12 +47,6 @@ public class UserService extends IntentService {
             HttpResponse response = httpclient.execute(httpget);
             InputStream is = response.getEntity().getContent();
 
-            /*BufferedReader r = new BufferedReader(new InputStreamReader(is));
-            String line;
-            while ((line = r.readLine()) != null) {
-                Log.d(TAG, line);
-            }*/
-
             user = readUserJsonStream(is);
 
             is.close();

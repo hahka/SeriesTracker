@@ -6,8 +6,10 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.ImageView;
 
+import java.io.IOException;
 import java.io.InputStream;
 
+import fr.hahka.seriestracker.utilitaires.images.AndroidBitmapUtil;
 import fr.hahka.seriestracker.utilitaires.images.BitmapTasks;
 
 import static fr.hahka.seriestracker.utilitaires.images.BitmapTasks.fillViewWithBitmap;
@@ -19,11 +21,17 @@ import static fr.hahka.seriestracker.utilitaires.images.BitmapTasks.fillViewWith
 public class BitmapWorkerTask extends AsyncTask<String, Void, android.graphics.Bitmap> {
 
     ImageView bmImage;
-        int width, height;
-        float imvRatio;
+    int width, height;
+    float imvRatio;
+    String key;
 
     public BitmapWorkerTask(ImageView bmImage) {
         this.bmImage = bmImage;
+    }
+
+    public BitmapWorkerTask(ImageView bmImage, String key) {
+        this.bmImage = bmImage;
+        this.key = key;
     }
 
 
@@ -57,9 +65,15 @@ public class BitmapWorkerTask extends AsyncTask<String, Void, android.graphics.B
 
         protected void onPostExecute(android.graphics.Bitmap result) {
 
-            //Log.d(TAG,"ImageView size : " + bmImage.getWidth() + "/" + bmImage.getHeight());
-            //bmImage.setImageBitmap(result);
+            Log.d(BitmapWorkerTask.class.getSimpleName(),"BitmapWorkerTask finished");
             fillViewWithBitmap(bmImage, result);
+
+            try {
+                AndroidBitmapUtil.save(result,"banners/"+key+".bmp");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
         }
 
 

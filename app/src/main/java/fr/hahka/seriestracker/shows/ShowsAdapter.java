@@ -71,7 +71,7 @@ public class ShowsAdapter extends BaseAdapter {
         final SimpleShow show = getItem(position);
 
         if (view == null) {
-            view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.show_row, viewGroup, false);
+            view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.simple_show_row, viewGroup, false);
         }
 
         ImageView showImageView = (ImageView) view.findViewById(R.id.showImageView);

@@ -8,6 +8,8 @@ import android.util.Log;
 import android.widget.ImageView;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 
 import fr.hahka.seriestracker.utilitaires.BitmapWorkerTask;
 
@@ -57,14 +59,28 @@ public class BitmapTasks {
         final Bitmap bitmap = getBitmapFromMemCache(key);
         if (bitmap != null) {
             Log.d(TAG, key + " : chargée depuis cache");
-            //mImageView.setImageResource(R.drawable.ic_launcher);
-            fillViewWithBitmap(mImageView,bitmap);
+            fillViewWithBitmap(mImageView, bitmap);
 
         } else {
-            //Log.d(TAG,key + " : chargée depuis api");
-            //mImageView.setImageResource(R.drawable.ic_launcher);
-            BitmapWorkerTask task = new BitmapWorkerTask(mImageView);
-            task.execute(url,key);
+
+            File image = AndroidBitmapUtil.getOutputMediaFile("banners/"+String.valueOf(key));
+            if(image != null){
+                Bitmap b = BitmapFactory.decodeFile(image.getAbsolutePath());
+                fillViewWithBitmap(mImageView,b);
+
+                BitmapTasks.addBitmapToMemoryCache(key, b);
+
+                try {
+                    AndroidBitmapUtil.save(b,"banners/"+key+".bmp");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            } else {
+
+                BitmapWorkerTask task = new BitmapWorkerTask(mImageView, key);
+                task.execute(url,key);
+            }
 
         }
     }
@@ -72,8 +88,6 @@ public class BitmapTasks {
 
     public static void fillViewWithBitmap(final ImageView imv, Bitmap b) {
 
-        Log.d(TAG,"filling start");
-        //Log.d(TAG,""+imv.getWidth()+" / "+imv.getHeight()+" : "+b.getWidth()+" / "+b.getHeight() );
         if(b != null){
             final float ratio = (float) b.getWidth() / (float) b.getHeight();
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -86,9 +100,6 @@ public class BitmapTasks {
 
             final Bitmap bitmap = BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length);
 
-            /*Log.d(TAG,"bitmap : "+bitmap.getWidth()+"/"+bitmap.getHeight());
-            Log.d(TAG,"imv : "+imv.getWidth()+"/"+imv.getHeight());
-            Log.d(TAG,"ratio : "+ratio);*/
 
             imv.post(new Runnable() {
                 @Override
@@ -102,14 +113,6 @@ public class BitmapTasks {
             });
 
 
-            /*Palette.generateAsync(bitmap,new Palette.PaletteAsyncListener() {
-                @Override
-                public void onGenerated(Palette palette) {
-                    Log.d(TAG,"TOTO");
-                }
-            });*/
-
-            Log.d(TAG,"filling end");
         }
 
 

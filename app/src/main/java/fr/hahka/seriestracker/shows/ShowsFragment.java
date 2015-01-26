@@ -4,11 +4,12 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ public class ShowsFragment extends Fragment implements DownloadResultReceiver.Re
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        rootView = inflater.inflate(R.layout.shows_fragment, container, false);
+        rootView = inflater.inflate(R.layout.simple_shows_list_fragment, container, false);
 
 
         mContentView = rootView.findViewById(R.id.showsListContainer);
@@ -68,17 +69,24 @@ public class ShowsFragment extends Fragment implements DownloadResultReceiver.Re
     public void onReceiveResult(int resultCode, Bundle resultData) {
         switch (resultCode) {
             case Config.STATUS_RUNNING:
-                Log.d(TAG, "running");
+                //Log.d(TAG, "running");
                 break;
             case Config.STATUS_FINISHED:
                 System.out.println("finished");
 
                 ArrayList<SimpleShow> userShowsList = resultData.getParcelableArrayList(Config.SHOWS_LIST);
 
-                ListView showsListView = (ListView) rootView.findViewById(R.id.showsListView);
-                showsListView.setAdapter(new ShowsAdapter(getActivity().getApplicationContext(), userShowsList, token));
-
                 UserInterface.showProgress(false, mContentView, mProgressView);
+
+                RecyclerView recList = (RecyclerView) rootView.findViewById(R.id.showsRecyclerView);
+                recList.setHasFixedSize(true);
+                LinearLayoutManager llm = new LinearLayoutManager(getActivity().getApplicationContext());
+                llm.setOrientation(LinearLayoutManager.VERTICAL);
+                recList.setLayoutManager(llm);
+
+
+                SimpleShowAdapter simpleShowAdapter = new SimpleShowAdapter(getActivity().getApplicationContext(), userShowsList, token);
+                recList.setAdapter(simpleShowAdapter);
 
                 break;
             case Config.STATUS_ERROR:
