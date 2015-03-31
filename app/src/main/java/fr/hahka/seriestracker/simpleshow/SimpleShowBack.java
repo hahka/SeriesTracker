@@ -1,4 +1,4 @@
-package fr.hahka.seriestracker.shows;
+package fr.hahka.seriestracker.simpleshow;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -7,41 +7,39 @@ import android.os.Parcelable;
  * Created by thibautvirolle on 02/12/14.
  * Classe pour les Shows affichés dans la liste
  */
-public class SimpleShow implements Parcelable {
+public class SimpleShowBack implements Parcelable {
 
-    public static final Parcelable.Creator<SimpleShow> CREATOR = new Parcelable.Creator<SimpleShow>() {
+    public static final Creator<SimpleShowBack> CREATOR = new Creator<SimpleShowBack>() {
         @Override
-        public SimpleShow createFromParcel(Parcel source) {
-            return new SimpleShow(source);
+        public SimpleShowBack createFromParcel(Parcel source) {
+            return new SimpleShowBack(source);
         }
 
         @Override
-        public SimpleShow[] newArray(int size) {
-            return new SimpleShow[size];
+        public SimpleShowBack[] newArray(int size) {
+            return new SimpleShowBack[size];
         }
 
     };
-
     private int id;
-    private int userId;
     private int thetvdbId;
     private String title;
     private String url;
     private float status = 0;
     private int remaining = 0;
 
-    public SimpleShow(int id, String title) {
+    public SimpleShowBack(int id, String title) {
         setId(id);
         setTitle(title);
     }
 
-    public SimpleShow(int id, int thetvdbId, String title) {
+    public SimpleShowBack(int id, int thetvdbId, String title) {
         setId(id);
         setThetvdbId(thetvdbId);
         setTitle(title);
     }
 
-    public SimpleShow(int id, int thetvdbId, String title, float status, int remaining) {
+    public SimpleShowBack(int id, int thetvdbId, String title, float status, int remaining) {
         setId(id);
         setThetvdbId(thetvdbId);
         setTitle(title);
@@ -50,7 +48,7 @@ public class SimpleShow implements Parcelable {
     }
 
     // Permet de recréer le show
-    public SimpleShow(Parcel in) {
+    public SimpleShowBack(Parcel in) {
         this.id = in.readInt();
         this.thetvdbId = in.readInt();
         this.title = in.readString();
@@ -105,14 +103,6 @@ public class SimpleShow implements Parcelable {
         this.remaining = remaining;
     }
 
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
-
 
     /**
      * Ce qui suit sert à passer des objets Show entre activité par les intent.
@@ -132,5 +122,4 @@ public class SimpleShow implements Parcelable {
         parcel.writeString(title);
         parcel.writeString(url);
     }
-
 }

@@ -3,11 +3,13 @@ package fr.hahka.seriestracker.shows;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import fr.hahka.seriestracker.simpleshow.SimpleShowBack;
+
 /**
  * Created by thibautvirolle on 02/12/14.
  * Objet show
  */
-public class Show extends SimpleShow implements Parcelable {
+public class Show extends SimpleShowBack implements Parcelable {
 
     public static final Parcelable.Creator<Show> CREATOR = new Parcelable.Creator<Show>() {
         @Override

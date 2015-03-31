@@ -8,7 +8,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-import fr.hahka.seriestracker.shows.SimpleShow;
+import fr.hahka.seriestracker.simpleshow.SimpleShow;
 
 import static fr.hahka.seriestracker.shows.ShowsJsonParser.readSimpleShow;
 
@@ -139,6 +139,7 @@ public class UserJsonParser {
 
         User user = new User(login, id, friends, badges, seasons, episodes, comments, progress,
                 episodesToWatch, timeOnTv, timeToSpend, xp, avatar);
+
         user.setShowsList(showsList);
 
         return user;

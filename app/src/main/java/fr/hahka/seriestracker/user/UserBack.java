@@ -5,7 +5,7 @@ import android.os.Parcelable;
 
 import java.util.ArrayList;
 
-import fr.hahka.seriestracker.shows.SimpleShow;
+import fr.hahka.seriestracker.simpleshow.SimpleShow;
 
 /**
  * Created by thibautvirolle on 04/01/15.

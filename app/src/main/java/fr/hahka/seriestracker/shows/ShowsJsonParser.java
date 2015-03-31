@@ -4,6 +4,8 @@ import android.util.JsonReader;
 
 import java.io.IOException;
 
+import fr.hahka.seriestracker.simpleshow.SimpleShow;
+
 /**
  * Created by thibautvirolle on 16/01/15.
  * Parser Json pour les Shows

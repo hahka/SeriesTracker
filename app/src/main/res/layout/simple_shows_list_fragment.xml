@@ -1,4 +1,5 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -12,25 +13,29 @@
         android:layout_height="match_parent"
         android:visibility="gone">
 
-
-        <ListView
-            android:id="@+id/showsListView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/showsRecyclerView"
+        <com.baoyz.widget.PullRefreshLayout
+            android:id="@+id/swipeRefreshLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            />
+            app:type="water_drop">
+
+
+            <ListView
+                android:id="@+id/showsListView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/showsRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                />
+
+        </com.baoyz.widget.PullRefreshLayout>
+
 
     </FrameLayout>
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true" />
+    <include layout="@layout/progress_bar_layout"/>
 
 </RelativeLayout>

@@ -4,12 +4,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v4.util.LruCache;
 import android.util.Base64;
-import android.util.Log;
 import android.widget.ImageView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 
 import fr.hahka.seriestracker.utilitaires.BitmapWorkerTask;
 
@@ -58,23 +56,17 @@ public class BitmapTasks {
 
         final Bitmap bitmap = getBitmapFromMemCache(key);
         if (bitmap != null) {
-            Log.d(TAG, key + " : chargée depuis cache");
+            //Log.d(TAG, key + " : chargée depuis cache");
             fillViewWithBitmap(mImageView, bitmap);
 
         } else {
 
-            File image = AndroidBitmapUtil.getOutputMediaFile("banners/"+String.valueOf(key));
+            File image = AndroidBitmapUtil.getOutputMediaFile("banners/"+String.valueOf(key)+".bmp");
             if(image != null){
                 Bitmap b = BitmapFactory.decodeFile(image.getAbsolutePath());
                 fillViewWithBitmap(mImageView,b);
 
                 BitmapTasks.addBitmapToMemoryCache(key, b);
-
-                try {
-                    AndroidBitmapUtil.save(b,"banners/"+key+".bmp");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
 
             } else {
 
@@ -104,11 +96,11 @@ public class BitmapTasks {
             imv.post(new Runnable() {
                 @Override
                 public void run(){
-                    imv.setImageBitmap(
-                            Bitmap.createScaledBitmap(bitmap,
-                                    imv.getWidth(),
-                                    (int) (imv.getWidth() / ratio),
-                                    false));
+
+                    imv.setImageBitmap(Bitmap.createScaledBitmap(bitmap,
+                            imv.getWidth(),
+                            (int) (imv.getWidth() / ratio),
+                            false));
                 }
             });
 

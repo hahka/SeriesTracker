@@ -7,7 +7,6 @@ import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -15,7 +14,6 @@ import android.widget.Toast;
 import fr.hahka.seriestracker.DownloadResultReceiver;
 import fr.hahka.seriestracker.R;
 import fr.hahka.seriestracker.utilitaires.Config;
-import fr.hahka.seriestracker.utilitaires.DownloadImageTask;
 import fr.hahka.seriestracker.utilitaires.UserInterface;
 
 public class UserFragment extends Fragment implements DownloadResultReceiver.Receiver{
@@ -86,8 +84,8 @@ public class UserFragment extends Fragment implements DownloadResultReceiver.Rec
 
 
                 String urlAvatar;
-                if((urlAvatar = user.getAvatar()).length() > 1)
-                    new DownloadImageTask((ImageView) rootView.findViewById(R.id.avatarImageView)).execute(urlAvatar);
+                /*if((urlAvatar = user.getAvatar()).length() > 1)
+                    new DownloadImageTask((ImageView) rootView.findViewById(R.id.avatarImageView)).execute(urlAvatar);*/
 
 
                 UserInterface.showProgress(false, mContentView, mProgressView);

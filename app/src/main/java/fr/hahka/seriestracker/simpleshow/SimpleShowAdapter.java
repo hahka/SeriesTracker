@@ -1,4 +1,4 @@
-package fr.hahka.seriestracker.shows;
+package fr.hahka.seriestracker.simpleshow;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -51,14 +51,16 @@ public class SimpleShowAdapter extends RecyclerView.Adapter<SimpleShowAdapter.Sh
     public void onBindViewHolder(ShowViewHolder showViewHolder, int i) {
         SimpleShow simpleShow = simpleShowList.get(i);
 
+        String url = simpleShow.getUrl();
 
-        if(simpleShow.getUrl() != null) {
+        if(url != null && !url.equals("")) {
 
-            loadBitmap(String.valueOf(simpleShow.getId()),simpleShow.getUrl(),showViewHolder.showImageView);
+            loadBitmap(String.valueOf(simpleShow.getId()),url,showViewHolder.showImageView);
 
         } else {
             showViewHolder.titletv.setText(simpleShow.getTitle());
             showViewHolder.titletv.setVisibility(View.VISIBLE);
+            //showViewHolder.titletv.setTextColor(Color.BLUE);
 
             loadBitmap("blackground",null,showViewHolder.showImageView);
 

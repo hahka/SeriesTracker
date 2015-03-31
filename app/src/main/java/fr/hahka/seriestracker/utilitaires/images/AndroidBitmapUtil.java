@@ -196,7 +196,7 @@ public class AndroidBitmapUtil {
     }
 
 
-    public static File getOutputMediaFile(String key){
+    public static File getOutputMediaFile(String filePath){
         // To be safe, you should check that the SDCard is mounted
         // using Environment.getExternalStorageState() before doing this.
         File mediaStorageDir = new File(Environment.getExternalStorageDirectory()
@@ -213,7 +213,7 @@ public class AndroidBitmapUtil {
         }
         // Create a media file name
         File mediaFile;
-        String mImageName= key+".bmp";
+        String mImageName= filePath;
         mediaFile = new File(mediaStorageDir.getPath() + File.separator + mImageName);
         if(mediaFile.exists())
             return mediaFile;

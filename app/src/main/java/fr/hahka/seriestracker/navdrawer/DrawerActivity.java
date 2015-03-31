@@ -182,6 +182,16 @@ public class DrawerActivity extends Activity {
                     ab.setIcon(null);
                 }
                 break;
+                /*fragment = new WebShowFragment();
+                bundle = new Bundle();
+                bundle.putString(Config.TOKEN, token);
+                bundle.putString(Config.USER_ID, userId);
+                fragment.setArguments(bundle);
+
+                if(ab != null) {
+                    ab.setIcon(null);
+                }
+                break;*/
 
             default:
                 break;
@@ -270,11 +280,13 @@ public class DrawerActivity extends Activity {
     private class SlideMenuClickListener implements
             ListView.OnItemClickListener {
         @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            if(position != (navDrawerItems.size() - 1))
+        public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+            if(position != (navDrawerItems.size() - 1)){
                 displayView(position);
-            else
+            }
+            else{
                 logout();
+            }
         }
     }
 

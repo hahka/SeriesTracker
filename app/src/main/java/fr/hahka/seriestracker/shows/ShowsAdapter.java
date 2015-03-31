@@ -20,6 +20,7 @@ import java.util.ArrayList;
 
 import fr.hahka.seriestracker.R;
 import fr.hahka.seriestracker.episodes.episodes.EpisodesActivity;
+import fr.hahka.seriestracker.simpleshow.SimpleShow;
 import fr.hahka.seriestracker.utilitaires.Config;
 import fr.hahka.seriestracker.utilitaires.images.BitmapTasks;
 

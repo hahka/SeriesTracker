@@ -12,12 +12,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.baoyz.widget.PullRefreshLayout;
+
 import java.util.ArrayList;
 
 import fr.hahka.seriestracker.DownloadResultReceiver;
 import fr.hahka.seriestracker.R;
+import fr.hahka.seriestracker.simpleshow.SimpleShow;
+import fr.hahka.seriestracker.simpleshow.SimpleShowAdapter;
 import fr.hahka.seriestracker.utilitaires.Config;
 import fr.hahka.seriestracker.utilitaires.UserInterface;
+import io.realm.Realm;
+import io.realm.RealmQuery;
+import io.realm.RealmResults;
 
 
 public class ShowsFragment extends Fragment implements DownloadResultReceiver.Receiver{
@@ -27,6 +34,9 @@ public class ShowsFragment extends Fragment implements DownloadResultReceiver.Re
     View mContentView;
     View mProgressView;
     String token;
+    String userId;
+
+    PullRefreshLayout layout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -41,24 +51,60 @@ public class ShowsFragment extends Fragment implements DownloadResultReceiver.Re
 
         UserInterface.showProgress(true, mContentView, mProgressView);
 
-        String userId = getArguments().getString(Config.USER_ID);
+        userId = getArguments().getString(Config.USER_ID);
         token = getArguments().getString(Config.TOKEN);
 
-
-        System.out.println(userId);
-        System.out.println(token);
+        //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 
-        DownloadResultReceiver mReceiver = new DownloadResultReceiver(new Handler());
-        mReceiver.setReceiver(this);
-        Intent intent = new Intent(Intent.ACTION_SYNC, null, getActivity().getApplicationContext(), ShowsService.class);
+        RecyclerView recList = (RecyclerView) rootView.findViewById(R.id.showsRecyclerView);
+        recList.setHasFixedSize(true);
+        LinearLayoutManager llm = new LinearLayoutManager(getActivity().getApplicationContext());
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        recList.setLayoutManager(llm);
+
+        Realm realm = Realm.getInstance(getActivity().getApplicationContext());
+
+        RealmQuery<SimpleShow> query = realm.where(SimpleShow.class)
+                .equalTo("userId", Integer.parseInt(userId));
+
+        RealmResults<SimpleShow> result1 = query.findAll();
+
+        ArrayList<SimpleShow> userShowsList = new ArrayList<>();
+        for(SimpleShow show : result1){
+            userShowsList.add(show);
+        }
+
+        SimpleShowAdapter simpleShowAdapter = new SimpleShowAdapter(getActivity().getApplicationContext(), userShowsList, token);
+        recList.setAdapter(simpleShowAdapter);
+
+        UserInterface.showProgress(false, mContentView, mProgressView);
+
+        //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+
+        layout = (PullRefreshLayout) rootView.findViewById(R.id.swipeRefreshLayout);
+
+        // listen refresh event
+        layout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+
+                DownloadResultReceiver mReceiver = new DownloadResultReceiver(new Handler());
+                mReceiver.setReceiver(ShowsFragment.this);
+                Intent intent = new Intent(Intent.ACTION_SYNC, null, getActivity().getApplicationContext(), ShowsService.class);
 
         /* Send optional extras to Download IntentService */
-        intent.putExtra("receiver", mReceiver);
-        intent.putExtra(Config.USER_ID, userId);
-        intent.putExtra(Config.TOKEN, token);
+                intent.putExtra("receiver", mReceiver);
+                intent.putExtra(Config.USER_ID, userId);
+                intent.putExtra(Config.TOKEN, token);
 
-        getActivity().startService(intent);
+                getActivity().startService(intent);
+            }
+        });
+
+
+
 
 
         return rootView;
@@ -73,8 +119,7 @@ public class ShowsFragment extends Fragment implements DownloadResultReceiver.Re
                 break;
             case Config.STATUS_FINISHED:
                 System.out.println("finished");
-
-                ArrayList<SimpleShow> userShowsList = resultData.getParcelableArrayList(Config.SHOWS_LIST);
+                layout.setRefreshing(false);
 
                 UserInterface.showProgress(false, mContentView, mProgressView);
 
@@ -84,6 +129,17 @@ public class ShowsFragment extends Fragment implements DownloadResultReceiver.Re
                 llm.setOrientation(LinearLayoutManager.VERTICAL);
                 recList.setLayoutManager(llm);
 
+                Realm realm = Realm.getInstance(getActivity().getApplicationContext());
+
+                RealmQuery<SimpleShow> query = realm.where(SimpleShow.class)
+                        .equalTo("userId", Integer.parseInt(userId));
+
+                RealmResults<SimpleShow> result1 = query.findAll();
+
+                ArrayList<SimpleShow> userShowsList = new ArrayList<>();
+                for(SimpleShow show : result1){
+                    userShowsList.add(show);
+                }
 
                 SimpleShowAdapter simpleShowAdapter = new SimpleShowAdapter(getActivity().getApplicationContext(), userShowsList, token);
                 recList.setAdapter(simpleShowAdapter);
