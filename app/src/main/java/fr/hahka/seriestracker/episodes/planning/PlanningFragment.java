@@ -1,14 +1,13 @@
 package fr.hahka.seriestracker.episodes.planning;
 
-import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.baoyz.widget.PullRefreshLayout;
@@ -17,11 +16,16 @@ import java.util.ArrayList;
 
 import fr.hahka.seriestracker.DownloadResultReceiver;
 import fr.hahka.seriestracker.R;
+import fr.hahka.seriestracker.episodes.episodes.Episode;
 import fr.hahka.seriestracker.utilitaires.Config;
+import fr.hahka.seriestracker.utilitaires.ScrollableFragmentWithBottomBar;
 import fr.hahka.seriestracker.utilitaires.UserInterface;
+import io.realm.Realm;
+import io.realm.RealmQuery;
+import io.realm.RealmResults;
 
 
-public class PlanningFragment extends Fragment implements DownloadResultReceiver.Receiver{
+public class PlanningFragment extends ScrollableFragmentWithBottomBar implements DownloadResultReceiver.Receiver{
 
     private static final String TAG = PlanningFragment.class.getSimpleName();
     View rootView;
@@ -29,36 +33,27 @@ public class PlanningFragment extends Fragment implements DownloadResultReceiver
     View mProgressView;
     PullRefreshLayout layout;
 
-    ArrayList<Planning> planningList;
+    private String userId;
+    private String token;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        super.onCreateView(inflater, container, savedInstanceState);
+
         if(savedInstanceState == null){
-            Log.d(TAG, "onCreateView");
+
             rootView = inflater.inflate(R.layout.planning_fragment, container, false);
 
             mContentView = rootView.findViewById(R.id.planningListContainer);
             mProgressView = rootView.findViewById(R.id.loadingContainer);
             UserInterface.showProgress(true, mContentView, mProgressView);
 
-            DownloadResultReceiver mReceiver = new DownloadResultReceiver(new Handler());
-            mReceiver.setReceiver(this);
-            Intent intent = new Intent(Intent.ACTION_SYNC, null, getActivity().getApplicationContext(), PlanningService.class);
+            userId = getArguments().getString(Config.USER_ID);
+            token = getArguments().getString(Config.TOKEN);
 
-            String userId = getArguments().getString(Config.USER_ID);
-            String token = getArguments().getString(Config.TOKEN);
-
-        /* Send optional extras to Download IntentService */
-            intent.putExtra("receiver", mReceiver);
-            intent.putExtra(Config.USER_ID, userId);
-            intent.putExtra(Config.TOKEN, token);
-            intent.putExtra("requestId", 101);
-
-            getActivity().startService(intent);
-
-
+            displayPlanning(userId, token);
 
             layout = (PullRefreshLayout) rootView.findViewById(R.id.swipeRefreshLayout);
 
@@ -67,24 +62,10 @@ public class PlanningFragment extends Fragment implements DownloadResultReceiver
                 @Override
                 public void onRefresh() {
 
-                    DownloadResultReceiver mReceiver = new DownloadResultReceiver(new Handler());
-                    mReceiver.setReceiver(PlanningFragment.this);
-                    Intent intent = new Intent(Intent.ACTION_SYNC, null, getActivity().getApplicationContext(), PlanningService.class);
+                    callPlanningService(userId, token);
 
-                    String userId = getArguments().getString(Config.USER_ID);
-                    String token = getArguments().getString(Config.TOKEN);
-
-        /* Send optional extras to Download IntentService */
-                    intent.putExtra("receiver", mReceiver);
-                    intent.putExtra(Config.USER_ID, userId);
-                    intent.putExtra(Config.TOKEN, token);
-                    intent.putExtra("requestId", 101);
-
-                    getActivity().startService(intent);
                 }
             });
-
-
 
 
         }
@@ -101,25 +82,82 @@ public class PlanningFragment extends Fragment implements DownloadResultReceiver
                 break;
             case Config.STATUS_FINISHED:
 
-                layout.setRefreshing(false);
+                if(isAdded()) {
+                    layout.setRefreshing(false);
 
-                ListView planningListView = (ListView) rootView.findViewById(R.id.planningListView);
+                    displayPlanning(userId, token);
 
-                planningList = resultData.getParcelableArrayList(Config.PLANNING_LIST);
-
-                planningListView.setAdapter(new PlanningAdapter(getActivity().getApplicationContext(),planningList));
-
-                UserInterface.showProgress(false, mContentView, mProgressView);
+                }
 
 
                 break;
             case Config.STATUS_ERROR:
 
-                String error = resultData.getString(Intent.EXTRA_TEXT);
-                Toast.makeText(getActivity().getApplicationContext(), error, Toast.LENGTH_LONG).show();
+                if(isAdded()) {
+                    String error = resultData.getString(Intent.EXTRA_TEXT);
+                    Toast.makeText(getActivity().getApplicationContext(), error, Toast.LENGTH_LONG).show();
+                }
                 break;
         }
 
+    }
+
+
+    private void displayPlanning(String userId, String token) {
+
+        Realm realm = Realm.getInstance(getActivity().getApplicationContext());
+
+        RealmQuery<Episode> query = realm.where(Episode.class);
+
+        RealmResults<Episode> result1 = query.findAll();
+
+        if(result1.size() >= 1) {
+
+            ArrayList<Episode> episodesList = new ArrayList<>();
+            for (Episode episode : result1) {
+                episodesList.add(episode);
+            }
+
+            RecyclerView planningRecyclerView = (RecyclerView) rootView.findViewById(R.id.planningRecyclerView);
+            planningRecyclerView.setHasFixedSize(true);
+            LinearLayoutManager llm = new LinearLayoutManager(getActivity().getApplicationContext());
+            llm.setOrientation(LinearLayoutManager.VERTICAL);
+            planningRecyclerView.setLayoutManager(llm);
+            planningRecyclerView.setAdapter(new PlanningAdapter(episodesList));
+
+            super.setScrollBehavior(planningRecyclerView);
+
+            UserInterface.showProgress(false, mContentView, mProgressView);
+
+        } else if(result1.size() == 0){
+
+            callPlanningService(userId, token);
+
+        }
+
+
+
+
+    }
+
+
+    private void callPlanningService(String userId, String token) {
+        if(userId != null && token != null) {
+
+            UserInterface.showProgress(true, mContentView, mProgressView);
+
+            DownloadResultReceiver mReceiver = new DownloadResultReceiver(new Handler());
+            mReceiver.setReceiver(this);
+            Intent intent = new Intent(Intent.ACTION_SYNC, null, getActivity().getApplicationContext(), PlanningService.class);
+
+            /* Send optional extras to Download IntentService */
+            intent.putExtra("receiver", mReceiver);
+            intent.putExtra(Config.USER_ID, userId);
+            intent.putExtra(Config.TOKEN, token);
+            intent.putExtra("requestId", 101);
+
+            getActivity().startService(intent);
+        }
     }
 
 }

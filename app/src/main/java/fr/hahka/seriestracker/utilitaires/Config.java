@@ -8,6 +8,8 @@ public class Config {
     public static final String BETASERIES_API_KEY = "a5c7abbec94a";
     public static final String THETVDB_API_KEY = "5A2625842D0FB89C";
 
+    public static final String BETASERIES_API = "https://api.betaseries.com/";
+
 
     public static final String USER_ID = "user_id";
     public static final String TOKEN = "token";

@@ -1,29 +1,14 @@
 package fr.hahka.seriestracker.user;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
-import java.util.ArrayList;
-
-import fr.hahka.seriestracker.simpleshow.SimpleShow;
+import io.realm.RealmObject;
 
 /**
  * Created by thibautvirolle on 04/01/15.
  * Objet User (pour le profil)
  */
-public class User implements Parcelable {
+public class User extends RealmObject {
 
-    public static final Parcelable.Creator<User> CREATOR = new Parcelable.Creator<User>() {
-        @Override
-        public User createFromParcel(Parcel source) {
-            return new User(source);
-        }
 
-        @Override
-        public User[] newArray(int size) {
-            return new User[size];
-        }
-    };
     private String login;
     private int id;
     private int friends;
@@ -37,7 +22,10 @@ public class User implements Parcelable {
     private int episodesToWatch;
     private int timeOnTv;
     private int timeToSpend;
-    private ArrayList<SimpleShow> showsList;
+
+    public User() {
+
+    }
 
     public User(String login, int id, int friends, int badges,
                 int seasons, int episodes, int comments, float progress,
@@ -55,26 +43,6 @@ public class User implements Parcelable {
         setTimeToSpend(timeToSpend);
         setAvatar(avatar);
         setXp(xp);
-    }
-
-    public User(Parcel in) {
-        this.login = in.readString();
-        this.id = in.readInt();
-        this.friends = in.readInt();
-        this.badges = in.readInt();
-        this.xp = in.readInt();
-        this.avatar = in.readString();
-
-        this.seasons = in.readInt();
-        this.episodes = in.readInt();
-        this.comments = in.readInt();
-        this.progress = in.readFloat();
-
-        this.episodesToWatch = in.readInt();
-        this.timeOnTv = in.readInt();
-        this.timeToSpend = in.readInt();
-
-        this.showsList = in.readArrayList(SimpleShow.class.getClassLoader());
     }
 
     public String getLogin() {
@@ -173,47 +141,12 @@ public class User implements Parcelable {
         this.timeToSpend = timeToSpend;
     }
 
-    public ArrayList<SimpleShow> getShowsList() {
-        return showsList;
-    }
-
-    public void setShowsList(ArrayList<SimpleShow> showsList) {
-        this.showsList = showsList;
-    }
-
     public String getAvatar() {
         return avatar;
     }
 
     public void setAvatar(String avatar) {
         this.avatar = avatar;
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int flags) {
-
-        parcel.writeString(login);
-        parcel.writeInt(id);
-        parcel.writeInt(friends);
-        parcel.writeInt(badges);
-        parcel.writeInt(xp);
-        parcel.writeString(avatar);
-
-        parcel.writeInt(seasons);
-        parcel.writeInt(episodes);
-        parcel.writeInt(comments);
-        parcel.writeFloat(progress);
-
-        parcel.writeInt(episodesToWatch);
-        parcel.writeInt(timeOnTv);
-        parcel.writeInt(timeToSpend);
-
-        parcel.writeList(showsList);
     }
 
 }

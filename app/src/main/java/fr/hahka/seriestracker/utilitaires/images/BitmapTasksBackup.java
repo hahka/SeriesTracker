@@ -2,16 +2,12 @@ package fr.hahka.seriestracker.utilitaires.images;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.support.v4.util.LruCache;
 import android.util.Base64;
-import android.util.Log;
 import android.widget.ImageView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.InputStream;
-import java.lang.ref.WeakReference;
 
 import fr.hahka.seriestracker.utilitaires.BitmapWorkerTask;
 
@@ -19,16 +15,12 @@ import fr.hahka.seriestracker.utilitaires.BitmapWorkerTask;
  * Created by thibautvirolle on 19/01/15.
  * Classe de gestion des images (cache, ajout cache etc...)
  */
-public class BitmapTasks extends AsyncTask<String, Void, Bitmap> {
+public class BitmapTasksBackup {
 
-    private static final String TAG = BitmapTasks.class.getSimpleName();
+
+    private static final String TAG = BitmapTasksBackup.class.getSimpleName();
+
     private static LruCache<String, Bitmap> mMemoryCache;
-    private final WeakReference<ImageView> imageViewReference;
-
-    public BitmapTasks(ImageView imageView) {
-        // Use a WeakReference to ensure the ImageView can be garbage collected
-        this.imageViewReference = new WeakReference<ImageView>(imageView);
-    }
 
     public static void setCache() {
 
@@ -64,7 +56,7 @@ public class BitmapTasks extends AsyncTask<String, Void, Bitmap> {
 
         final Bitmap bitmap = getBitmapFromMemCache(key);
         if (bitmap != null) {
-
+            //Log.d(TAG, key + " : chargée depuis cache");
             fillViewWithBitmap(mImageView, bitmap);
 
         } else {
@@ -74,7 +66,7 @@ public class BitmapTasks extends AsyncTask<String, Void, Bitmap> {
                 Bitmap b = BitmapFactory.decodeFile(image.getAbsolutePath());
                 fillViewWithBitmap(mImageView,b);
 
-                BitmapTasks.addBitmapToMemoryCache(key, b);
+                BitmapTasksBackup.addBitmapToMemoryCache(key, b);
 
             } else {
 
@@ -85,9 +77,10 @@ public class BitmapTasks extends AsyncTask<String, Void, Bitmap> {
         }
     }
 
+
     public static void fillViewWithBitmap(final ImageView imv, Bitmap b) {
 
-        if(imv != null && b != null){
+        if(b != null){
             final float ratio = (float) b.getWidth() / (float) b.getHeight();
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             b.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
@@ -115,78 +108,6 @@ public class BitmapTasks extends AsyncTask<String, Void, Bitmap> {
         }
 
 
-    }
-
-    // Decode image in background.
-    @Override
-    protected Bitmap doInBackground(String... params) {
-
-        String key = params[0];
-
-        if(key != null) {
-            Bitmap bitmap = getBitmapFromMemCache(params[0]);
-            if (bitmap != null) {
-
-                return bitmap;
-
-            } else {
-
-                File image = AndroidBitmapUtil.getOutputMediaFile("banners/" + String.valueOf(key) + ".bmp");
-                if (image != null) {
-
-                    Bitmap b = BitmapFactory.decodeFile(image.getAbsolutePath());
-                    BitmapTasks.addBitmapToMemoryCache(key, b);
-
-                    return bitmap;
-
-                } else {
-                    if (params[1] != null && !params[1].equals("")) {
-                        try {
-                            InputStream in;
-                            in = new java.net.URL(params[1]).openStream();
-
-                            bitmap = BitmapFactory.decodeStream(in);
-                            BitmapTasks.addBitmapToMemoryCache(params[0], bitmap);
-
-                            return bitmap;
-
-                        } catch (Exception e) {
-                            Log.e("Error", e.getMessage());
-                            //e.printStackTrace();
-                        }
-                    }
-                }
-
-            }
-        } else {
-            return getBitmapFromMemCache("blackground");
-        }
-
-        return null;
-
-    }
-
-    // Once complete, see if ImageView is still around and set bitmap.
-    // In the layout, imageview's height is set as wrap_content :
-    // This way, all the imageViews are loaded on screen with a height of 0 and they all uses
-    // the inCreateViewHolder so they are all loaded
-    @Override
-    protected void onPostExecute(Bitmap bitmap) {
-
-        //fillViewWithBitmap(imageViewReference.get(), bitmap);
-        if (bitmap != null) {
-
-            //On a besoin du ratio pour étirer l'image
-            final float ratio = (float) bitmap.getWidth() / (float) bitmap.getHeight();
-
-            final ImageView imageView = imageViewReference.get();
-            if (imageView != null) {
-                imageView.setImageBitmap(Bitmap.createScaledBitmap(bitmap,
-                        imageView.getWidth(),
-                        (int) (imageView.getWidth() / ratio),
-                        false));
-            }
-        }
     }
 
 

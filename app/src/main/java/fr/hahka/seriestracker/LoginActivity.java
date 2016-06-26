@@ -19,16 +19,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-
+import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -219,26 +214,19 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             userId = null;
             token = null;
 
-            //Log.d(TAG,"début connection");
-
-            HttpPost httppost = new HttpPost("https://api.betaseries.com/members/auth");
-            List<NameValuePair> postParameters = new ArrayList<>();
-            //On crée la liste qui contiendra tous nos paramètres
-            //Et on y rajoute nos paramètres
-            postParameters.add(new BasicNameValuePair("login", mEmail));
-            postParameters.add(new BasicNameValuePair("password", mPassword));
-            postParameters.add(new BasicNameValuePair("key", Config.BETASERIES_API_KEY));
-
-
-            // Parsing json
             try {
-                UrlEncodedFormEntity entity = new UrlEncodedFormEntity(postParameters);
-                httppost.setEntity(entity);
-                HttpClient httpclient = new DefaultHttpClient();
 
-                HttpResponse response = httpclient.execute(httppost);
-                InputStream is = response.getEntity().getContent();
+                URL url = new URL("https://api.betaseries.com/members/auth");
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("POST");
+                urlConnection.setDoOutput(true);
 
+                DataOutputStream wr = new DataOutputStream( urlConnection.getOutputStream() );
+                wr.writeBytes("login=" + mEmail + "&password=" + mPassword + "&key=" + Config.BETASERIES_API_KEY);
+                wr.flush();
+                wr.close();
+
+                InputStream is = urlConnection.getInputStream();
 
                 JsonReader reader = new JsonReader(new InputStreamReader(is, "UTF-8"));
 
@@ -250,12 +238,8 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                             reader.beginObject();
                             while (reader.hasNext()) {
                                 value = reader.nextName();
-                                //Log.d(TAG, value);
                                 if (value.equals("id")) {
-
                                     userId = String.valueOf(reader.nextInt());
-                                    //Log.d(TAG, String.valueOf(userId));
-
                                 } else {
                                     reader.skipValue();
                                 }
@@ -264,7 +248,6 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                             break;
                         case "token":
                             token = reader.nextString();
-                            //Log.d(TAG, token);
                             break;
                         case "errors":
                             reader.beginArray();

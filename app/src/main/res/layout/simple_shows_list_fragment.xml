@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.thibautvirolle.seriestracker.shows.ShowsActivity">
+    tools:context="fr.hahka.seriestracker.shows.ShowsFragment">
 
     <!-- As the main content view, the view below consumes the entire
          space available using match_parent in both dimensions. -->
@@ -20,10 +20,10 @@
             app:type="water_drop">
 
 
-            <ListView
+            <!--<ListView
                 android:id="@+id/showsListView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent" />-->
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/showsRecyclerView"

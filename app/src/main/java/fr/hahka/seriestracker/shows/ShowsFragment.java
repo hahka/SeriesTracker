@@ -1,6 +1,5 @@
 package fr.hahka.seriestracker.shows;
 
-import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,13 +20,14 @@ import fr.hahka.seriestracker.R;
 import fr.hahka.seriestracker.simpleshow.SimpleShow;
 import fr.hahka.seriestracker.simpleshow.SimpleShowAdapter;
 import fr.hahka.seriestracker.utilitaires.Config;
+import fr.hahka.seriestracker.utilitaires.ScrollableFragmentWithBottomBar;
 import fr.hahka.seriestracker.utilitaires.UserInterface;
 import io.realm.Realm;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
 
 
-public class ShowsFragment extends Fragment implements DownloadResultReceiver.Receiver{
+public class ShowsFragment extends ScrollableFragmentWithBottomBar implements DownloadResultReceiver.Receiver{
 
     private static final String TAG = ShowsFragment.class.getSimpleName();
     View rootView;
@@ -42,6 +42,8 @@ public class ShowsFragment extends Fragment implements DownloadResultReceiver.Re
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        super.onCreateView(inflater, container, savedInstanceState);
+
         rootView = inflater.inflate(R.layout.simple_shows_list_fragment, container, false);
 
 
@@ -54,7 +56,6 @@ public class ShowsFragment extends Fragment implements DownloadResultReceiver.Re
         userId = getArguments().getString(Config.USER_ID);
         token = getArguments().getString(Config.TOKEN);
 
-        //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 
         RecyclerView recList = (RecyclerView) rootView.findViewById(R.id.showsRecyclerView);
@@ -70,18 +71,19 @@ public class ShowsFragment extends Fragment implements DownloadResultReceiver.Re
 
         RealmResults<SimpleShow> result1 = query.findAll();
 
+        result1.sort("title");
+
         ArrayList<SimpleShow> userShowsList = new ArrayList<>();
         for(SimpleShow show : result1){
             userShowsList.add(show);
         }
 
-        SimpleShowAdapter simpleShowAdapter = new SimpleShowAdapter(getActivity().getApplicationContext(), userShowsList, token);
-        recList.setAdapter(simpleShowAdapter);
+
+        recList.setAdapter(new SimpleShowAdapter(getActivity().getApplicationContext(), userShowsList, token));
 
         UserInterface.showProgress(false, mContentView, mProgressView);
 
-        //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-
+        super.setScrollBehavior(recList);
 
         layout = (PullRefreshLayout) rootView.findViewById(R.id.swipeRefreshLayout);
 
@@ -94,7 +96,7 @@ public class ShowsFragment extends Fragment implements DownloadResultReceiver.Re
                 mReceiver.setReceiver(ShowsFragment.this);
                 Intent intent = new Intent(Intent.ACTION_SYNC, null, getActivity().getApplicationContext(), ShowsService.class);
 
-        /* Send optional extras to Download IntentService */
+                // Send optional extras to Download IntentService
                 intent.putExtra("receiver", mReceiver);
                 intent.putExtra(Config.USER_ID, userId);
                 intent.putExtra(Config.TOKEN, token);
@@ -102,10 +104,6 @@ public class ShowsFragment extends Fragment implements DownloadResultReceiver.Re
                 getActivity().startService(intent);
             }
         });
-
-
-
-
 
         return rootView;
     }
@@ -118,39 +116,47 @@ public class ShowsFragment extends Fragment implements DownloadResultReceiver.Re
                 //Log.d(TAG, "running");
                 break;
             case Config.STATUS_FINISHED:
-                System.out.println("finished");
-                layout.setRefreshing(false);
 
-                UserInterface.showProgress(false, mContentView, mProgressView);
+                if(isAdded()) {
+                    System.out.println("finished");
+                    layout.setRefreshing(false);
 
-                RecyclerView recList = (RecyclerView) rootView.findViewById(R.id.showsRecyclerView);
-                recList.setHasFixedSize(true);
-                LinearLayoutManager llm = new LinearLayoutManager(getActivity().getApplicationContext());
-                llm.setOrientation(LinearLayoutManager.VERTICAL);
-                recList.setLayoutManager(llm);
+                    UserInterface.showProgress(false, mContentView, mProgressView);
 
-                Realm realm = Realm.getInstance(getActivity().getApplicationContext());
+                    RecyclerView recList = (RecyclerView) rootView.findViewById(R.id.showsRecyclerView);
+                    recList.setHasFixedSize(true);
+                    LinearLayoutManager llm = new LinearLayoutManager(getActivity().getApplicationContext());
+                    llm.setOrientation(LinearLayoutManager.VERTICAL);
+                    recList.setLayoutManager(llm);
 
-                RealmQuery<SimpleShow> query = realm.where(SimpleShow.class)
-                        .equalTo("userId", Integer.parseInt(userId));
+                    Realm realm = Realm.getInstance(getActivity().getApplicationContext());
 
-                RealmResults<SimpleShow> result1 = query.findAll();
+                    RealmQuery<SimpleShow> query = realm.where(SimpleShow.class)
+                            .equalTo("userId", Integer.parseInt(userId));
 
-                ArrayList<SimpleShow> userShowsList = new ArrayList<>();
-                for(SimpleShow show : result1){
-                    userShowsList.add(show);
+                    RealmResults<SimpleShow> result1 = query.findAll();
+
+                    result1.sort("title");
+
+                    ArrayList<SimpleShow> userShowsList = new ArrayList<>();
+                    for (SimpleShow show : result1) {
+                        userShowsList.add(show);
+                    }
+
+                    SimpleShowAdapter simpleShowAdapter = new SimpleShowAdapter(getActivity().getApplicationContext(), userShowsList, token);
+                    recList.setAdapter(simpleShowAdapter);
+
                 }
-
-                SimpleShowAdapter simpleShowAdapter = new SimpleShowAdapter(getActivity().getApplicationContext(), userShowsList, token);
-                recList.setAdapter(simpleShowAdapter);
 
                 break;
             case Config.STATUS_ERROR:
 
-                Log.e(TAG,"error");
-                UserInterface.showProgress(true, mContentView, mProgressView);
-                String error = resultData.getString(Intent.EXTRA_TEXT);
-                Toast.makeText(getActivity().getApplicationContext(), error, Toast.LENGTH_LONG).show();
+                if(isAdded()) {
+                    Log.e(TAG, "error");
+                    UserInterface.showProgress(true, mContentView, mProgressView);
+                    String error = resultData.getString(Intent.EXTRA_TEXT);
+                    Toast.makeText(getActivity().getApplicationContext(), error, Toast.LENGTH_LONG).show();
+                }
                 break;
         }
 

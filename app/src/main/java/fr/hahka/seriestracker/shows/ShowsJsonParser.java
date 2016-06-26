@@ -1,8 +1,12 @@
 package fr.hahka.seriestracker.shows;
 
 import android.util.JsonReader;
+import android.util.JsonToken;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 
 import fr.hahka.seriestracker.simpleshow.SimpleShow;
 
@@ -67,6 +71,68 @@ public class ShowsJsonParser {
 
         return new Show(id, title, seasons, episodes, archived, favorited);
     }*/
+
+
+
+    public static ArrayList<SimpleShow> readUserShowsListJsonStream(InputStream in) throws IOException {
+
+        JsonReader reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
+
+        ArrayList<SimpleShow> showsList = new ArrayList<>();
+
+        reader.beginObject();
+        while (reader.hasNext() && (reader.peek().toString().equals("NAME"))) {
+            String value = reader.nextName();
+            switch (value) {
+                case "member":
+
+                    reader.beginObject();
+
+                    while (reader.hasNext()) {
+
+                        String nameBis = reader.nextName();
+
+                        if (reader.peek() == JsonToken.NULL) {
+                            reader.nextNull();
+                        } else {
+
+                            switch (nameBis) {
+                                case "shows":
+                                    // On arrive dans le trajet
+                                    reader.beginArray();
+                                    while (reader.hasNext()) {
+                                        showsList.add(readSimpleShow(reader));
+                                    }
+                                    reader.endArray();
+
+                                    break;
+                                default:
+                                    reader.skipValue();
+                                    break;
+                            }
+
+                        }
+
+
+                    }
+
+                    reader.endObject();
+
+                    break;
+                case "error":
+                    reader.skipValue();
+                    break;
+                default:
+                    reader.skipValue();
+                    break;
+            }
+
+        }
+        reader.endObject();
+        reader.close();
+
+        return showsList;
+    }
 
 
 

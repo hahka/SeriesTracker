@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Surface;
@@ -26,9 +27,9 @@ import fr.hahka.seriestracker.utilitaires.images.BitmapTasks;
  * Created by thibautvirolle on 24/01/15.
  * Adapter pour la liste des séries avec bannières (SimpleShow)
  */
-public class SimpleShowAdapter extends RecyclerView.Adapter<SimpleShowAdapter.ShowViewHolder>{
+public class SimpleShowAdapterBackup extends RecyclerView.Adapter<SimpleShowAdapterBackup.ShowViewHolder>{
 
-    private static final String TAG = SimpleShowAdapter.class.getSimpleName();
+    private static final String TAG = SimpleShowAdapterBackup.class.getSimpleName();
 
     private ArrayList<SimpleShow> simpleShowList;
     private Context context;
@@ -36,9 +37,9 @@ public class SimpleShowAdapter extends RecyclerView.Adapter<SimpleShowAdapter.Sh
 
     private int count = 0;
 
-    public SimpleShowAdapter(Context context, ArrayList<SimpleShow> liste, String token) {
-        this.context = context;
+    public SimpleShowAdapterBackup(Context context, ArrayList<SimpleShow> liste, String token) {
         this.simpleShowList = liste;
+        this.context = context;
         this.token = token;
 
         BitmapTasks.setCache();
@@ -54,14 +55,17 @@ public class SimpleShowAdapter extends RecyclerView.Adapter<SimpleShowAdapter.Sh
 
     @Override
     public ShowViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-
         View itemView = LayoutInflater.
                 from(viewGroup.getContext()).
                 inflate(R.layout.simple_show_row, viewGroup, false);
 
         ImageView showImageView = (ImageView) itemView.findViewById(R.id.showImageView);
 
-        loadImage(showImageView, count);
+        /*if(showImageView != null && position != RecyclerView.NO_POSITION)
+            loadImage(showImageView, position);*/
+
+        //loadImage(showImageView, count);
+        Log.d(TAG, "onCreate " + String.valueOf(count));
         count++;
 
         itemView.setOnClickListener(new View.OnClickListener() {
@@ -90,11 +94,13 @@ public class SimpleShowAdapter extends RecyclerView.Adapter<SimpleShowAdapter.Sh
 
         loadImage(showViewHolder.showImageView, i);
 
+        Log.d(TAG, "onBind " + String.valueOf(i));
+
+
         String url = simpleShow.getUrl();
 
         if(url != null && !url.equals("")) {
             showViewHolder.showIdTextView.setText(String.valueOf(simpleShow.getId()));
-            showViewHolder.titletv.setVisibility(View.GONE);
         } else {
             showViewHolder.titletv.setText(simpleShow.getTitle());
             showViewHolder.titletv.setVisibility(View.VISIBLE);
@@ -113,12 +119,12 @@ public class SimpleShowAdapter extends RecyclerView.Adapter<SimpleShowAdapter.Sh
             float status = simpleShow.getStatus();
             if(remaining == 0) {
                 if(status == 100)
-                    showViewHolder.remainingTextView.setText(R.string.show_finished);
+                    showViewHolder.remainingTextView.setText("Série terminée");
                 else
                     showViewHolder.remainingTextView.setText("Diffusion prochaine");
             }
             else if (remaining == 1) {
-                showViewHolder.remainingTextView.setText(R.string.one_episode_remaining);
+                showViewHolder.remainingTextView.setText("1 épisode restant");
             }
             else {
                 showViewHolder.remainingTextView.setText(simpleShow.getRemaining() + " épisodes restants");
@@ -132,22 +138,20 @@ public class SimpleShowAdapter extends RecyclerView.Adapter<SimpleShowAdapter.Sh
 
 
     private void loadImage(ImageView imageView, int i) {
-        if(i < simpleShowList.size()) {
-            SimpleShow simpleShow = simpleShowList.get(i);
+        SimpleShow simpleShow = simpleShowList.get(i);
 
-            String url = simpleShow.getUrl();
+        String url = simpleShow.getUrl();
 
-            if (url != null && !url.equals("")) {
+        if(url != null && !url.equals("")) {
 
-                BitmapTasks task = new BitmapTasks(imageView);
-                task.execute(String.valueOf(simpleShow.getId()), url);
+            BitmapTasks task = new BitmapTasks(imageView);
+            task.execute(String.valueOf(simpleShow.getId()), url);
 
-            } else {
+        } else {
 
-                BitmapTasks task = new BitmapTasks(imageView);
-                task.execute(null, null);
+            BitmapTasks task = new BitmapTasks(imageView);
+            task.execute(null, null);
 
-            }
         }
     }
 
@@ -164,6 +168,8 @@ public class SimpleShowAdapter extends RecyclerView.Adapter<SimpleShowAdapter.Sh
 
             titletv = (TextView) v.findViewById(R.id.showTitleTextView);
             showImageView = (ImageView) v.findViewById(R.id.showImageView);
+
+            Log.d(TAG, String.valueOf(v.getId()));
 
 
         }

@@ -122,7 +122,7 @@ public class EpisodesJsonParser {
         }
         reader.endObject();
 
-        return new Episode(id, title, season, episode, seen, show, date);
+        return new Episode(id, title, season, episode, seen, /*show,*/ 0, date);
     }
 
 }

@@ -32,8 +32,10 @@
 
     <TextView
         android:id="@+id/episodeTitleTextView"
+
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+
         android:layout_alignBottom="@+id/isSeenImageButton"
         android:layout_alignParentTop="true"
         android:layout_gravity="center_horizontal"
@@ -41,7 +43,9 @@
         android:layout_toLeftOf="@+id/isSeenImageButton"
         android:layout_toRightOf="@+id/episodeSeparatorTextView"
         android:layout_toStartOf="@+id/isSeenImageButton"
+        android:ellipsize="end"
         android:gravity="center_vertical"
+        android:singleLine="true"
         android:text="@string/details"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 

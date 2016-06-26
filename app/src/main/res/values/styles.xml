@@ -9,6 +9,10 @@
         <item name="android:actionBarStyle">@style/MyActionBar</item>
     </style>
 
+    <style name="MyCustomThemeBis" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:actionBarStyle">@style/MyActionBar</item>
+    </style>
+
 
     <!-- ActionBar styles -->
     <style name="MyActionBar"

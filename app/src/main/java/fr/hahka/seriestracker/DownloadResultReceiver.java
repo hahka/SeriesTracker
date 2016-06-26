@@ -10,6 +10,7 @@ import android.os.ResultReceiver;
 
 
 public class DownloadResultReceiver extends ResultReceiver {
+
     private Receiver mReceiver;
 
     public DownloadResultReceiver(Handler handler) {

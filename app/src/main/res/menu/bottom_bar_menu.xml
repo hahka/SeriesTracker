@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/bottomBarProfile"
+        android:icon="@drawable/ic_profile"
+        android:title="@string/ic_profile_label" />
+    <item
+        android:id="@+id/bottomBarPlanning"
+        android:icon="@drawable/ic_planning"
+        android:title="@string/ic_planning_label" />
+    <item
+        android:id="@+id/bottomBarShows"
+        android:icon="@drawable/ic_shows"
+        android:title="@string/ic_shows_label" />
+    <item
+        android:id="@+id/bottomBarLogout"
+        android:icon="@drawable/ic_logout"
+        android:title="@string/ic_logout_label" />
+</menu>

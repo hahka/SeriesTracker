@@ -6,8 +6,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.ResultReceiver;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -19,8 +21,13 @@ import java.util.ArrayList;
 
 import fr.hahka.seriestracker.DownloadResultReceiver;
 import fr.hahka.seriestracker.R;
+import fr.hahka.seriestracker.api.APIService;
+import fr.hahka.seriestracker.api.ApiParamHashMap;
 import fr.hahka.seriestracker.utilitaires.Config;
 import fr.hahka.seriestracker.utilitaires.UserInterface;
+import io.realm.Realm;
+import io.realm.RealmQuery;
+import io.realm.RealmResults;
 
 import static fr.hahka.seriestracker.R.drawable.ic_shows;
 
@@ -31,6 +38,8 @@ public class EpisodesActivity extends Activity implements DownloadResultReceiver
     private ArrayList<Episode> userShowEpisodesList = new ArrayList<>();
     private View mContentView;
     private View mProgressView;
+
+    private String showId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,19 +59,28 @@ public class EpisodesActivity extends Activity implements DownloadResultReceiver
 
         UserInterface.showProgress(true, mContentView, mProgressView);
 
-        DownloadResultReceiver mReceiver = new DownloadResultReceiver(new Handler());
-        mReceiver.setReceiver(this);
-        Intent intent = new Intent(Intent.ACTION_SYNC, null, getApplicationContext(), EpisodesService.class);
+        ResultReceiver mReceiver = new ResultReceiver(new Handler());
+
+        Intent intent = new Intent(Intent.ACTION_SYNC, null, getApplicationContext(), APIService.class);
 
         Intent callingIntent = getIntent();
-        String showId = callingIntent.getStringExtra(Config.SHOW_ID);
+        showId = callingIntent.getStringExtra(Config.SHOW_ID);
         String token = callingIntent.getStringExtra(Config.TOKEN);
 
         /* Send optional extras to Download IntentService */
+        intent.putExtra("rest", "GET");
+        intent.putExtra("resource", "shows");
+        intent.putExtra("action", "episodes");
+
+        ApiParamHashMap params = new ApiParamHashMap();
+        params.put("id", showId);
+        params.put("token", token);
+
+        intent.putExtra("params", params);
+
         intent.putExtra("receiver", mReceiver);
         intent.putExtra(Config.SHOW_ID, showId);
         intent.putExtra(Config.TOKEN, token);
-        intent.putExtra("requestId", 101);
 
         startService(intent);
 
@@ -71,12 +89,32 @@ public class EpisodesActivity extends Activity implements DownloadResultReceiver
     @Override
     public void onReceiveResult(int resultCode, Bundle resultData) {
 
+        Log.d("toto", "100");
+
         switch (resultCode) {
             case Config.STATUS_RUNNING:
+
+                Log.d("toto", "101");
+
                 break;
             case Config.STATUS_FINISHED:
 
-                userShowEpisodesList = resultData.getParcelableArrayList(Config.EPISODES_LIST);
+                Log.d("toto", "102");
+
+                Realm realm = Realm.getInstance(getApplicationContext());
+
+                RealmQuery<Episode> query = realm.where(Episode.class)
+                        .equalTo("showId", Integer.parseInt(showId));
+
+                RealmResults<Episode> result1 = query.findAll();
+
+                result1.sort("episode");
+                result1.sort("season");
+
+                for(Episode episode : result1){
+                    userShowEpisodesList.add(episode);
+                }
+
 
                 viewPager = (ViewPager) findViewById(R.id.myviewpager);
                 myPagerAdapter = new MyPagerAdapter(getApplicationContext(), userShowEpisodesList);
@@ -87,6 +125,8 @@ public class EpisodesActivity extends Activity implements DownloadResultReceiver
 
                 break;
             case Config.STATUS_ERROR:
+
+                Log.d("toto", "103");
 
                 String error = resultData.getString(Intent.EXTRA_TEXT);
                 Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG).show();
@@ -147,7 +187,7 @@ public class EpisodesActivity extends Activity implements DownloadResultReceiver
                     seasonEpisodesList.add(episode);
             }
 
-            EpisodesAdapter adapter = new EpisodesAdapter(seasonEpisodesList);
+            EpisodesAdapter adapter = new EpisodesAdapter(EpisodesActivity.this, seasonEpisodesList);
 
             episodesListView.setAdapter(adapter);
 

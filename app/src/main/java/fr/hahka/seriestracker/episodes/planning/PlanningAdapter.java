@@ -1,49 +1,38 @@
 package fr.hahka.seriestracker.episodes.planning;
 
 import android.content.Context;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
 import fr.hahka.seriestracker.R;
+import fr.hahka.seriestracker.episodes.episodes.Episode;
+import fr.hahka.seriestracker.episodes.episodes.EpisodeUtils;
 
 /**
  * Created by thibautvirolle on 07/12/14.
  * Adapter pour afficher la listView du planning
  */
-public class PlanningAdapter extends BaseAdapter {
+public class PlanningAdapter extends RecyclerView.Adapter<PlanningAdapter.PlanningViewHolder> {
 
-    ArrayList<Planning> episodesList = new ArrayList<>();
-    private String[] headerList;
+    ArrayList<Episode> episodesList = new ArrayList<>();
 
-    public PlanningAdapter(Context context,ArrayList<Planning> liste) {
+    private int count = 0;
+
+
+    public PlanningAdapter(ArrayList<Episode> liste) {
         this.episodesList = liste;
-
-        headerList = context.getResources().getStringArray(R.array.header_items);
-        int headerIndice = -1;
-
-        for(Planning p : episodesList) {
-            int newHeaderIndice = p.getHeaderIndice();
-            if(!(headerIndice == newHeaderIndice)){
-                headerIndice = newHeaderIndice;
-                p.setHeader(headerList[headerIndice]);
-            }
-        }
-
     }
 
+
     @Override
-    public int getCount() {
+    public int getItemCount() {
         return episodesList.size();
-    }
-
-    @Override
-    public Planning getItem(int position) {
-        return episodesList.get(position);
     }
 
     @Override
@@ -52,45 +41,97 @@ public class PlanningAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View view, ViewGroup viewGroup) {
+    public PlanningViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
 
-        final Planning episode = getItem(position);
+        View itemView = LayoutInflater.
+                from(viewGroup.getContext()).
+                inflate(R.layout.planning_row_with_header, viewGroup, false);
 
+        final Episode episode = episodesList.get(count);
+        String header = episode.getHeader();
 
-        int headerIndice = episode.getHeaderIndice();
+        TextView headerTextView = (TextView) itemView.findViewById(R.id.headerTextView);
+        View separator = itemView.findViewById(R.id.headerSeparatorView);
 
+        if(count != 0 && ((header == null) || (header.equals("")))) {
 
-        if(position == 0) {
-            view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.planning_row_with_header, viewGroup, false);
-            TextView headerTextView = (TextView) view.findViewById(R.id.headerTextView);
-            headerTextView.setText(headerList[headerIndice]);
+            headerTextView.setVisibility(View.GONE);
+            separator.setVisibility(View.GONE);
 
         } else {
 
-            String header = episode.getHeader();
-            if(!(header == null)) {
-                view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.planning_row_with_header, viewGroup, false);
-
-                TextView headerTextView = (TextView) view.findViewById(R.id.headerTextView);
-                headerTextView.setText(header);
-
-            } else {
-                view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.planning_row, viewGroup, false);
-            }
-
+            headerTextView.setVisibility(View.VISIBLE);
+            separator.setVisibility(View.VISIBLE);
         }
 
-        TextView dateTextView = (TextView) view.findViewById(R.id.dateTextView);
-        dateTextView.setText(episode.getDateShortString());
+        Log.d("tata", "onCreate");
+        headerTextView.setText(episode.getHeader());
 
-        TextView showTitleTextView = (TextView) view.findViewById(R.id.showTitleTextView);
+        TextView dateTextView = (TextView) itemView.findViewById(R.id.dateTextView);
+        dateTextView.setText(EpisodeUtils.getDateShortString(episode));
+
+        TextView showTitleTextView = (TextView) itemView.findViewById(R.id.showTitleTextView);
         showTitleTextView.setText(episode.getShow());
 
-        TextView episodeDetailsTextView = (TextView) view.findViewById(R.id.episodeDetailsTextView);
-        episodeDetailsTextView.setText(episode.getCode() + " - " + episode.getTitle());
+        TextView episodeDetailsTextView = (TextView) itemView.findViewById(R.id.episodeDetailsTextView);
+        episodeDetailsTextView.setText(String.format("%s - %s", episode.getCode(), episode.getTitle()));
 
 
-        return view;
+        count++;
+
+        return new PlanningViewHolder(itemView, viewGroup.getContext());
+    }
+
+    @Override
+    public void onBindViewHolder(PlanningViewHolder holder, int position) {
+
+        Log.d("tata", "onBind");
+
+        Episode episode = episodesList.get(position);
+        String header = episode.getHeader();
+
+        if(count != 0 && ((header == null) || (header.equals("")))) {
+
+            holder.headerTextView.setVisibility(View.GONE);
+            holder.separator.setVisibility(View.GONE);
+
+        } else {
+
+            holder.headerTextView.setVisibility(View.VISIBLE);
+            holder.headerTextView.setText(episode.getHeader());
+            holder.separator.setVisibility(View.VISIBLE);
+        }
+
+        holder.dateTextView.setText(EpisodeUtils.getDateShortString(episode));
+        holder.showTitleTextView.setText(episode.getShow());
+        holder.episodeDetailsTextView.setText(String.format("%s - %s", episode.getCode(), episode.getTitle()));
+
+
+    }
+
+
+    public class PlanningViewHolder extends RecyclerView.ViewHolder {
+
+        protected TextView headerTextView;
+        protected TextView dateTextView;
+        protected TextView showTitleTextView;
+        protected TextView episodeDetailsTextView;
+        protected View separator;
+
+        public PlanningViewHolder(View itemView) {
+            super(itemView);
+        }
+
+        public PlanningViewHolder(View v, final Context c) {
+            super(v);
+
+            headerTextView = (TextView) v.findViewById(R.id.headerTextView);
+            dateTextView = (TextView) v.findViewById(R.id.dateTextView);
+            showTitleTextView = (TextView) v.findViewById(R.id.showTitleTextView);
+            episodeDetailsTextView = (TextView) v.findViewById(R.id.episodeDetailsTextView);
+            separator = v.findViewById(R.id.headerSeparatorView);
+
+        }
     }
 }
 

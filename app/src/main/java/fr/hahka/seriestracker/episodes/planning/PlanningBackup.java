@@ -9,19 +9,19 @@ import fr.hahka.seriestracker.episodes.AbstractEpisode;
 
 /**
  * Created by thibautvirolle on 13/01/15.
- * Classe Planning : Episode plus header pour affichage
+ * Classe PlanningBackup : Episode plus header pour affichage
  */
-public class Planning extends AbstractEpisode implements Parcelable{
+public class PlanningBackup extends AbstractEpisode implements Parcelable{
 
-    public static final Parcelable.Creator<Planning> CREATOR = new Parcelable.Creator<Planning>() {
+    public static final Parcelable.Creator<PlanningBackup> CREATOR = new Parcelable.Creator<PlanningBackup>() {
         @Override
-        public Planning createFromParcel(Parcel source) {
-            return new Planning(source);
+        public PlanningBackup createFromParcel(Parcel source) {
+            return new PlanningBackup(source);
         }
 
         @Override
-        public Planning[] newArray(int size) {
-            return new Planning[size];
+        public PlanningBackup[] newArray(int size) {
+            return new PlanningBackup[size];
         }
     };
     private static Calendar today = Calendar.getInstance();
@@ -31,7 +31,7 @@ public class Planning extends AbstractEpisode implements Parcelable{
     private String code = "";
 
 
-    public Planning(int id, String title, String show, String code, String date) {
+    public PlanningBackup(int id, String title, String show, String code, String date) {
 
         setId(id);
         setTitle(title);
@@ -42,7 +42,7 @@ public class Planning extends AbstractEpisode implements Parcelable{
     }
 
 
-    public Planning(Parcel in) {
+    public PlanningBackup(Parcel in) {
         this.id = in.readInt();
         this.title = in.readString();
         this.show = in.readString();

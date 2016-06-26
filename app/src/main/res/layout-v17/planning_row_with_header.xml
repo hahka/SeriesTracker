@@ -2,7 +2,7 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
     android:paddingTop="10dp">
 
@@ -16,6 +16,7 @@
         android:textAppearance="?android:attr/textAppearanceMedium"/>
 
     <View
+        android:id="@+id/headerSeparatorView"
         android:layout_width="fill_parent"
         android:layout_height="2dp"
         android:background="@android:color/darker_gray"/>

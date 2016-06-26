@@ -19,16 +19,6 @@ public class SimpleShow extends RealmObject{
     public SimpleShow(){
 
     }
-    /*public SimpleShow(int id, String title) {
-        setId(id);
-        setTitle(title);
-    }
-
-    public SimpleShow(int id, int thetvdbId, String title) {
-        setId(id);
-        setThetvdbId(thetvdbId);
-        setTitle(title);
-    }*/
 
     public SimpleShow(int id, int thetvdbId, String title, float status, int remaining) {
         setId(id);
@@ -94,6 +84,5 @@ public class SimpleShow extends RealmObject{
     public void setUserId(int userId) {
         this.userId = userId;
     }
-
 
 }

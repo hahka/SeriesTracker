@@ -19,9 +19,13 @@ import fr.hahka.seriestracker.R;
 public class EpisodesAdapter extends BaseAdapter {
 
     private static String TAG = EpisodesAdapter.class.getSimpleName();
-    ArrayList<Episode> episodesList = new ArrayList<>();
 
-    public EpisodesAdapter(ArrayList<Episode> liste) {
+    private EpisodesActivity activity;
+    private ArrayList<Episode> episodesList = new ArrayList<>();
+
+
+    public EpisodesAdapter(EpisodesActivity activity, ArrayList<Episode> liste) {
+        this.activity = activity;
         this.episodesList = liste;
     }
 
@@ -70,8 +74,10 @@ public class EpisodesAdapter extends BaseAdapter {
             @Override
             public void onClick(View view) {
                 TextView idtv = (TextView) view.findViewById(R.id.episodeIdTextView);
-                int showId = Integer.parseInt(idtv.getText().toString());
-                Log.d(TAG, String.valueOf(showId));
+                int episodeId = Integer.parseInt(idtv.getText().toString());
+                Log.d(TAG, String.valueOf(episodeId));
+
+                EpisodeDialogUtils.showEpisodeDialog(activity, episodeId);
             }
         });
 
