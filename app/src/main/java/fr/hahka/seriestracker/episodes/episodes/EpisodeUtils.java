@@ -7,16 +7,31 @@ import java.util.Calendar;
  */
 public class EpisodeUtils {
 
+    public static int getJourFromString(String date) {
+        return Integer.parseInt(date.split("-")[2]);
+    }
+
+    public static int getMoisFromString(String date) {
+        return Integer.parseInt(date.split("-")[1]);
+    }
+
+    public static int getAnneeFromString(String date) {
+        return Integer.parseInt(date.split("-")[0]);
+    }
+
     public static int getJour(Episode episode) {
-        return Integer.parseInt(episode.getDate().split("-")[2]);
+        // TODO : deprecated
+        return episode.getDate().getDate();
     }
 
     public static int getMois(Episode episode) {
-        return Integer.parseInt(episode.getDate().split("-")[1]);
+        // TODO : deprecated
+        return episode.getDate().getMonth() + 1;
     }
 
     public static int getAnnee(Episode episode) {
-        return Integer.parseInt(episode.getDate().split("-")[0]);
+        // TODO : deprecated
+        return episode.getDate().getYear() + 1900;
     }
 
     public static long getNbJourAvantDiffusion(Episode episode){
@@ -33,7 +48,7 @@ public class EpisodeUtils {
     }
 
     public static String getDateShortString(Episode episode) {
-        return episode.getDate().split("-")[2] + "/" + episode.getDate().split("-")[1];
+        return episode.getDate().getDate() + "/" + (episode.getDate().getMonth()+1);
     }
 
     public static int getCurrentMonth() {
@@ -41,5 +56,19 @@ public class EpisodeUtils {
         return today.get(Calendar.MONTH) + 1;
     }
 
+    public static int getCurrentYear() {
+        Calendar today = Calendar.getInstance();
+        return today.get(Calendar.YEAR);
+    }
+
+
+    public static int getCurrentDayOfWeek() {
+        int dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+        dayOfWeek -= 1;
+        if(dayOfWeek == 0)
+            dayOfWeek = 7;
+
+        return dayOfWeek;
+    }
 
 }

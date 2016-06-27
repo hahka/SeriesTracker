@@ -1,8 +1,9 @@
 package fr.hahka.seriestracker.episodes.episodes;
 
-import java.util.Calendar;
+import java.util.Date;
 
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by thibautvirolle on 06/12/14.
@@ -10,13 +11,15 @@ import io.realm.RealmObject;
  */
 public class Episode extends RealmObject {
 
+    @PrimaryKey
     private int id = 0;
+
     private String title = "";
     private int season = 0;
     private int episode = 0;
     private boolean seen = false;
     private int showId = 0;
-    private String date = "";
+    private Date date = null;
 
     private String header = "";
     private String show = "";
@@ -26,7 +29,7 @@ public class Episode extends RealmObject {
 
     }
 
-    public Episode(int id, String title, int season, int episode, boolean seen, int showId, String date) {
+    public Episode(int id, String title, int season, int episode, boolean seen, int showId, Date date) {
         setId(id);
         setTitle(title);
         setSeason(season);
@@ -34,15 +37,6 @@ public class Episode extends RealmObject {
         setSeen(seen);
         setShowId(showId);
         setDate(date);
-    }
-
-    public static int getCurrentDayOfWeek() {
-        int dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
-        dayOfWeek -= 1;
-        if(dayOfWeek == 0)
-            dayOfWeek = 7;
-
-        return dayOfWeek;
     }
 
     public int getId(){ return id; }
@@ -85,11 +79,11 @@ public class Episode extends RealmObject {
         this.showId = showId;
     }
 
-    public String getDate() {
+    public Date getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(Date date) {
         this.date = date;
     }
 
@@ -120,7 +114,7 @@ public class Episode extends RealmObject {
 
 
     public long getIndice(){
-        return EpisodeUtils.getNbJourAvantDiffusion(this) + getCurrentDayOfWeek();
+        return EpisodeUtils.getNbJourAvantDiffusion(this) + EpisodeUtils.getCurrentDayOfWeek();
     }
 
     public int getHeaderIndice() {
@@ -144,16 +138,34 @@ public class Episode extends RealmObject {
             int currentMonth = EpisodeUtils.getCurrentMonth();
             int episodeMonth = EpisodeUtils.getMois(this);
 
-            if(currentMonth == episodeMonth) {
-                return 6;
-            } else if(currentMonth == episodeMonth -1) {
-                return 7;
-            } else if(currentMonth == episodeMonth -2) {
-                return 8;
-            } else if(currentMonth == episodeMonth -3) {
-                return 9;
+            int currentYear = EpisodeUtils.getCurrentYear();
+            int episodeYear = EpisodeUtils.getAnnee(this);
+
+            // TODO : améliorer années différentes
+            if(currentYear < episodeYear) {
+                if (currentMonth == episodeMonth) {
+                    return 10;
+                } else if (currentMonth == episodeMonth - 1) {
+                    return 7;
+                } else if (currentMonth == episodeMonth - 2) {
+                    return 8;
+                } else if (currentMonth == episodeMonth - 3) {
+                    return 9;
+                } else {
+                    return 10;
+                }
             } else {
-                return 10;
+                if (currentMonth == episodeMonth) {
+                    return 6;
+                } else if (currentMonth == episodeMonth - 1) {
+                    return 7;
+                } else if (currentMonth == episodeMonth - 2) {
+                    return 8;
+                } else if (currentMonth == episodeMonth - 3) {
+                    return 9;
+                } else {
+                    return 10;
+                }
             }
 
         }

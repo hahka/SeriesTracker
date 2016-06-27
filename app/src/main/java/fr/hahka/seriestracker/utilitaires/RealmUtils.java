@@ -3,6 +3,7 @@ package fr.hahka.seriestracker.utilitaires;
 import android.content.Context;
 
 import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import io.realm.RealmQuery;
 
 /**
@@ -25,7 +26,9 @@ public class RealmUtils {
      */
     public static int findById(Context pContext, Class pClass, int pId) {
 
-        Realm realm = Realm.getInstance(pContext);
+
+        RealmConfiguration config = new RealmConfiguration.Builder(pContext).build();
+        Realm realm = Realm.getInstance(config);
 
         RealmQuery query = realm.where(pClass)
                 .equalTo("id", pId);
@@ -75,10 +78,12 @@ public class RealmUtils {
 
     public static void clearTable(Context pContext, Class pClass){
 
-        Realm realm = Realm.getInstance(pContext);
+
+        RealmConfiguration config = new RealmConfiguration.Builder(pContext).build();
+        Realm realm = Realm.getInstance(config);
 
         realm.beginTransaction();
-        realm.clear(pClass);
+        //realm.clear(pClass);
         realm.commitTransaction();
 
     }

@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import fr.hahka.seriestracker.utilitaires.Config;
 import fr.hahka.seriestracker.utilitaires.RealmUtils;
 import io.realm.Realm;
+import io.realm.RealmConfiguration;
 
 /**
  * Created by thibautvirolle on 14/01/15.
@@ -49,7 +50,9 @@ public class EpisodesService extends IntentService {
             InputStream in = new BufferedInputStream(urlConnection.getInputStream());
 
             episodesList = EpisodesJsonParser.readShowEpisodesJsonStream(in);
-            Realm realm = Realm.getInstance(this);
+
+            RealmConfiguration config = new RealmConfiguration.Builder(this).build();
+            Realm realm = Realm.getInstance(config);
 
             for(Episode episode : episodesList) {
                 if (!RealmUtils.exists(c, Episode.class, episode.getId())) {

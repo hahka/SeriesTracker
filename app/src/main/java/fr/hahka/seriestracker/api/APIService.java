@@ -15,9 +15,11 @@ import java.util.ArrayList;
 
 import fr.hahka.seriestracker.episodes.episodes.Episode;
 import fr.hahka.seriestracker.episodes.episodes.EpisodesJsonParser;
+import fr.hahka.seriestracker.episodes.planning.PlanningJsonParser;
 import fr.hahka.seriestracker.utilitaires.Config;
 import fr.hahka.seriestracker.utilitaires.RealmUtils;
 import io.realm.Realm;
+import io.realm.RealmConfiguration;
 
 /**
  * Created by thibautvirolle on 23/06/2016.
@@ -53,86 +55,80 @@ public class APIService extends IntentService {
         /*String showId = workIntent.getStringExtra(Config.SHOW_ID);
         String token = workIntent.getStringExtra(Config.TOKEN);*/
 
-        Log.d(TAG, "1");
-
         try {
-
-            ApiParamHashMap params = (ApiParamHashMap)workIntent.getParcelableExtra("params");
-            Log.d(TAG, "2");
-
-            String showId = params.get("id");
-            Log.d(TAG, "3");
-
             /*URL url = new URL(Config.BETASERIES_API
                     + resource + "/" + action
                     + "?key=" + Config.BETASERIES_API_KEY
                     + "&id=" + showId + "&token=" + token);*/
+            ApiParamHashMap params = (ApiParamHashMap) workIntent.getParcelableExtra("params");
 
             URL url = new URL(Config.BETASERIES_API
                     + resource + "/" + action
                     + "?key=" + Config.BETASERIES_API_KEY
                     + "&" + params.toString());
 
+            if(resource.equals("planning") && action.equals("member")) {
 
-            Log.d(TAG, "4");
+                String userId = params.get("id");
 
-            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
 
-            Log.d(TAG, "5");
-            InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                PlanningJsonParser.readUserPlanningJsonStream(getApplicationContext(), in, userId);
 
+                receiver.send(Config.STATUS_FINISHED, bundle);
 
-            Log.d(TAG, "6");
-
-            if(rest.equals("GET")) {
-
-                Log.d(TAG, "7");
-
-                episodesList = EpisodesJsonParser.readShowEpisodesJsonStream(in);
-                Realm realm = Realm.getInstance(this);
-
-                Log.d(TAG, "8");
-
-                for(Episode episode : episodesList) {
-                    if (!RealmUtils.exists(c, Episode.class, episode.getId())) {
-                        realm.beginTransaction();
-                        Episode newEpisode = realm.createObject(Episode.class); // Create a new object
-                        newEpisode.setId(episode.getId());
-                        newEpisode.setDate(episode.getDate());
-                        newEpisode.setEpisode(episode.getEpisode());
-                        newEpisode.setSeason(episode.getSeason());
-                        newEpisode.setSeen(episode.isSeen());
-                        newEpisode.setShowId(Integer.parseInt(showId));
-                        newEpisode.setTitle(episode.getTitle());
-
-                        realm.commitTransaction();
-                    } else {
-                        realm.beginTransaction();
-                        //realm.clear(SimpleShow.class);
-                        realm.commitTransaction();
-                    }
-                }
-
-                Log.d(TAG, "9");
+                urlConnection.disconnect();
 
             } else {
-                errorMessage = "404 Not Found";
+                String showId = params.get("id");
+
+
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+
+                if (rest.equals("GET")) {
+
+                    episodesList = EpisodesJsonParser.readShowEpisodesJsonStream(in);
+
+                    RealmConfiguration config = new RealmConfiguration.Builder(this).build();
+                    Realm realm = Realm.getInstance(config);
+
+                    for (Episode episode : episodesList) {
+                        if (!RealmUtils.exists(c, Episode.class, episode.getId())) {
+                            realm.beginTransaction();
+                            Episode newEpisode = realm.createObject(Episode.class); // Create a new object
+                            newEpisode.setId(episode.getId());
+                            newEpisode.setDate(episode.getDate());
+                            newEpisode.setEpisode(episode.getEpisode());
+                            newEpisode.setSeason(episode.getSeason());
+                            newEpisode.setSeen(episode.isSeen());
+                            newEpisode.setShowId(Integer.parseInt(showId));
+                            newEpisode.setTitle(episode.getTitle());
+
+                            Log.d(TAG, episode.getTitle());
+
+                            realm.commitTransaction();
+                        } else {
+                            realm.beginTransaction();
+                            //realm.clear(SimpleShow.class);
+                            realm.commitTransaction();
+                        }
+                    }
+
+                } else {
+                    errorMessage = "404 Not Found";
+                }
+
+                urlConnection.disconnect();
+
+                if (!errorMessage.equals("")) {
+                    bundle.putString(Intent.EXTRA_TEXT, errorMessage);
+                    receiver.send(Config.STATUS_ERROR, bundle);
+                }
             }
-
-            if(!errorMessage.equals("")) {
-                bundle.putString(Intent.EXTRA_TEXT, errorMessage);
-                receiver.send(Config.STATUS_ERROR, bundle);
-            }
-
-            Log.d(TAG, "10");
-
-            urlConnection.disconnect();
-
-            Log.d(TAG, "11");
 
             receiver.send(Config.STATUS_FINISHED, bundle);
-
-            Log.d(TAG, "12");
 
         } catch (Exception e) {
             e.printStackTrace();

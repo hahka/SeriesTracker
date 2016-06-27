@@ -2,6 +2,7 @@ package fr.hahka.seriestracker;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -12,10 +13,11 @@ import com.ashokvarma.bottomnavigation.BottomNavigationItem;
 
 import fr.hahka.seriestracker.episodes.planning.PlanningFragment;
 import fr.hahka.seriestracker.shows.ShowsFragment;
-import fr.hahka.seriestracker.simpleshow.SimpleShow;
 import fr.hahka.seriestracker.user.UserFragment;
 import fr.hahka.seriestracker.utilitaires.Config;
+import fr.hahka.seriestracker.utilitaires.ScrollableFragmentWithBottomBar;
 import io.realm.Realm;
+import io.realm.RealmConfiguration;
 
 /**
  * Created by thibautvirolle on 23/06/2016.
@@ -23,14 +25,20 @@ import io.realm.Realm;
 public class BottomNavigationActivity extends AppCompatActivity {
 
     private static final String TAG = BottomNavigationActivity.class.getSimpleName();
-    //private BottomBar mBottomBar;
+
     private static String userId = "";
     private static String token = "";
-    BottomNavigationBar bottomNavigationBar;
+    private BottomNavigationBar bottomNavigationBar;
+
+    private Fragment fragment = null;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+        RealmConfiguration realmConfiguration = new RealmConfiguration.Builder(this).build();
+        Realm.setDefaultConfiguration(realmConfiguration);
 
         Log.d(TAG, "onCreate");
 
@@ -57,6 +65,9 @@ public class BottomNavigationActivity extends AppCompatActivity {
             @Override
             public void onTabReselected(int position) {
                 //bottomNavigationItemAction(position);
+                if(position == 1 || position == 2) {
+                    ((ScrollableFragmentWithBottomBar)fragment).smoothScrollToPosition(0);
+                }
             }
         });
 
@@ -85,9 +96,10 @@ public class BottomNavigationActivity extends AppCompatActivity {
         Intent restart = new Intent(BottomNavigationActivity.this,BottomNavigationActivity.class);
         userId = null;
 
-        Realm realm = Realm.getInstance(this);
+        RealmConfiguration config = new RealmConfiguration.Builder(this).build();
+        Realm realm = Realm.getInstance(config);
         realm.beginTransaction();
-        realm.clear(SimpleShow.class);
+        //realm.clear(SimpleShow.class);
         realm.commitTransaction();
 
         startActivity(restart);
@@ -109,7 +121,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
      */
     private void displayView(int position) {
         // met à jour le contenu en remplaçant le fragment
-        Fragment fragment = null;
+
         Bundle bundle;
         switch (position) {
             case 0:
@@ -144,8 +156,15 @@ public class BottomNavigationActivity extends AppCompatActivity {
         if (fragment != null) {
 
             FragmentManager fragmentManager = getFragmentManager();
-            fragmentManager.beginTransaction()
-                    .replace(R.id.frame_container, fragment).commit();
+
+            FragmentTransaction ft = fragmentManager.beginTransaction();
+
+            ft.setTransition(FragmentTransaction.
+                    TRANSIT_FRAGMENT_FADE);
+
+
+            ft.replace(R.id.frame_container, fragment).commit();
+
 
         }
     }

@@ -17,6 +17,7 @@ import fr.hahka.seriestracker.utilitaires.Config;
 import fr.hahka.seriestracker.utilitaires.RealmUtils;
 import fr.hahka.seriestracker.utilitaires.XmlParser;
 import io.realm.Realm;
+import io.realm.RealmConfiguration;
 
 /**
  * Created by thibautvirolle on 14/01/15.
@@ -72,7 +73,8 @@ public class ShowsService extends IntentService {
 
 
 
-                Realm realm = Realm.getInstance(this);
+                RealmConfiguration config = new RealmConfiguration.Builder(this).build();
+                Realm realm = Realm.getInstance(config);
 
                 if(!RealmUtils.exists(c,SimpleShow.class,show.getId())){
                     realm.beginTransaction();

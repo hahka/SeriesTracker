@@ -9,9 +9,7 @@ import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 
-import fr.hahka.seriestracker.episodes.episodes.Episode;
 import fr.hahka.seriestracker.utilitaires.Config;
 
 /**
@@ -31,8 +29,7 @@ public class PlanningService extends IntentService {
     @Override
     protected void onHandleIntent(Intent workIntent) {
 
-        ArrayList<PlanningBackup> planningBackupList;
-        ArrayList<Episode> episodesList;
+
         Bundle bundle = new Bundle();
         final ResultReceiver receiver = workIntent.getParcelableExtra("receiver");
 
@@ -44,10 +41,8 @@ public class PlanningService extends IntentService {
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
 
             InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-            //planningBackupList = PlanningJsonParser.readUserPlanningJsonStream(in);
-            episodesList = PlanningJsonParser.readUserPlanningJsonStream(getApplicationContext(), in);
+            PlanningJsonParser.readUserPlanningJsonStream(getApplicationContext(), in, userId);
 
-            //bundle.putParcelableArrayList(Config.PLANNING_LIST, planningBackupList);
             receiver.send(Config.STATUS_FINISHED, bundle);
 
             urlConnection.disconnect();

@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -62,8 +64,9 @@ public class EpisodesJsonParser {
 
     private static Episode readEpisode(JsonReader reader) throws IOException {
         int id = 0, season = 0, episode = 0;
-        String title = "", show = "", date = "";
+        String title = "", show = "";
         boolean seen = false;
+        Date date = null;
 
         reader.beginObject();
 
@@ -98,7 +101,15 @@ public class EpisodesJsonParser {
 
                     break;
                 case "date":
-                    date = reader.nextString();
+                    String dateString = reader.nextString();
+                    /*date = new Date(EpisodeUtils.getAnneeFromString(dateString),
+                            EpisodeUtils.getAnneeFromString(dateString),
+                            EpisodeUtils.getAnneeFromString(dateString));*/
+                    Calendar instance = Calendar.getInstance();
+                    instance.set(EpisodeUtils.getAnneeFromString(dateString),
+                            EpisodeUtils.getMoisFromString(dateString) - 1,
+                            EpisodeUtils.getJourFromString(dateString));
+                    date = instance.getTime();
                     break;
                 case "user":
 
@@ -121,6 +132,7 @@ public class EpisodesJsonParser {
             }
         }
         reader.endObject();
+
 
         return new Episode(id, title, season, episode, seen, /*show,*/ 0, date);
     }

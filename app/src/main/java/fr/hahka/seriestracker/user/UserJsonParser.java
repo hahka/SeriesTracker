@@ -19,6 +19,7 @@ import fr.hahka.seriestracker.utilitaires.Config;
 import fr.hahka.seriestracker.utilitaires.RealmUtils;
 import fr.hahka.seriestracker.utilitaires.XmlParser;
 import io.realm.Realm;
+import io.realm.RealmConfiguration;
 
 import static fr.hahka.seriestracker.shows.ShowsJsonParser.readSimpleShow;
 
@@ -147,7 +148,9 @@ public class UserJsonParser {
         reader.endObject();
         reader.close();
 
-        Realm realm = Realm.getInstance(c);
+
+        RealmConfiguration config = new RealmConfiguration.Builder(c).build();
+        Realm realm = Realm.getInstance(config);
 
         for(SimpleShow show : showsList){
 

@@ -28,6 +28,8 @@ public class ScrollableFragmentWithBottomBar extends Fragment implements Downloa
 
     protected int mBottomBarTranslationY = 0;
 
+    protected RecyclerView rv;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -38,50 +40,63 @@ public class ScrollableFragmentWithBottomBar extends Fragment implements Downloa
 
     }
 
-        @Override
+    @Override
     public void onReceiveResult(int resultCode, Bundle resultData) {
 
     }
 
+    public void setRecyclerView(RecyclerView rv) {
+        this.rv = rv;
+    }
+
+    public void smoothScrollToPosition(int position) {
+
+        if(rv != null)
+            rv.smoothScrollToPosition(position);
+
+    }
 
     public void setScrollBehavior(RecyclerView rv) {
 
-        rv.addOnScrollListener(new OnScrollListener() {
+        if(rv != null) {
+            setRecyclerView(rv);
+            this.rv.addOnScrollListener(new OnScrollListener() {
 
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                if (dy > 0 && mDirection == -1) {
-                    // Scrolling up
-                    mDirection = 1;
-                } else if (dy < 0 && mDirection == 1) {
-                    // Scrolling down
-                    mDirection = -1;
-                }
-            }
-
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-
-                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_FLING
-                        || newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
-                    // Do something
-                    if(mDirection == 1) {
-                        // Going up
-                        mBottomBarTranslationY = mBottomNavigationBar.getHeight();
-                    } else if(mDirection == -1){
-                        // Going down
-                        mBottomBarTranslationY = 0;
+                @Override
+                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                    super.onScrolled(recyclerView, dx, dy);
+                    if (dy > 0 && mDirection == -1) {
+                        // Scrolling up
+                        mDirection = 1;
+                    } else if (dy < 0 && mDirection == 1) {
+                        // Scrolling down
+                        mDirection = -1;
                     }
-
-                    mBottomNavigationBar.animate().translationY(mBottomBarTranslationY);
-
-                } else {
-                    // Do something
                 }
-            }
-        });
+
+                @Override
+                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                    super.onScrollStateChanged(recyclerView, newState);
+
+                    if (newState == AbsListView.OnScrollListener.SCROLL_STATE_FLING
+                            || newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
+                        // Do something
+                        if (mDirection == 1) {
+                            // Going up
+                            mBottomBarTranslationY = mBottomNavigationBar.getHeight();
+                        } else if (mDirection == -1) {
+                            // Going down
+                            mBottomBarTranslationY = 0;
+                        }
+
+                        mBottomNavigationBar.animate().translationY(mBottomBarTranslationY);
+
+                    } else {
+                        // Do something
+                    }
+                }
+            });
+        }
 
     }
 

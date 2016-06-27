@@ -19,6 +19,7 @@ import fr.hahka.seriestracker.utilitaires.Config;
 import fr.hahka.seriestracker.utilitaires.DownloadImageTask;
 import fr.hahka.seriestracker.utilitaires.UserInterface;
 import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
 
@@ -77,11 +78,14 @@ public class UserFragment extends Fragment implements DownloadResultReceiver.Rec
 
     private void displayUserInformations(String userId, String token) {
 
-        Realm realm = Realm.getInstance(getActivity().getApplicationContext());
+
+        RealmConfiguration config = new RealmConfiguration.Builder(getActivity().getApplicationContext()).build();
+        Realm realm = Realm.getInstance(config);
         User newUser = null;
 
         int test = Integer.parseInt(userId);
 
+        // TODO : getByUser
         RealmQuery<User> query = realm.where(User.class)
                 .equalTo("id", test);
 

@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.ResultReceiver;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -26,6 +25,7 @@ import fr.hahka.seriestracker.api.ApiParamHashMap;
 import fr.hahka.seriestracker.utilitaires.Config;
 import fr.hahka.seriestracker.utilitaires.UserInterface;
 import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
 
@@ -59,9 +59,11 @@ public class EpisodesActivity extends Activity implements DownloadResultReceiver
 
         UserInterface.showProgress(true, mContentView, mProgressView);
 
-        ResultReceiver mReceiver = new ResultReceiver(new Handler());
+        DownloadResultReceiver mReceiver = new DownloadResultReceiver(new Handler());
+        mReceiver.setReceiver(this);
 
-        Intent intent = new Intent(Intent.ACTION_SYNC, null, getApplicationContext(), APIService.class);
+        //Intent intent = new Intent(Intent.ACTION_SYNC, null, getApplicationContext(), APIService.class);
+        Intent intent = new Intent(this, APIService.class);
 
         Intent callingIntent = getIntent();
         showId = callingIntent.getStringExtra(Config.SHOW_ID);
@@ -101,7 +103,8 @@ public class EpisodesActivity extends Activity implements DownloadResultReceiver
 
                 Log.d("toto", "102");
 
-                Realm realm = Realm.getInstance(getApplicationContext());
+                RealmConfiguration config = new RealmConfiguration.Builder(getApplicationContext()).build();
+                Realm realm = Realm.getInstance(config);
 
                 RealmQuery<Episode> query = realm.where(Episode.class)
                         .equalTo("showId", Integer.parseInt(showId));

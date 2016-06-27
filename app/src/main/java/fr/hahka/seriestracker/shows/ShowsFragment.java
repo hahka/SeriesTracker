@@ -23,6 +23,7 @@ import fr.hahka.seriestracker.utilitaires.Config;
 import fr.hahka.seriestracker.utilitaires.ScrollableFragmentWithBottomBar;
 import fr.hahka.seriestracker.utilitaires.UserInterface;
 import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
 
@@ -56,34 +57,7 @@ public class ShowsFragment extends ScrollableFragmentWithBottomBar implements Do
         userId = getArguments().getString(Config.USER_ID);
         token = getArguments().getString(Config.TOKEN);
 
-
-
-        RecyclerView recList = (RecyclerView) rootView.findViewById(R.id.showsRecyclerView);
-        recList.setHasFixedSize(true);
-        LinearLayoutManager llm = new LinearLayoutManager(getActivity().getApplicationContext());
-        llm.setOrientation(LinearLayoutManager.VERTICAL);
-        recList.setLayoutManager(llm);
-
-        Realm realm = Realm.getInstance(getActivity().getApplicationContext());
-
-        RealmQuery<SimpleShow> query = realm.where(SimpleShow.class)
-                .equalTo("userId", Integer.parseInt(userId));
-
-        RealmResults<SimpleShow> result1 = query.findAll();
-
-        result1.sort("title");
-
-        ArrayList<SimpleShow> userShowsList = new ArrayList<>();
-        for(SimpleShow show : result1){
-            userShowsList.add(show);
-        }
-
-
-        recList.setAdapter(new SimpleShowAdapter(getActivity().getApplicationContext(), userShowsList, token));
-
-        UserInterface.showProgress(false, mContentView, mProgressView);
-
-        super.setScrollBehavior(recList);
+        displayShowsList();
 
         layout = (PullRefreshLayout) rootView.findViewById(R.id.swipeRefreshLayout);
 
@@ -121,30 +95,7 @@ public class ShowsFragment extends ScrollableFragmentWithBottomBar implements Do
                     System.out.println("finished");
                     layout.setRefreshing(false);
 
-                    UserInterface.showProgress(false, mContentView, mProgressView);
-
-                    RecyclerView recList = (RecyclerView) rootView.findViewById(R.id.showsRecyclerView);
-                    recList.setHasFixedSize(true);
-                    LinearLayoutManager llm = new LinearLayoutManager(getActivity().getApplicationContext());
-                    llm.setOrientation(LinearLayoutManager.VERTICAL);
-                    recList.setLayoutManager(llm);
-
-                    Realm realm = Realm.getInstance(getActivity().getApplicationContext());
-
-                    RealmQuery<SimpleShow> query = realm.where(SimpleShow.class)
-                            .equalTo("userId", Integer.parseInt(userId));
-
-                    RealmResults<SimpleShow> result1 = query.findAll();
-
-                    result1.sort("title");
-
-                    ArrayList<SimpleShow> userShowsList = new ArrayList<>();
-                    for (SimpleShow show : result1) {
-                        userShowsList.add(show);
-                    }
-
-                    SimpleShowAdapter simpleShowAdapter = new SimpleShowAdapter(getActivity().getApplicationContext(), userShowsList, token);
-                    recList.setAdapter(simpleShowAdapter);
+                    displayShowsList();
 
                 }
 
@@ -160,5 +111,36 @@ public class ShowsFragment extends ScrollableFragmentWithBottomBar implements Do
                 break;
         }
 
+    }
+
+    public void displayShowsList() {
+        RecyclerView recList = (RecyclerView) rootView.findViewById(R.id.showsRecyclerView);
+        recList.setHasFixedSize(true);
+        LinearLayoutManager llm = new LinearLayoutManager(getActivity().getApplicationContext());
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        recList.setLayoutManager(llm);
+
+
+        RealmConfiguration config = new RealmConfiguration.Builder(getActivity().getApplicationContext()).build();
+        Realm realm = Realm.getInstance(config);
+
+        RealmQuery<SimpleShow> query = realm.where(SimpleShow.class)
+                .equalTo("userId", Integer.parseInt(userId));
+
+        RealmResults<SimpleShow> result1 = query.findAll();
+
+        result1 = result1.sort("title");
+
+        ArrayList<SimpleShow> userShowsList = new ArrayList<>();
+        for (SimpleShow show : result1) {
+            userShowsList.add(show);
+        }
+
+        SimpleShowAdapter simpleShowAdapter = new SimpleShowAdapter(getActivity().getApplicationContext(), userShowsList, token);
+        recList.setAdapter(simpleShowAdapter);
+
+        UserInterface.showProgress(false, mContentView, mProgressView);
+
+        super.setScrollBehavior(recList);
     }
 }
